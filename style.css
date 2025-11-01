@@ -1,78 +1,49 @@
-/* Reset & base styles */
-body, html {
+/* Reset */
+* {
   margin: 0;
   padding: 0;
-  height: 100%;
-  font-family: 'Helvetica Neue', sans-serif;
-  background-color: #f2e6cf; /* beige */
-  color: #222;
+  box-sizing: border-box;
 }
 
-/* HERO section */
+html, body {
+  height: 100%;
+  background-color: #0a0a0a; /* dark neutral background */
+  font-family: "Helvetica Neue", sans-serif;
+  overflow-x: hidden;
+}
+
+/* HERO SECTION */
 .hero {
   position: relative;
+  width: 100%;
   height: 100vh;
   background: url('images/background.jpg') center center no-repeat;
-  background-size: contain; /* ensure full picture visible */
-  background-color: #f2e6cf; /* fill beige borders */
+  background-size: contain; /* entire picture visible */
+  background-color: #0a0a0a; /* same as bars */
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
   align-items: center;
-  text-align: center;
-  padding: 2rem;
+  justify-content: center;
 }
 
-/* Headline text */
+/* Headline */
 .headline {
-  font-size: 3rem;
-  margin-top: 2rem;
-  color: #222;
-  text-shadow: none;
-}
-
-/* Buttons at bottom */
-.button-container {
-  margin-bottom: 2rem;
-}
-
-.filter-btn {
-  background: none;
-  border: 2px solid #222;
-  color: #222;
-  font-size: 1.2rem;
-  padding: 0.5rem 1.5rem;
-  margin: 0 0.5rem;
-  cursor: pointer;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-}
-
-.filter-btn:hover {
-  background-color: #222;
-  color: #f2e6cf;
+  color: white;
+  font-size: 4rem;
+  text-align: center;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
 }
 
 /* VIDEO GALLERY */
 .videos {
+  min-height: 100vh;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1rem;
   padding: 2rem;
-  background-color: #f9f8f4;
+  background-color: #0a0a0a; /* match black bars */
 }
 
-.video-card video {
-  width: 100%;
-  height: auto;
-  border-radius: 8px;
-}
-
-.video-card label {
-  margin-top: 0.5rem;
-  font-weight: 500;
-}
-/* Fade-in animation for videos */
+/* Video card + animation */
 .video-card {
   opacity: 1;
   transform: translateY(0);
@@ -84,17 +55,9 @@ body, html {
   transform: translateY(20px);
 }
 
-.video-placeholder {
+.video-card video {
   width: 100%;
-  height: 200px;
-  background-color: #e8e0d0;
+  height: auto;
   border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #555;
-  font-size: 1rem;
-  font-style: italic;
+  display: block;
 }
-
-
