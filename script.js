@@ -1,48 +1,47 @@
-// ===== FILTER BUTTONS =====
-const buttons = document.querySelectorAll('.filter-btn');
-const galleries = document.querySelectorAll('.video-gallery');
-const hero = document.querySelector('.hero');
-const videoSection = document.getElementById('videoSection');
+// Define your videos here
+const videos = [
+  { src: "videos/figure1.mp4", label: "figures" },
+  { src: "videos/figure1.mp4", label: "figures" },
+  { src: "videos/figure1.mp4", label: "choreo" },
+  { src: "videos/figure1.mp4", label: "choreo" },
+  { src: "videos/figure1.mp4", label: "choreo" },
+  { src: "videos/figure1.mp4", label: "practice" },
+  { src: "videos/figure1.mp4", label: "practice" },
+  { src: "videos/figure1.mp4", label: "practice" },
+  { src: "videos/figure1.mp4", label: "practice" },
+];
 
-// ===== OVERLAY =====
-const overlay = document.getElementById('videoOverlay');
-const overlayIframe = document.getElementById('overlayIframe');
-const closeOverlay = document.getElementById('closeOverlay');
+const gallery = document.getElementById("video-gallery");
+const buttons = document.querySelectorAll(".filter-btn");
 
-buttons.forEach(button => {
-  button.addEventListener('click', () => {
-    const category = button.dataset.filter;
+// Load all videos initially when you scroll down
+let videosLoaded = false;
+window.addEventListener("scroll", () => {
+  if (!videosLoaded && window.scrollY > window.innerHeight / 2) {
+    loadVideos("all");
+    videosLoaded = true;
+  }
+});
 
-    // Slide up hero
-    hero.classList.add('slide-up');
-
-    // Show video section
-    videoSection.classList.add('active');
-
-    // Show only selected category
-    galleries.forEach(gallery => {
-      gallery.style.display = (gallery.dataset.category === category) ? 'grid' : 'none';
-    });
-
-    // Smooth scroll
-    setTimeout(() => {
-      videoSection.scrollIntoView({ behavior: 'smooth' });
-    }, 600);
+// Handle filter buttons
+buttons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    const filter = btn.dataset.filter;
+    loadVideos(filter);
   });
 });
 
-// ===== FIGURE VIDEO CLICK (OPEN 1080p YOUTUBE) =====
-const figureVideos = document.querySelectorAll('.video-gallery[data-category="figures"] video');
-figureVideos.forEach(video => {
-  video.addEventListener('click', () => {
-    const youtubeUrl = video.dataset.youtube;
-    overlayIframe.src = youtubeUrl + '?autoplay=1';
-    overlay.classList.add('active');
-  });
-});
+function loadVideos(filter) {
+  gallery.innerHTML = ""; // clear existing
+  const filtered = filter === "all" ? videos : videos.filter(v => v.label === filter);
 
-// ===== CLOSE OVERLAY =====
-closeOverlay.addEventListener('click', () => {
-  overlay.classList.remove('active');
-  overlayIframe.src = '';
-});
+  filtered.forEach(v => {
+    const card = document.createElement("div");
+    card.classList.add("video-card");
+    card.innerHTML = `
+      <video src="${v.src}" autoplay muted loop></video>
+      <label>${v.label.charAt(0).toUpperCase() + v.label.slice(1)}</label>
+    `;
+    gallery.appendChild(card);
+  });
+}
