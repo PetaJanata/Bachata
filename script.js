@@ -8,16 +8,7 @@ const videos = [
    { src: "videos/figure1.mp4" },
    { src: "videos/figure1.mp4" },
    { src: "videos/figure1.mp4" },
-   { src: "videos/figure1.mp4" },
-   { src: "videos/figure1.mp4" },
-   { src: "videos/figure1.mp4" },
-   { src: "videos/figure1.mp4" },
-   { src: "videos/figure1.mp4" },
-   { src: "videos/figure1.mp4" },
-   { src: "videos/figure1.mp4" },
-   { src: "videos/figure1.mp4" },
-   { src: "videos/figure1.mp4" },
-   { src: "videos/figure1.mp4" },
+
 ];
 
 const gallery = document.getElementById("video-gallery");
