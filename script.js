@@ -26,118 +26,81 @@ const videos = [
 const gallery = document.getElementById("video-gallery");
 const buttons = document.querySelectorAll(".filter-btn");
 
-let hasLoaded = false;
+let currentFilter = "all";
 
-// === LOAD VIDEOS FUNCTION ===
-function loadVideos(filter = "all") {
+// === Function to build placeholder grid ===
+function buildPlaceholders(filter = "all") {
   gallery.innerHTML = "";
-  const filtered = filter === "all" ? videos : videos.filter(v => v.label === filter);
 
-  filtered.forEach(v => {
+  const filtered =
+    filter === "all" ? videos : videos.filter((v) => v.label === filter);
+
+  filtered.forEach((v) => {
     const card = document.createElement("div");
     card.classList.add("video-card", "hidden");
+    card.dataset.src = v.src;
+    card.dataset.label = v.label;
     card.innerHTML = `
-      <video src="${v.src}" autoplay muted loop playsinline></video>
+      <div class="video-placeholder">Loading...</div>
       <label>${v.label.charAt(0).toUpperCase() + v.label.slice(1)}</label>
     `;
     gallery.appendChild(card);
-    // Fade-in animation trigger
-    requestAnimationFrame(() => {
-      card.classList.remove("hidden");
-    });
   });
+
+  observeLazyLoad(); // start watching for scroll visibility
 }
 
-// === SCROLL / VIEWPORT DETECTION ===
-function checkAndLoadVideos() {
-  if (hasLoaded) return;
+// === Lazy load videos when visible ===
+function observeLazyLoad() {
+  const cards = document.querySelectorAll(".video-card");
 
-  const heroBottom = document.querySelector(".hero").getBoundingClientRect().bottom;
-  const viewportHeight = window.innerHeight;
+  const observer = new IntersectionObserver(
+    (entries, obs) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const card = entry.target;
+          const src = card.dataset.src;
 
-  if (heroBottom <= viewportHeight * 0.8) {
-    loadVideos("all");
-    hasLoaded = true;
-  }
-}
-
-// Trigger once on scroll or resize
-window.addEventListener("scroll", checkAndLoadVideos);
-window.addEventListener("resize", checkAndLoadVideos);
-
-// === BUTTON FILTERS ===
-buttons.forEach(btn => {
-  btn.addEventListener("click", () => {
-    if (!hasLoaded) {
-      loadVideos("all");
-      hasLoaded = true;
+          // Replace placeholder with video
+          card.innerHTML = `
+            <video src="${src}" autoplay muted loop playsinline></video>
+            <label>${card.dataset.label.charAt(0).toUpperCase() + card.dataset.label.slice(1)}</label>
+          `;
+          card.classList.remove("hidden");
+          obs.unobserve(card); // stop observing once loaded
+        }
+      });
+    },
+    {
+      threshold: 0.2, // load when 20% visible
+      rootMargin: "100px", // preload just before entering
     }
-    const filter = btn.dataset.filter;
-    loadVideos(filter);
+  );
+
+  cards.forEach((card) => observer.observe(card));
+}
+
+// === Buttons logic ===
+buttons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    currentFilter = btn.dataset.filter;
+    buildPlaceholders(currentFilter);
+
+    // Smooth scroll to videos
     window.scrollTo({
       top: gallery.offsetTop,
-      behavior: "smooth"
+      behavior: "smooth",
     });
   });
 });
 
-// === SAFETY: if user doesn’t scroll at all, still load after a short delay ===
-window.addEventListener("load", () => {
-  setTimeout(() => {
-    if (!hasLoaded) {
-      loadVideos("all");
-      hasLoaded = true;
-    }
-  }, 2000); // load after 2 seconds as fallback
-});
-
-const gallery = document.getElementById("video-gallery");
-const buttons = document.querySelectorAll(".filter-btn");
-
-// Flag so we only auto-load once
-let hasLoaded = false;
-
-// Fade-in load for all videos
-function loadVideos(filter = "all") {
-  gallery.innerHTML = "";
-  const filtered = filter === "all" ? videos : videos.filter(v => v.label === filter);
-
-  filtered.forEach(v => {
-    const card = document.createElement("div");
-    card.classList.add("video-card", "hidden");
-    card.innerHTML = `
-      <video src="${v.src}" autoplay muted loop playsinline></video>
-      <label>${v.label.charAt(0).toUpperCase() + v.label.slice(1)}</label>
-    `;
-    gallery.appendChild(card);
-    // Trigger fade-in animation
-    requestAnimationFrame(() => {
-      card.classList.remove("hidden");
-    });
-  });
-}
-
-// Scroll detection (trigger once when leaving hero)
-const hero = document.querySelector(".hero");
+// === Auto-build once user scrolls down past hero ===
+let built = false;
 window.addEventListener("scroll", () => {
-  if (!hasLoaded && window.scrollY > hero.offsetHeight / 2) {
-    loadVideos("all");
-    hasLoaded = true;
+  const heroBottom = document.querySelector(".hero").getBoundingClientRect()
+    .bottom;
+  if (!built && heroBottom < window.innerHeight * 0.8) {
+    buildPlaceholders("all");
+    built = true;
   }
-});
-
-// Button filtering
-buttons.forEach(btn => {
-  btn.addEventListener("click", () => {
-    const filter = btn.dataset.filter;
-    if (!hasLoaded) {
-      loadVideos("all"); // ensure videos exist before filtering
-      hasLoaded = true;
-    }
-    loadVideos(filter);
-    window.scrollTo({
-      top: gallery.offsetTop,
-      behavior: "smooth"
-    });
-  });
 });
