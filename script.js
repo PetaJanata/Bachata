@@ -26,6 +26,74 @@ const videos = [
 const gallery = document.getElementById("video-gallery");
 const buttons = document.querySelectorAll(".filter-btn");
 
+let hasLoaded = false;
+
+// === LOAD VIDEOS FUNCTION ===
+function loadVideos(filter = "all") {
+  gallery.innerHTML = "";
+  const filtered = filter === "all" ? videos : videos.filter(v => v.label === filter);
+
+  filtered.forEach(v => {
+    const card = document.createElement("div");
+    card.classList.add("video-card", "hidden");
+    card.innerHTML = `
+      <video src="${v.src}" autoplay muted loop playsinline></video>
+      <label>${v.label.charAt(0).toUpperCase() + v.label.slice(1)}</label>
+    `;
+    gallery.appendChild(card);
+    // Fade-in animation trigger
+    requestAnimationFrame(() => {
+      card.classList.remove("hidden");
+    });
+  });
+}
+
+// === SCROLL / VIEWPORT DETECTION ===
+function checkAndLoadVideos() {
+  if (hasLoaded) return;
+
+  const heroBottom = document.querySelector(".hero").getBoundingClientRect().bottom;
+  const viewportHeight = window.innerHeight;
+
+  if (heroBottom <= viewportHeight * 0.8) {
+    loadVideos("all");
+    hasLoaded = true;
+  }
+}
+
+// Trigger once on scroll or resize
+window.addEventListener("scroll", checkAndLoadVideos);
+window.addEventListener("resize", checkAndLoadVideos);
+
+// === BUTTON FILTERS ===
+buttons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    if (!hasLoaded) {
+      loadVideos("all");
+      hasLoaded = true;
+    }
+    const filter = btn.dataset.filter;
+    loadVideos(filter);
+    window.scrollTo({
+      top: gallery.offsetTop,
+      behavior: "smooth"
+    });
+  });
+});
+
+// === SAFETY: if user doesn’t scroll at all, still load after a short delay ===
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    if (!hasLoaded) {
+      loadVideos("all");
+      hasLoaded = true;
+    }
+  }, 2000); // load after 2 seconds as fallback
+});
+
+const gallery = document.getElementById("video-gallery");
+const buttons = document.querySelectorAll(".filter-btn");
+
 // Flag so we only auto-load once
 let hasLoaded = false;
 
