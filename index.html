@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dance Visuals</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <!-- ===== HERO SECTION ===== -->
+  <section class="hero">
+    <div class="overlay">
+      <h1 class="headline">My bachata journey</h1>
+
+      <!-- Filter Buttons -->
+      <div class="filter-buttons">
+        <button class="filter-btn" data-filter="figures">Figures</button>
+        <button class="filter-btn" data-filter="choreo">Choreo</button>
+        <button class="filter-btn" data-filter="practice">Practice</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== VIDEO SECTION ===== -->
+  <section class="video-section" id="videoSection">
+    <!-- Figures -->
+    <div class="video-gallery" data-category="figures">
+      <video src="videos/figure1.mp4" autoplay muted loop data-youtube="https://www.youtube.com/shorts/hwO9uu9Ngt0"></video>
+      <video src="videos/figure1.mp4" autoplay muted loop data-youtube="https://www.youtube.com/shorts/hwO9uu9Ngt0"></video>
+      <video src="videos/figure1.mp4" autoplay muted loop data-youtube="https://www.youtube.com/shorts/hwO9uu9Ngt0"></video>
+      <video src="videos/figure1.mp4" autoplay muted loop data-youtube="https://www.youtube.com/shorts/hwO9uu9Ngt0"></video>
+    </div>
+
+    <!-- Choreo -->
+    <div class="video-gallery" data-category="choreo">
+      <iframe src="https://www.youtube.com/shorts/hwO9uu9Ngt0" allowfullscreen></iframe>
+      <iframe src="https://www.youtube.com/shorts/hwO9uu9Ngt0" allowfullscreen></iframe>
+      <iframe src="https://www.youtube.com/shorts/hwO9uu9Ngt0" allowfullscreen></iframe>
+    </div>
+
+    <!-- Practice -->
+    <div class="video-gallery" data-category="practice">
+      <iframe src="https://www.youtube.com/shorts/hwO9uu9Ngt0" allowfullscreen></iframe>
+      <iframe src="https://www.youtube.com/shorts/hwO9uu9Ngt0" allowfullscreen></iframe>
+      <iframe src="https://www.youtube.com/shorts/hwO9uu9Ngt0" allowfullscreen></iframe>
+      <iframe src="https://www.youtube.com/shorts/hwO9uu9Ngt0" allowfullscreen></iframe>
+      <iframe src="https://www.youtube.com/shorts/hwO9uu9Ngt0" allowfullscreen></iframe>
+    </div>
+  </section>
+
+  <!-- ===== FULL SCREEN OVERLAY ===== -->
+  <div class="video-overlay" id="videoOverlay">
+    <div class="video-container">
+      <button class="close-btn" id="closeOverlay">&times;</button>
+      <iframe id="overlayIframe" src="" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <!-- ===== SCRIPT ===== -->
+  <script src="script.js"></script>
+</body>
+</html>
