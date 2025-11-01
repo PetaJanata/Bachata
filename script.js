@@ -1,14 +1,14 @@
 // Define your videos here
 const videos = [
-  { src: "videos/figure1.mp4", label: "figures" },
-  { src: "videos/figure1.mp4", label: "figures" },
-  { src: "videos/figure1.mp4", label: "choreo" },
-  { src: "videos/figure1.mp4", label: "choreo" },
-  { src: "videos/figure1.mp4", label: "choreo" },
-  { src: "videos/figure1.mp4", label: "practice" },
-  { src: "videos/figure1.mp4", label: "practice" },
-  { src: "videos/figure1.mp4", label: "practice" },
-  { src: "videos/figure1.mp4", label: "practice" },
+  { src: "videos/figure1.mp4", label: "Figures" },
+  { src: "videos/figure1.mp4", label: "Figures" },
+  { src: "videos/figure1.mp4", label: "Choreo" }, 
+  { src: "videos/figure1.mp4", label: "Choreo" }, 
+  { src: "videos/figure1.mp4", label: "Choreo" }, 
+  { src: "videos/figure1.mp4", label: "Practice" },
+  { src: "videos/figure1.mp4", label: "Practice" }, 
+  { src: "videos/figure1.mp4", label: "Practice" },
+  { src: "videos/figure1.mp4", label: "Practice" },
 ];
 
 const gallery = document.getElementById("video-gallery");
