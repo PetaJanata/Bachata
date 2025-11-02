@@ -28,23 +28,15 @@ body, html {
 /* VIDEO BLOCK */
 .video-block {
   width: 100%;
-  min-height: 600px; /* you can adjust based on your layout */
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 10px;
   padding: 2rem;
   background-color: #f9f8f4;
+  display: grid;
+  grid-template-columns: repeat(6, 300px); /* 6 fixed columns */
+  justify-content: center; /* center the grid in container */
+  gap: 20px; /* spacing between videos */
 }
 
 /* VIDEO CARD */
-.video-card {
-  width: 300px; /* fixed width */
-  position: relative;
-  flex: 0 0 auto;
-}
-
 .video-card video {
   width: 100%;
   height: auto; /* maintain aspect ratio */
