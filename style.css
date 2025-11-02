@@ -1,63 +1,58 @@
-/* Reset */
-* {
+/* Reset & base styles */
+body, html {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-}
-
-html, body {
   height: 100%;
-  background-color: #0a0a0a; /* dark neutral background */
-  font-family: "Helvetica Neue", sans-serif;
-  overflow-x: hidden;
+  font-family: 'Helvetica Neue', sans-serif;
+  background-color: #f2e6cf; /* beige */
+  color: #222;
 }
 
-/* HERO SECTION */
+/* HERO section */
 .hero {
   position: relative;
-  width: 100%;
   height: 100vh;
   background: url('images/background.jpg') center center no-repeat;
-  background-size: contain; /* entire picture visible */
-  background-color: #0a0a0a; /* same as bars */
+  background-size: contain; /* ensure full picture visible */
+  background-color: #f2e6cf; /* fill beige borders */
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 2rem;
 }
 
-/* Headline */
+/* Headline text */
 .headline {
-  color: white;
-  font-size: 4rem;
-  text-align: center;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+  font-size: 3rem;
+  margin-top: 2rem;
+  color: #222;
+  text-shadow: none;
 }
 
 /* VIDEO GALLERY */
 .videos {
-  min-height: 100vh;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1rem;
   padding: 2rem;
-  background-color: #0a0a0a; /* match black bars */
+  background-color: #f9f8f4;
 }
 
-/* Video card + animation */
 .video-card {
-  opacity: 1;
-  transform: translateY(0);
-  transition: opacity 0.8s ease, transform 0.8s ease;
-}
-
-.video-card.hidden {
-  opacity: 0;
-  transform: translateY(20px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .video-card video {
   width: 100%;
   height: auto;
   border-radius: 8px;
-  display: block;
+}
+
+.video-card label {
+  margin-top: 0.5rem;
+  font-weight: 500;
 }
