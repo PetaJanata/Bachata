@@ -2,51 +2,52 @@
 body, html {
   margin: 0;
   padding: 0;
-  height: 100%;
   font-family: 'Helvetica Neue', sans-serif;
-  background-color: #f2e6cf; /* beige */
+  background-color: #f2e6cf;
   color: #222;
 }
 
 /* HERO section */
 .hero {
-  position: relative;
-  height: 100vh;
+  height: 100vh; /* exactly 100% viewport height */
+  width: 100%;
   background: url('images/background.jpg') center center no-repeat;
-  background-size: contain; /* ensure full picture visible */
-  background-color: #f2e6cf; /* fill beige borders */
+  background-size: cover; /* cover entire section */
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 2rem;
 }
 
-/* Headline text */
 .headline {
   font-size: 3rem;
-  margin-top: 2rem;
   color: #222;
-  text-shadow: none;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
-/* VIDEO GALLERY */
-.videos {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
+/* VIDEO BLOCK */
+.video-block {
+  width: 100%;
+  min-height: 600px; /* you can adjust based on your layout */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 10px;
   padding: 2rem;
   background-color: #f9f8f4;
 }
 
+/* VIDEO CARD */
 .video-card {
-  display: flex;
-  justify-content: center;
+  width: 300px; /* fixed width */
+  position: relative;
+  flex: 0 0 auto;
 }
 
 .video-card video {
   width: 100%;
-  height: auto;
+  height: auto; /* maintain aspect ratio */
+  display: block;
   border-radius: 8px;
 }
