@@ -37,3 +37,4 @@ function loadVideos() {
     gallery.appendChild(card);
   });
 }
+
