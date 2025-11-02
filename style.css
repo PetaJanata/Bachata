@@ -35,11 +35,10 @@ body, html {
   padding: 2rem;
   background-color: #f9f8f4;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  justify-content: center;
+  grid-template-columns: repeat(6, 1fr); /* max 6 columns */
   gap: 20px;
-  max-width: calc(6 * 300px + 5 * 20px); /* max width for 6 columns + gaps */
-  margin: 0 auto; /* center the grid */
+  max-width: 1920px; /* optional: limit width on very large screens */
+  margin: 0 auto;
 }
 
 /* VIDEO CARD */
@@ -48,5 +47,35 @@ body, html {
   height: auto; /* maintain aspect ratio */
   display: block;
   border-radius: 8px;
-  max-width: 300px; /* ensures max 6 videos in a row */
+}
+
+/* Responsive adjustments */
+@media (max-width: 1600px) {
+  .video-block {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+@media (max-width: 1300px) {
+  .video-block {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 1000px) {
+  .video-block {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .video-block {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 500px) {
+  .video-block {
+    grid-template-columns: 1fr;
+  }
 }
