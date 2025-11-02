@@ -17,16 +17,16 @@ const videos = [
    { src: "videos/figure1.mp4" },
    { src: "videos/figure1.mp4" },
 ];
-
 const gallery = document.getElementById("video-gallery");
 
-// Load all videos immediately on page load
+// Load all videos immediately
 window.addEventListener("DOMContentLoaded", () => {
   loadVideos();
 });
 
 function loadVideos() {
   gallery.innerHTML = ""; // clear existing
+
   videos.forEach(v => {
     const card = document.createElement("div");
     card.classList.add("video-card");
