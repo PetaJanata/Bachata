@@ -5,6 +5,7 @@ body, html {
   font-family: 'Helvetica Neue', sans-serif;
   background-color: #f2e6cf;
   color: #222;
+  box-sizing: border-box;
 }
 
 /* HERO section */
@@ -31,9 +32,10 @@ body, html {
   padding: 2rem;
   background-color: #f9f8f4;
   display: grid;
-  grid-template-columns: repeat(6, 300px); /* 6 fixed columns */
-  justify-content: center; /* center the grid in container */
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* responsive columns */
   gap: 20px; /* spacing between videos */
+  justify-content: center;
+  box-sizing: border-box;
 }
 
 /* VIDEO CARD */
