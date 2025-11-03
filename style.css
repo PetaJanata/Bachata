@@ -10,19 +10,19 @@
   }
 
   html {
-    scroll-behavior: smooth;
+    scroll-behavior: smooth;  /* smooth scrolling */
   }
 
 /* HERO section */
 .hero {
-  height: 100vh; /* full viewport height */
-  width: 100%;
-  background: url('images/background.jpg') center center no-repeat;
-  background-size: cover;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+  height: 100vh; /* section covers the full scree height */
+  width: 100%; /* section covers the full screen width */
+  background: url('images/background.jpg') center center no-repeat; /* background img source */
+  background-size: cover; /* img will always cover the hero section. It will get re-sized */
+  display: flex;  /* enables to manipulate elements' alignment, spacing ...  */
+  justify-content: center; /* horizontal alignment */
+  align-items: center; /* vertical alignment */
+  text-align: center; /* alignment of text to center */
 }
 
 /* VIDEO BLOCK */
