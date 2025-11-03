@@ -37,35 +37,38 @@ const videos = [
 const gallery = document.getElementById("video-gallery");
 
 window.addEventListener("DOMContentLoaded", () => {
-  loadVideos();
+  const randomizedVideos = shuffleArray([...videos]); // shuffle BEFORE load
+  loadVideos(randomizedVideos);
 });
 
-function loadVideos() {
-  gallery.innerHTML = ""; // Clear existing videos
+function loadVideos(videoList) {
+  gallery.innerHTML = ""; // clear any previous videos
 
-  const shuffled = shuffleArray([...videos]); // Make a randomized copy
-
-  shuffled.forEach(v => {
+  videoList.forEach(v => {
     const card = document.createElement("div");
     card.classList.add("video-card");
 
-    // Use data-src for lazy loading
-    card.innerHTML = `
-      <video data-src="${v.src}" muted loop playsinline></video>
-    `;
+    // Lazy loading: use data-src instead of src
+    const video = document.createElement("video");
+    video.setAttribute("data-src", v.src);
+    video.muted = true;
+    video.loop = true;
+    video.playsInline = true;
+
+    card.appendChild(video);
     gallery.appendChild(card);
   });
 
-  // Initialize lazy loading once elements are added
   lazyLoadVideos();
 }
 
-// Fisher-Yates shuffle (unbiased)
 function shuffleArray(array) {
+  // Fisher-Yates shuffle (unbiased)
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]];
   }
+  console.log("Shuffled order:", array.map(v => v.src)); // see console
   return array;
 }
 
@@ -83,7 +86,7 @@ function lazyLoadVideos() {
       }
     });
   }, {
-    rootMargin: "200px 0px", // preload before visible
+    rootMargin: "200px 0px",
     threshold: 0.25
   });
 
