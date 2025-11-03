@@ -1,19 +1,10 @@
-/* Reset & base styles */
-* {
-  box-sizing: border-box;
-}
-
 :root {
-    --accent-color: #b00035;
-    --accent-color-dark: #b15b74;
-    --text-color: #333333;
     --bg-color: #ffffff;
   }
 
   /* GLOBAL STYLY */
   body {
     font-family: 'Winky Sans', sans-serif;
-    color: var(--text-color);
     background-color: var(--bg-color);
     /* line-height: 2; */
   }
