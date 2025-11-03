@@ -27,10 +27,10 @@
 
 /* VIDEO BLOCK */
 .video-block {
-  display: grid;
+  display: grid; /* grid structure */
   grid-template-columns: repeat(6, 1fr); /* 6 videos per row */
   gap: 20px; /* space between videos */
-  padding: 2rem;
+  padding: 2rem; /* offset from all sides */
 }
 
 /* VIDEO CARD */
@@ -38,7 +38,7 @@
   width: 100%;
   height: auto; /* maintain aspect ratio */
   display: block;
-  border-radius: 8px;
+  border-radius: 8px; /* radius around each video */
 }
 
 /* Responsive adjustments */
