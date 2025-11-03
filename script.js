@@ -41,39 +41,49 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 function loadVideos() {
-  gallery.innerHTML = ""; // clear existing
+  gallery.innerHTML = ""; // Clear existing videos
 
-  videos.forEach(v => {
+  const shuffled = shuffleArray([...videos]); // Make a randomized copy
+
+  shuffled.forEach(v => {
     const card = document.createElement("div");
     card.classList.add("video-card");
 
-    // use data-src instead of src for lazy loading
+    // Use data-src for lazy loading
     card.innerHTML = `
       <video data-src="${v.src}" muted loop playsinline></video>
     `;
-
     gallery.appendChild(card);
   });
 
-  // initialize lazy loading
+  // Initialize lazy loading once elements are added
   lazyLoadVideos();
+}
+
+// Fisher-Yates shuffle (unbiased)
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
 }
 
 function lazyLoadVideos() {
   const videoElements = document.querySelectorAll("video[data-src]");
-  
+
   const observer = new IntersectionObserver((entries, observer) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         const video = entry.target;
         video.src = video.dataset.src;
-        video.autoplay = true; // start playing once loaded
+        video.autoplay = true;
         video.removeAttribute("data-src");
         observer.unobserve(video);
       }
     });
   }, {
-    rootMargin: "200px 0px", // start loading a bit before it’s visible
+    rootMargin: "200px 0px", // preload before visible
     threshold: 0.25
   });
 
