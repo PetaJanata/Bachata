@@ -1,5 +1,4 @@
 const videos = [
-
   { src: "videos/1_480.mp4" },
   { src: "videos/2_480.mp4" },
   { src: "videos/3_480.mp4" },
@@ -11,26 +10,22 @@ const videos = [
   { src: "videos/9_480.mp4" },
   { src: "videos/10_480.mp4" },
   { src: "videos/15_480.mp4" },
- 
-
-    
 ];
 
 const gallery = document.getElementById("video-gallery");
 
 window.addEventListener("DOMContentLoaded", () => {
-  const randomizedVideos = shuffleArray([...videos]); // shuffle BEFORE load
+  const randomizedVideos = shuffleArray([...videos]);
   loadVideos(randomizedVideos);
 });
 
 function loadVideos(videoList) {
-  gallery.innerHTML = ""; // clear any previous videos
+  gallery.innerHTML = "";
 
   videoList.forEach(v => {
     const card = document.createElement("div");
     card.classList.add("video-card");
 
-    // Lazy loading: use data-src instead of src
     const video = document.createElement("video");
     video.setAttribute("data-src", v.src);
     video.muted = true;
@@ -45,26 +40,28 @@ function loadVideos(videoList) {
 }
 
 function shuffleArray(array) {
-  // Fisher-Yates shuffle (unbiased)
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]];
   }
-  console.log("Shuffled order:", array.map(v => v.src)); // see console
   return array;
 }
 
 function lazyLoadVideos() {
-  const videoElements = document.querySelectorAll("video[data-src]");
+  const videoElements = document.querySelectorAll("video[data-src], video[src]");
 
   const observer = new IntersectionObserver((entries, observer) => {
     entries.forEach(entry => {
+      const video = entry.target;
+
       if (entry.isIntersecting) {
-        const video = entry.target;
-        video.src = video.dataset.src;
-        video.autoplay = true;
-        video.removeAttribute("data-src");
-        observer.unobserve(video);
+        if (video.dataset.src) {
+          video.src = video.dataset.src;
+          video.removeAttribute("data-src");
+        }
+        video.play().catch(() => {});
+      } else {
+        video.pause();
       }
     });
   }, {
