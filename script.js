@@ -20,7 +20,8 @@ window.addEventListener("DOMContentLoaded", () => {
   const randomizedVideos = shuffleArray([...videos]);
   loadVideos(randomizedVideos);
 });
-// load gallery
+
+// === LOAD GALLERY ===
 function loadVideos(videoList) {
   gallery.innerHTML = "";
 
@@ -43,7 +44,8 @@ function loadVideos(videoList) {
 
   lazyLoadVideos();
 }
-//randomize
+
+// === RANDOMIZE ORDER ===
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -51,7 +53,8 @@ function shuffleArray(array) {
   }
   return array;
 }
-//lazy video
+
+// === LAZY LOAD VIDEOS ===
 function lazyLoadVideos() {
   const videoElements = document.querySelectorAll("video[data-src], video[src]");
 
@@ -77,17 +80,14 @@ function lazyLoadVideos() {
   videoElements.forEach(video => observer.observe(video));
 }
 
-
 // === FULLSCREEN 1080p OVERLAY PLAYER ===
 const overlay = document.getElementById("video-overlay");
-const overlayVideo = document.getElementById("overlay-video");
-const switchButton = document.getElementById("switch-angle");
 const overlayContent = document.querySelector(".overlay-content");
-const overlayButtons = document.getElementById("overlay-buttons");
-
+const overlayButtonsContainer = document.getElementById("overlay-buttons");
+let mainVideo = null;
 let altVideo = null;
-let isDualView = false;
 let mainVideoSrc = "";
+let isDualView = false;
 
 // === OPEN HD PLAYER ===
 async function openHDPlayer(videoSrc480) {
@@ -101,22 +101,27 @@ async function openHDPlayer(videoSrc480) {
       return;
     }
 
-    // ✅ Pause all 480p videos
     document.querySelectorAll("#video-gallery video").forEach(v => v.pause());
 
-    // ✅ Setup overlay
-    overlayVideo.src = videoSrc1080;
+    // ✅ Setup main video
+    overlayContent.innerHTML = "";
+    overlayButtonsContainer.innerHTML = "";
+
+    mainVideo = document.createElement("video");
+    mainVideo.src = videoSrc1080;
+    mainVideo.controls = true;
+    mainVideo.loop = true;
+    mainVideo.playsInline = true;
+    mainVideo.autoplay = true;
+
+    overlayContent.appendChild(mainVideo);
     overlay.classList.add("active");
     document.body.style.overflow = "hidden";
-    overlayVideo.play();
 
-    // ✅ Reset state
-    switchButton.style.display = "inline-block";
-    overlayContent.classList.remove("dual");
-    if (altVideo) {
-      altVideo.remove();
-      altVideo = null;
-    }
+    // ✅ Add original switch button under main video
+    addSwitchButton(mainVideo);
+
+    altVideo = null;
     isDualView = false;
 
   } catch (err) {
@@ -127,12 +132,14 @@ async function openHDPlayer(videoSrc480) {
 // === CLOSE HD PLAYER ===
 function closeHDPlayer() {
   overlay.classList.add("closing");
-  overlayVideo.pause();
+  if (mainVideo) mainVideo.pause();
+  if (altVideo) altVideo.pause();
 
   const handleTransitionEnd = () => {
     overlay.classList.remove("active", "closing");
     document.body.style.overflow = "";
-    overlayVideo.src = "";
+    overlayContent.innerHTML = "";
+    overlayButtonsContainer.innerHTML = "";
 
     // Resume only visible 480p videos
     document.querySelectorAll("#video-gallery video").forEach(v => {
@@ -156,74 +163,75 @@ overlay.addEventListener("click", (e) => {
 });
 
 // === DUAL VIEW FEATURE ===
+function addSwitchButton(video) {
+  const switchBtn = document.createElement("button");
+  switchBtn.textContent = "Ukaž video z jiného úhlu";
+  switchBtn.classList.add("btn-primary");
+  switchBtn.style.display = "block";
+  switchBtn.style.margin = "10px auto";
 
-// Handle “Ukaž video z jiného úhlu”
-switchButton.addEventListener("click", async () => {
-  if (isDualView) return;
+  switchBtn.addEventListener("click", async () => {
+    if (isDualView) return;
 
-  const altSrc = mainVideoSrc.replace(".mp4", "_alt.mp4");
-  try {
-    const response = await fetch(altSrc, { method: "HEAD" });
-    if (!response.ok) {
-      console.warn("No alternate angle found for:", mainVideoSrc);
-      return;
+    const altSrc = mainVideoSrc.replace(".mp4", "_alt.mp4");
+    try {
+      const response = await fetch(altSrc, { method: "HEAD" });
+      if (!response.ok) {
+        console.warn("No alternate angle found for:", mainVideoSrc);
+        return;
+      }
+
+      // Create second video
+      altVideo = document.createElement("video");
+      altVideo.src = altSrc;
+      altVideo.controls = true;
+      altVideo.loop = true;
+      altVideo.playsInline = true;
+      altVideo.autoplay = true;
+
+      // Apply dual view layout
+      overlayContent.innerHTML = "";
+      const mainWrapper = document.createElement("div");
+      const altWrapper = document.createElement("div");
+
+      mainWrapper.classList.add("video-wrapper");
+      altWrapper.classList.add("video-wrapper");
+
+      mainWrapper.appendChild(mainVideo);
+      altWrapper.appendChild(altVideo);
+
+      overlayContent.appendChild(mainWrapper);
+      overlayContent.appendChild(altWrapper);
+
+      // Add buttons under each video
+      overlayButtonsContainer.innerHTML = "";
+      addSingleViewButton(mainVideo, mainWrapper);
+      addSingleViewButton(altVideo, altWrapper);
+
+      isDualView = true;
+
+    } catch (err) {
+      console.warn("Error loading alternate video:", err);
     }
+  });
 
-    // Create second video
-    altVideo = document.createElement("video");
-    altVideo.src = altSrc;
-    altVideo.controls = true;
-    altVideo.playsInline = true;
-    altVideo.autoplay = true;
-
-    // Enter dual view
-    overlayContent.classList.add("dual");
-    overlayContent.insertBefore(altVideo, overlayButtons);
-
-    // Replace button with two single-view buttons
-    switchButton.style.display = "none";
-    addSingleViewButtons();
-
-    isDualView = true;
-  } catch (err) {
-    console.warn("Error loading alternate video:", err);
-  }
-});
-
-// Add “Ukaž jenom tohle” buttons
-function addSingleViewButtons() {
-  overlayButtons.innerHTML = "";
-
-  const mainBtn = document.createElement("button");
-  mainBtn.textContent = "Ukaž jenom tohle";
-  mainBtn.classList.add("btn-primary");
-  mainBtn.addEventListener("click", () => focusOnVideo(overlayVideo));
-
-  const altBtn = document.createElement("button");
-  altBtn.textContent = "Ukaž jenom tohle";
-  altBtn.classList.add("btn-primary");
-  altBtn.addEventListener("click", () => focusOnVideo(altVideo));
-
-  overlayButtons.appendChild(mainBtn);
-  overlayButtons.appendChild(altBtn);
+  overlayButtonsContainer.appendChild(switchBtn);
 }
 
-// Focus on one video in overlay
-function focusOnVideo(videoToKeep) {
-  overlayContent.classList.remove("dual");
-  switchButton.style.display = "inline-block";
+function addSingleViewButton(video, wrapper) {
+  const btn = document.createElement("button");
+  btn.textContent = "Ukaž jenom tohle";
+  btn.classList.add("btn-primary");
+  btn.style.display = "block";
+  btn.style.margin = "10px auto";
 
-  if (videoToKeep === altVideo) {
-    overlayVideo.src = altVideo.src;
-  }
-
-  setTimeout(() => {
-    if (altVideo) {
-      altVideo.remove();
-      altVideo = null;
-    }
+  btn.addEventListener("click", () => {
+    overlayContent.innerHTML = "";
+    overlayContent.appendChild(video);
+    overlayButtonsContainer.innerHTML = "";
+    addSwitchButton(video); // Keep original switch button
     isDualView = false;
-  }, 400);
+  });
 
-  overlayButtons.innerHTML = "";
+  wrapper.appendChild(btn);
 }
