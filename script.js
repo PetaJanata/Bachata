@@ -14,13 +14,6 @@ const videos = [
   { src: "videos/2_1080.mp4" },
   { src: "videos/3_1080.mp4" },
   { src: "videos/4_1080.mp4" },
-  { src: "videos/5_1080.mp4" },
-  { src: "videos/6_1080.mp4" },
-  { src: "videos/7_1080.mp4" },
-  { src: "videos/8_1080.mp4" },
-  { src: "videos/9_1080.mp4" },
-  { src: "videos/10_1080.mp4" },
-  { src: "videos/15_1080.mp4" },
 ];
 
 const gallery = document.getElementById("video-gallery");
