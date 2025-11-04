@@ -84,33 +84,45 @@
   z-index: 1000;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.4s ease;
 }
 
-/* Active state: visible */
+/* Active (faded in) */
 .video-overlay.active {
   opacity: 1;
   pointer-events: auto;
 }
 
-/* The 1080p video player */
-.video-overlay video {
-  width: 50%;
-  max-width: 960px;
-  border-radius: 12px;
-  box-shadow: 0 0 30px rgba(0,0,0,0.4);
-  transform: scale(0.95);
-  transition: transform 0.3s ease;
+/* Fade-out state (added briefly before removal) */
+.video-overlay.closing {
+  opacity: 0;
+  pointer-events: none;
 }
 
-/* When overlay is active, scale up the video smoothly */
+/* The 1080p video player */
+.video-overlay video {
+  width: auto;
+  max-width: 90vw;
+  max-height: 70vh; /* ✅ height-limited */
+  border-radius: 12px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
+  transform: scale(0.95);
+  transition: transform 0.4s ease;
+}
+
 .video-overlay.active video {
   transform: scale(1);
 }
 
-/* Responsive adjustments */
+/* Shrink slightly when closing */
+.video-overlay.closing video {
+  transform: scale(0.9);
+}
+
+/* Responsive adjustment for smaller screens */
 @media (max-width: 1000px) {
   .video-overlay video {
-    width: 80%;
+    max-width: 95vw;
+    max-height: 60vh;
   }
 }
