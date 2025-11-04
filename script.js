@@ -82,36 +82,41 @@ const overlay = document.getElementById("video-overlay");
 const overlayVideo = document.getElementById("overlay-video");
 
 function openHDPlayer(videoSrc480) {
-  // Replace "_480" with "_1080" in the file name
   const videoSrc1080 = videoSrc480.replace("_480", "_1080");
-
-  // Pause all background videos
   document.querySelectorAll("#video-gallery video").forEach(v => v.pause());
 
-  // Setup and show overlay
   overlayVideo.src = videoSrc1080;
   overlay.classList.add("active");
-  document.body.style.overflow = "hidden"; // disable scroll
+  document.body.style.overflow = "hidden";
   overlayVideo.play();
 }
 
 function closeHDPlayer() {
-  // Start fade-out
   overlay.classList.add("closing");
   overlayVideo.pause();
 
-  // After animation ends, fully hide and clean up
-  setTimeout(() => {
+  const handleTransitionEnd = () => {
     overlay.classList.remove("active", "closing");
-    document.body.style.overflow = ""; // restore scroll
+    document.body.style.overflow = "";
     overlayVideo.src = "";
 
-    // Resume visible background videos
     document.querySelectorAll("#video-gallery video").forEach(v => {
       const rect = v.getBoundingClientRect();
       if (rect.top < window.innerHeight && rect.bottom > 0) {
         v.play().catch(() => {});
       }
     });
-  }, 400); // matches CSS transition duration (0.4s)
+
+    overlay.removeEventListener("transitionend", handleTransitionEnd);
+  };
+
+  overlay.addEventListener("transitionend", handleTransitionEnd);
 }
+
+// ✅ Close when clicking outside the video
+overlay.addEventListener("click", (e) => {
+  if (e.target === overlay) {
+    closeHDPlayer();
+  }
+});
+
