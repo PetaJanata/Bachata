@@ -96,12 +96,12 @@ function openHDPlayer(videoSrc480) {
 }
 
 function closeHDPlayer() {
-  // Add closing class for fade-out animation
+  // Start fade-out
   overlay.classList.add("closing");
   overlayVideo.pause();
 
-  // Listen for transition end instead of using a timer
-  const handleTransitionEnd = () => {
+  // After animation ends, fully hide and clean up
+  setTimeout(() => {
     overlay.classList.remove("active", "closing");
     document.body.style.overflow = ""; // restore scroll
     overlayVideo.src = "";
@@ -113,10 +113,3 @@ function closeHDPlayer() {
         v.play().catch(() => {});
       }
     });
-
-    // Cleanup the event listener
-    overlay.removeEventListener("transitionend", handleTransitionEnd);
-  };
-
-  overlay.addEventListener("transitionend", handleTransitionEnd);
-}
