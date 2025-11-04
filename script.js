@@ -32,6 +32,9 @@ function loadVideos(videoList) {
     video.loop = true;
     video.playsInline = true;
 
+ // 💡 Open 1080p overlay when clicked
+    video.addEventListener("click", () => openHDPlayer(v.src));
+    
     card.appendChild(video);
     gallery.appendChild(card);
   });
@@ -71,3 +74,32 @@ function lazyLoadVideos() {
 
   videoElements.forEach(video => observer.observe(video));
 }
+
+// === FULLSCREEN 1080p OVERLAY PLAYER ===
+const overlay = document.getElementById("video-overlay");
+const overlayVideo = document.getElementById("overlay-video");
+
+function openHDPlayer(videoSrc480) {
+  // Replace "_480" with "_1080" in the file name
+  const videoSrc1080 = videoSrc480.replace("_480", "_1080");
+
+  overlayVideo.src = videoSrc1080;
+  overlay.classList.add("active");
+  document.body.style.overflow = "hidden"; // disable scroll
+  overlayVideo.play();
+}
+
+function closeHDPlayer() {
+  overlay.classList.remove("active");
+  document.body.style.overflow = ""; // restore scroll
+  overlayVideo.pause();
+  overlayVideo.src = "";
+}
+
+// When clicking outside the video, close overlay
+overlay.addEventListener("click", (e) => {
+  if (e.target === overlay) {
+    closeHDPlayer();
+  }
+});
+
