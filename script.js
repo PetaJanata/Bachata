@@ -10,10 +10,6 @@ const videos = [
   { src: "videos/9_480.mp4" },
   { src: "videos/10_480.mp4" },
   { src: "videos/15_480.mp4" },
-   { src: "videos/1_1080.mp4" },
-  { src: "videos/2_1080.mp4" },
-  { src: "videos/3_1080.mp4" },
-  { src: "videos/4_1080.mp4" },
 ];
 
 const gallery = document.getElementById("video-gallery");
