@@ -1,3 +1,4 @@
+// ✅ Only 480p videos in the gallery
 const videos = [
   { src: "videos/1_480.mp4" },
   { src: "videos/2_480.mp4" },
@@ -9,7 +10,7 @@ const videos = [
   { src: "videos/8_480.mp4" },
   { src: "videos/9_480.mp4" },
   { src: "videos/10_480.mp4" },
-  { src: "videos/15_480.mp4" },
+  { src: "videos/15_480.mp4" }
 ];
 
 const gallery = document.getElementById("video-gallery");
@@ -32,9 +33,9 @@ function loadVideos(videoList) {
     video.loop = true;
     video.playsInline = true;
 
- // 💡 Open 1080p overlay when clicked
+    // 💡 Open 1080p overlay when clicked
     video.addEventListener("click", () => openHDPlayer(v.src));
-    
+
     card.appendChild(video);
     gallery.appendChild(card);
   });
@@ -83,6 +84,10 @@ function openHDPlayer(videoSrc480) {
   // Replace "_480" with "_1080" in the file name
   const videoSrc1080 = videoSrc480.replace("_480", "_1080");
 
+  // Pause all background videos
+  document.querySelectorAll("#video-gallery video").forEach(v => v.pause());
+
+  // Setup and show overlay
   overlayVideo.src = videoSrc1080;
   overlay.classList.add("active");
   document.body.style.overflow = "hidden"; // disable scroll
@@ -90,10 +95,24 @@ function openHDPlayer(videoSrc480) {
 }
 
 function closeHDPlayer() {
-  overlay.classList.remove("active");
-  document.body.style.overflow = ""; // restore scroll
+  // Start fade-out
+  overlay.classList.add("closing");
   overlayVideo.pause();
-  overlayVideo.src = "";
+
+  // After animation ends, fully hide and clean up
+  setTimeout(() => {
+    overlay.classList.remove("active", "closing");
+    document.body.style.overflow = ""; // restore scroll
+    overlayVideo.src = "";
+
+    // Resume visible background videos
+    document.querySelectorAll("#video-gallery video").forEach(v => {
+      const rect = v.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        v.play().catch(() => {});
+      }
+    });
+  }, 400); // matches CSS transition duration (0.4s)
 }
 
 // When clicking outside the video, close overlay
@@ -102,4 +121,3 @@ overlay.addEventListener("click", (e) => {
     closeHDPlayer();
   }
 });
-
