@@ -71,3 +71,46 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* === FULLSCREEN VIDEO OVERLAY === */
+.video-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* Active state: visible */
+.video-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* The 1080p video player */
+.video-overlay video {
+  width: 50%;
+  max-width: 960px;
+  border-radius: 12px;
+  box-shadow: 0 0 30px rgba(0,0,0,0.4);
+  transform: scale(0.95);
+  transition: transform 0.3s ease;
+}
+
+/* When overlay is active, scale up the video smoothly */
+.video-overlay.active video {
+  transform: scale(1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1000px) {
+  .video-overlay video {
+    width: 80%;
+  }
+}
