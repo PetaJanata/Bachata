@@ -26,10 +26,17 @@
     <!-- Videos will be inserted dynamically by JS -->
  
   </section>
+  
 <!-- HD Video Overlay -->
 <div id="video-overlay" class="video-overlay">
-  <video id="overlay-video" controls playsinline></video>
+  <div class="overlay-content">
+    <video id="overlay-video" controls playsinline></video>
+    <div id="overlay-buttons" class="overlay-buttons">
+      <button id="switch-angle" class="btn-primary">Ukaž video z jiného úhlu</button>
+    </div>
+  </div>
 </div>
+
 
   <script src="script.js"></script>
 </body>
