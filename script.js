@@ -96,12 +96,12 @@ function openHDPlayer(videoSrc480) {
 }
 
 function closeHDPlayer() {
-  // Start fade-out
+  // Add closing class for fade-out animation
   overlay.classList.add("closing");
   overlayVideo.pause();
 
-  // After animation ends, fully hide and clean up
-  setTimeout(() => {
+  // Listen for transition end instead of using a timer
+  const handleTransitionEnd = () => {
     overlay.classList.remove("active", "closing");
     document.body.style.overflow = ""; // restore scroll
     overlayVideo.src = "";
@@ -113,12 +113,10 @@ function closeHDPlayer() {
         v.play().catch(() => {});
       }
     });
-  }, 400); // matches CSS transition duration (0.4s)
-}
 
-// When clicking outside the video, close overlay
-overlay.addEventListener("click", (e) => {
-  if (e.target === overlay) {
-    closeHDPlayer();
-  }
-});
+    // Cleanup the event listener
+    overlay.removeEventListener("transitionend", handleTransitionEnd);
+  };
+
+  overlay.addEventListener("transitionend", handleTransitionEnd);
+}
