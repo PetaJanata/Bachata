@@ -126,3 +126,44 @@
     max-height: 60vh;
   }
 }
+
+/* === Overlay Buttons === */
+.overlay-buttons {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.btn-primary {
+  background: rgba(255, 255, 255, 0.9);
+  color: #000;
+  font-weight: 500;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: rgba(255, 255, 255, 1);
+}
+
+/* Dual video mode */
+.overlay-content.dual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  transition: all 0.4s ease;
+}
+
+.overlay-content.dual video {
+  width: 48%;
+  height: auto;
+  transition: all 0.4s ease;
+}
+
+/* Smooth fade for switching modes */
+.overlay-content video {
+  transition: opacity 0.4s ease;
+}
+
