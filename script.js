@@ -113,3 +113,5 @@ function closeHDPlayer() {
         v.play().catch(() => {});
       }
     });
+  }, 400); // matches CSS transition duration (0.4s)
+}
