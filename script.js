@@ -6,7 +6,6 @@ const videos = [
   { src: "videos/4_480.mp4" },
   { src: "videos/5_480.mp4" },
   { src: "videos/6_480.mp4" },
-//  { src: "videos/7_480.mp4" },
   { src: "videos/8_480.mp4" },
   { src: "videos/9_480.mp4" },
   { src: "videos/10_480.mp4" },
