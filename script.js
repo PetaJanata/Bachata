@@ -83,13 +83,29 @@ const overlayVideo = document.getElementById("overlay-video");
 
 function openHDPlayer(videoSrc480) {
   const videoSrc1080 = videoSrc480.replace("_480", "_1080");
-  document.querySelectorAll("#video-gallery video").forEach(v => v.pause());
 
-  overlayVideo.src = videoSrc1080;
-  overlay.classList.add("active");
-  document.body.style.overflow = "hidden";
-  overlayVideo.play();
+  // 🧠 Check if the 1080p version exists before loading
+  fetch(videoSrc1080, { method: "HEAD" })
+    .then(response => {
+      if (!response.ok) {
+        console.warn("No 1080p version available for:", videoSrc480);
+        return; // ❌ Do nothing if 1080p not found
+      }
+
+      // ✅ Pause all 480p videos
+      document.querySelectorAll("#video-gallery video").forEach(v => v.pause());
+
+      // ✅ Setup and show overlay
+      overlayVideo.src = videoSrc1080;
+      overlay.classList.add("active");
+      document.body.style.overflow = "hidden"; // disable scroll
+      overlayVideo.play();
+    })
+    .catch(err => {
+      console.warn("Error checking 1080p file:", err);
+    });
 }
+
 
 function closeHDPlayer() {
   overlay.classList.add("closing");
