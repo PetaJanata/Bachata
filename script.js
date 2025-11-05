@@ -99,6 +99,7 @@ function openOverlay(src480) {
         video.src = videoSrc;
         video.controls = true;
         video.autoplay = true;
+        video.loop = true; // ✅ added looping here
         video.playsInline = true;
         video.classList.add("overlay-video");
         wrapper.appendChild(video);
@@ -182,3 +183,4 @@ function openOverlay(src480) {
       console.log("HD video not available:", hdSrc);
     });
 }
+
