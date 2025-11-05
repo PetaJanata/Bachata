@@ -66,20 +66,32 @@ function lazyLoadVideos() {
 function openOverlay(src480) {
   const hdSrc = src480.replace("_480", "_1080");
 
-  const overlay = document.createElement("div");
-  overlay.classList.add("video-overlay");
-  overlay.addEventListener("click", () => {
-    overlay.remove();
-    document.body.style.overflow = "";
-  });
+  // Check if HD version exists
+  fetch(hdSrc, { method: 'HEAD' })
+    .then(response => {
+      if (response.ok) {
+        // HD exists → show overlay
+        const overlay = document.createElement("div");
+        overlay.classList.add("video-overlay");
+        overlay.addEventListener("click", () => {
+          overlay.remove();
+          document.body.style.overflow = "";
+        });
 
-  const video = document.createElement("video");
-  video.src = hdSrc;
-  video.controls = true;
-  video.autoplay = true;
-  video.playsInline = true;
+        const video = document.createElement("video");
+        video.src = hdSrc;
+        video.controls = true;
+        video.autoplay = true;
+        video.playsInline = true;
 
-  overlay.appendChild(video);
-  document.body.appendChild(overlay);
-  document.body.style.overflow = "hidden";
+        overlay.appendChild(video);
+        document.body.appendChild(overlay);
+        document.body.style.overflow = "hidden";
+      }
+      // If HD doesn't exist → do nothing
+    })
+    .catch(err => {
+      console.log("HD video not available:", hdSrc);
+    });
 }
+
