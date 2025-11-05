@@ -66,16 +66,16 @@ function lazyLoadVideos() {
 
 
 // HD overlay with alt video and buttons properly placed
-// HD overlay with alt video and buttons properly placed
 function openOverlay(src480) {
   const hdSrc = src480.replace("_480", "_1080");
-  const altSrc = hdSrc.replace(".mp4", "_alt.mp4"); // e.g., 6_1080_alt.mp4
+  const altSrc = hdSrc.replace(".mp4", "_alt.mp4");
 
   // Check if HD version exists
-  fetch(hdSrc, { method: 'HEAD' })
-    .then(response => {
+  fetch(hdSrc, { method: "HEAD" })
+    .then((response) => {
       if (!response.ok) return; // HD not available → do nothing
 
+      // Overlay setup
       const overlay = document.createElement("div");
       overlay.classList.add("video-overlay");
 
@@ -84,7 +84,11 @@ function openOverlay(src480) {
       videoContainer.style.gap = "20px";
       overlay.appendChild(videoContainer);
 
-      function createVideoWrapper(videoSrc, buttonText, buttonHandler) {
+      document.body.appendChild(overlay);
+      document.body.style.overflow = "hidden";
+
+      // Helper to create a video + button wrapper
+      function createVideoWrapper(videoSrc) {
         const wrapper = document.createElement("div");
         wrapper.style.display = "flex";
         wrapper.style.flexDirection = "column";
@@ -98,62 +102,90 @@ function openOverlay(src480) {
         video.classList.add("overlay-video");
         wrapper.appendChild(video);
 
-        if (buttonText && buttonHandler) {
-          const btn = document.createElement("button");
-          btn.textContent = buttonText;
-          btn.style.marginTop = "10px";
-          btn.addEventListener("click", buttonHandler);
-          wrapper.appendChild(btn);
-        }
+        const button = document.createElement("button");
+        button.style.marginTop = "10px";
+        wrapper.appendChild(button);
 
-        return { wrapper, video };
+        return { wrapper, video, button };
       }
 
-      const showAltButton = { visible: true };
+      // Create the main video
+      const main = createVideoWrapper(hdSrc);
+      main.button.textContent = "Ukaž video z jiného úhlu";
+      videoContainer.appendChild(main.wrapper);
 
-      const mainWrapperData = createVideoWrapper(hdSrc, "Ukaž video z jiného úhlu", () => {
-        const altVideoData = createVideoWrapper(altSrc, "chci jen tohle", () => {
-          mainWrapperData.wrapper.remove();
-          showAltButton.visible = true;
-          mainWrapperData.wrapper.querySelector("button").style.display = "block";
+      // Check if alt video exists first
+      fetch(altSrc, { method: "HEAD" }).then((altResp) => {
+        const altAvailable = altResp.ok;
+
+        if (!altAvailable) {
+          main.button.style.display = "none"; // no alt video → hide button
+          return;
+        }
+
+        // Create alt video but don't show it yet
+        const alt = createVideoWrapper(altSrc);
+        alt.wrapper.style.display = "none"; // hidden initially
+        videoContainer.appendChild(alt.wrapper);
+
+        // --- MAIN BUTTON HANDLER ---
+        main.button.addEventListener("click", () => {
+          // Switch to dual video view
+          alt.wrapper.style.display = "flex";
+          main.button.style.display = "none"; // hide "show alt" button
+
+          // Update alt buttons
+          alt.button.textContent = "chci jen tohle";
+          main.button.textContent = "chci jen tohle";
+          main.button.style.display = "block"; // re-show under main
+          alt.button.style.display = "block";
+
+          // --- MAIN "chci jen tohle" ---
+          main.button.onclick = () => {
+            // Show only main
+            alt.wrapper.style.display = "none";
+            main.button.textContent = "Ukaž video z jiného úhlu";
+            main.button.onclick = null;
+            // Restore "show alt" click
+            main.button.addEventListener("click", showAltHandler, { once: true });
+          };
+
+          // --- ALT "chci jen tohle" ---
+          alt.button.onclick = () => {
+            // Show only alt
+            main.wrapper.style.display = "none";
+            alt.button.style.display = "none";
+            // Re-show "Ukaž video..." button under alt
+            const backBtn = document.createElement("button");
+            backBtn.textContent = "Ukaž video z jiného úhlu";
+            backBtn.style.marginTop = "10px";
+            backBtn.addEventListener("click", () => {
+              // restore both
+              main.wrapper.style.display = "flex";
+              alt.wrapper.style.display = "flex";
+              alt.button.style.display = "block";
+              backBtn.remove();
+              main.button.textContent = "chci jen tohle";
+              main.button.onclick = mainOnlyHandler;
+            });
+            alt.wrapper.appendChild(backBtn);
+          };
+
+          // Save handler references to restore later
+          const showAltHandler = main.button.onclick;
+          const mainOnlyHandler = main.button.onclick;
         });
-        videoContainer.appendChild(altVideoData.wrapper);
-
-        mainWrapperData.wrapper.querySelector("button").textContent = "chci jen tohle";
-        mainWrapperData.wrapper.querySelector("button").onclick = () => {
-          if (altVideoData) altVideoData.wrapper.remove();
-          mainWrapperData.wrapper.querySelector("button").textContent = "Ukaž video z jiného úhlu";
-          mainWrapperData.wrapper.querySelector("button").onclick = mainWrapperData.showAltHandler;
-        };
-
-        showAltButton.visible = false;
-        mainWrapperData.wrapper.querySelector("button").style.display = "block";
       });
 
-      mainWrapperData.showAltHandler = mainWrapperData.wrapper.querySelector("button").onclick;
-
-      videoContainer.appendChild(mainWrapperData.wrapper);
-
-      // Check if alt video exists
-      fetch(altSrc, { method: 'HEAD' })
-        .then(altResp => {
-          if (!altResp.ok) {
-            mainWrapperData.wrapper.querySelector("button").style.display = "none";
-          }
-        });
-
+      // Close overlay on click outside videos
       overlay.addEventListener("click", (e) => {
         if (e.target === overlay) {
           overlay.remove();
           document.body.style.overflow = "";
         }
       });
-
-      document.body.appendChild(overlay);
-      document.body.style.overflow = "hidden";
     })
-    .catch(err => {
+    .catch((err) => {
       console.log("HD video not available:", hdSrc);
     });
 }
-
