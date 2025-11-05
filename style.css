@@ -6,6 +6,9 @@
 body {
     font-family: 'Winky Sans', sans-serif;
     background-color: var(--bg-color);
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
 }
 
 html {
@@ -46,25 +49,27 @@ html {
 @media (max-width: 700px)  { .video-block { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 500px)  { .video-block { grid-template-columns: 1fr; } }
 
-/* === OVERLAY SECTION === */
-.video-overlay-section {
+/* === FULLSCREEN OVERLAY === */
+.video-overlay {
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    height: 70vh;
-    max-width: 95vw;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 20px; /* gap between video wrappers */
-    background: rgba(0,0,0,0.6);
-    backdrop-filter: blur(8px);
     z-index: 1000;
-    overflow-y: auto;
-    padding: 10px;
-    border-radius: 12px;
-    box-shadow: 0 0 40px rgba(0,0,0,0.5);
+    overflow: hidden;
+}
+
+/* Section inside overlay: controls height (70vh) */
+.video-overlay-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    height: 70vh;       /* max height of video+button content */
+    width: 95vw;
 }
 
 /* Top-level wrapper for each video+button */
@@ -73,14 +78,14 @@ html {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 2%; /* gap between video and button */
+    gap: 2%; /* space between video and button */
     height: 100%;
-    flex: 1; /* share space equally for multiple videos */
+    flex: 1; /* share space for multiple videos */
 }
 
 /* Video container */
 .video-div {
-    flex: 0 0 90%; /* video occupies 90% of wrapper height */
+    flex: 0 0 90%; /* video takes 90% of wrapper height */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -97,7 +102,7 @@ html {
 
 /* Button container */
 .button-div {
-    flex: 0 0 8%; /* button occupies 8% of wrapper height */
+    flex: 0 0 8%; /* button takes 8% of wrapper height */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -122,6 +127,8 @@ html {
 @media (max-width: 1000px) {
     .video-overlay-section {
         flex-direction: column;
+        height: auto;
+        max-height: 90vh;
     }
     .video-wrapper {
         width: 90%;
