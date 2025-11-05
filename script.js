@@ -128,14 +128,21 @@ function openOverlay(src480) {
           alt.wrapper.style.display = "none";
           videoContainer.appendChild(alt.wrapper);
 
+          let altButton = null; // Track the alt "chci jen tohle" button
+          let backBtn = null;   // Track the back button for alt-only view
+
           // Define handlers for showing/hiding videos
           const showAlt = () => {
             alt.wrapper.style.display = "flex";
             mainButton.textContent = "chci jen tohle";
-            const altButton = document.createElement("button");
-            altButton.textContent = "chci jen tohle";
-            altButton.style.marginTop = "10px";
-            alt.wrapper.appendChild(altButton);
+
+            // Create alt "chci jen tohle" button if not already created
+            if (!altButton) {
+              altButton = document.createElement("button");
+              altButton.textContent = "chci jen tohle";
+              altButton.style.marginTop = "10px";
+              alt.wrapper.appendChild(altButton);
+            }
 
             mainButton.onclick = showMainOnly;
             altButton.onclick = showAltOnly;
@@ -145,19 +152,32 @@ function openOverlay(src480) {
             alt.wrapper.style.display = "none";
             mainButton.textContent = "Ukaž video z jiného úhlu";
             mainButton.onclick = showAlt;
+
+            // Clean up: remove altButton if it exists
+            if (altButton) {
+              altButton.remove();
+              altButton = null;
+            }
           };
 
           const showAltOnly = () => {
             main.wrapper.style.display = "none";
+            if (altButton) altButton.style.display = "none";
 
-            // Create restore button under alt video
-            const backBtn = document.createElement("button");
+            // Avoid multiple restore buttons
+            if (backBtn) backBtn.remove();
+
+            backBtn = document.createElement("button");
             backBtn.textContent = "Ukaž video z jiného úhlu";
             backBtn.style.marginTop = "10px";
             backBtn.addEventListener("click", () => {
               main.wrapper.style.display = "flex";
               alt.wrapper.style.display = "flex";
+              if (altButton) altButton.style.display = "block";
               backBtn.remove();
+              backBtn = null;
+
+              // restore two-video mode
               mainButton.textContent = "chci jen tohle";
               mainButton.onclick = showMainOnly;
             });
@@ -168,7 +188,7 @@ function openOverlay(src480) {
           mainButton.onclick = showAlt;
         });
 
-      // Close overlay when clicking outside videos
+      // Click outside overlay closes it
       overlay.addEventListener("click", (e) => {
         if (e.target === overlay) {
           overlay.remove();
