@@ -62,7 +62,9 @@ function lazyLoadVideos() {
   videoElements.forEach(video => observer.observe(video));
 }
 
-// HD overlay
+
+
+// HD overlay with alt video and buttons properly placed
 function openOverlay(src480) {
   const hdSrc = src480.replace("_480", "_1080");
   const altSrc = hdSrc.replace(".mp4", "_alt.mp4"); // e.g., 6_1080_alt.mp4
@@ -72,6 +74,7 @@ function openOverlay(src480) {
     .then(response => {
       if (!response.ok) return; // HD not available → do nothing
 
+      // overlay
       const overlay = document.createElement("div");
       overlay.classList.add("video-overlay");
 
@@ -81,28 +84,72 @@ function openOverlay(src480) {
       videoContainer.style.gap = "20px";
       overlay.appendChild(videoContainer);
 
-      // create main HD video
-      const mainVideo = document.createElement("video");
-      mainVideo.src = hdSrc;
-      mainVideo.controls = true;
-      mainVideo.autoplay = true;
-      mainVideo.playsInline = true;
-      mainVideo.classList.add("overlay-video");
-      videoContainer.appendChild(mainVideo);
+      // function to create a video + button wrapper
+      function createVideoWrapper(videoSrc, buttonText, buttonHandler) {
+        const wrapper = document.createElement("div");
+        wrapper.style.display = "flex";
+        wrapper.style.flexDirection = "column";
+        wrapper.style.alignItems = "center";
 
-      // create "show alternative angle" button
-      const showAltButton = document.createElement("button");
-      showAltButton.textContent = "Ukaž video z jiného úhlu";
-      showAltButton.style.display = "block";
-      showAltButton.style.marginTop = "10px";
+        const video = document.createElement("video");
+        video.src = videoSrc;
+        video.controls = true;
+        video.autoplay = true;
+        video.playsInline = true;
+        video.classList.add("overlay-video");
+        wrapper.appendChild(video);
 
-      // append buttons container
-      const buttonsContainer = document.createElement("div");
-      buttonsContainer.style.display = "flex";
-      buttonsContainer.style.gap = "10px";
-      buttonsContainer.style.marginTop = "10px";
-      overlay.appendChild(buttonsContainer);
-      buttonsContainer.appendChild(showAltButton);
+        if (buttonText && buttonHandler) {
+          const btn = document.createElement("button");
+          btn.textContent = buttonText;
+          btn.style.marginTop = "10px";
+          btn.addEventListener("click", buttonHandler);
+          wrapper.appendChild(btn);
+        }
+
+        return { wrapper, video };
+      }
+
+      // main video wrapper with "show alt angle" button
+      const showAltButton = { visible: true }; // track visibility
+
+      const mainWrapperData = createVideoWrapper(hdSrc, "Ukaž video z jiného úhlu", () => {
+        // show alt video next to main
+        altVideoData = createVideoWrapper(altSrc, "chci jen tohle", () => {
+          // Show only alt video
+          mainWrapperData.wrapper.remove();
+          showAltButton.visible = true;
+          mainWrapperData.wrapper.querySelector("button").style.display = "block"; // restore button if needed
+        });
+        videoContainer.appendChild(altVideoData.wrapper);
+
+        // replace main button with "chci jen tohle"
+        mainWrapperData.wrapper.querySelector("button").textContent = "chci jen tohle";
+        mainWrapperData.wrapper.querySelector("button").onclick = () => {
+          // Show only main video
+          if (altVideoData) altVideoData.wrapper.remove();
+          // Restore original button
+          mainWrapperData.wrapper.querySelector("button").textContent = "Ukaž video z jiného úhlu";
+          mainWrapperData.wrapper.querySelector("button").onclick = mainWrapperData.showAltHandler;
+        };
+
+        showAltButton.visible = false;
+        mainWrapperData.wrapper.querySelector("button").style.display = "block";
+      });
+
+      // store handler for later restoration
+      mainWrapperData.showAltHandler = mainWrapperData.wrapper.querySelector("button").onclick;
+
+      videoContainer.appendChild(mainWrapperData.wrapper);
+
+      // Check if alt video exists
+      fetch(altSrc, { method: 'HEAD' })
+        .then(altResp => {
+          if (!altResp.ok) {
+            // hide button if alt not available
+            mainWrapperData.wrapper.querySelector("button").style.display = "none";
+          }
+        });
 
       // overlay click outside videos closes overlay
       overlay.addEventListener("click", (e) => {
@@ -114,63 +161,12 @@ function openOverlay(src480) {
 
       document.body.appendChild(overlay);
       document.body.style.overflow = "hidden";
-
-      // Check if alt video exists
-      fetch(altSrc, { method: 'HEAD' })
-        .then(altResp => {
-          if (!altResp.ok) {
-            showAltButton.style.display = "none"; // hide button if alt not available
-          }
-        });
-
-      // Event: show alternative angle video
-      showAltButton.addEventListener("click", () => {
-        // create alt video next to main video
-        const altVideo = document.createElement("video");
-        altVideo.src = altSrc;
-        altVideo.controls = true;
-        altVideo.autoplay = true;
-        altVideo.playsInline = true;
-        altVideo.classList.add("overlay-video");
-        videoContainer.appendChild(altVideo);
-
-        // hide showAltButton
-        showAltButton.style.display = "none";
-
-        // create "show only this" buttons for each video
-        buttonsContainer.innerHTML = ""; // clear previous buttons
-
-        const onlyMainBtn = document.createElement("button");
-        onlyMainBtn.textContent = "chci jen tohle"; // for main video
-        const onlyAltBtn = document.createElement("button");
-        onlyAltBtn.textContent = "chci jen tohle"; // for alt video
-
-        buttonsContainer.appendChild(onlyMainBtn);
-        buttonsContainer.appendChild(onlyAltBtn);
-
-        // click handlers
-        onlyMainBtn.addEventListener("click", () => {
-          // show only main video
-          altVideo.remove();
-          buttonsContainer.innerHTML = "";
-          buttonsContainer.appendChild(showAltButton);
-          showAltButton.style.display = "block";
-        });
-
-        onlyAltBtn.addEventListener("click", () => {
-          // show only alt video
-          mainVideo.remove();
-          buttonsContainer.innerHTML = "";
-          buttonsContainer.appendChild(showAltButton);
-          showAltButton.style.display = "block";
-
-          // swap mainVideo reference
-          mainVideo.src = altVideo.src;
-          videoContainer.appendChild(mainVideo); // put mainVideo back
-        });
-      });
     })
     .catch(err => {
+      console.log("HD video not available:", hdSrc);
+    });
+}
+
       console.log("HD video not available:", hdSrc);
     });
 }
