@@ -1,170 +1,138 @@
 :root {
     --bg-color: #ffffff;
-  }
+}
 
-  /* GLOBAL STYLY */
-  body {
+/* GLOBAL STYLES */
+body {
     font-family: 'Winky Sans', sans-serif;
     background-color: var(--bg-color);
-    /* line-height: 2; */
-  }
+}
 
-  html {
-    scroll-behavior: smooth;  /* smooth scrolling */
-  }
+html {
+    scroll-behavior: smooth;
+}
 
 /* HERO section */
 .hero {
-  height: 100vh; /* section covers the full scree height */
-  width: 100%; /* section covers the full screen width */
-  background: url('images/background.jpg') center center no-repeat; /* background img source */
-  background-size: cover; /* img will always cover the hero section. It will get re-sized */
-  display: flex;  /* enables to manipulate elements' alignment, spacing ...  */
-  justify-content: center; /* horizontal alignment */
-  align-items: center; /* vertical alignment */
-  text-align: center; /* alignment of text to center */
+    height: 100vh;
+    width: 100%;
+    background: url('images/background.jpg') center center no-repeat;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.hero h1 {
+    color: white;
+    font-size: 6rem;
+    font-weight: 300;
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
 }
 
 /* VIDEO BLOCK */
 .video-block {
-  display: grid; /* grid structure */
-  grid-template-columns: repeat(6, 1fr); /* 6 videos per row */
-  gap: 20px; /* space between videos */
-  padding: 2rem; /* offset from all sides */
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 20px;
+    padding: 2rem;
 }
 
-/* VIDEO CARD */
 .video-card video {
-  width: 100%;
-  height: auto; /* maintain aspect ratio */
-  display: block;
-  border-radius: 8px; /* radius around each video */
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 8px;
 }
 
-/* Responsive adjustments */
-@media (max-width: 1600px) {
-  .video-block {
-    grid-template-columns: repeat(5, 1fr);
-  }
-}
-
-@media (max-width: 1300px) {
-  .video-block {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-@media (max-width: 1000px) {
-  .video-block {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (max-width: 700px) {
-  .video-block {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 500px) {
-  .video-block {
-    grid-template-columns: 1fr;
-  }
-}
+@media (max-width: 1600px) { .video-block { grid-template-columns: repeat(5, 1fr); } }
+@media (max-width: 1300px) { .video-block { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 1000px) { .video-block { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 700px)  { .video-block { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 500px)  { .video-block { grid-template-columns: 1fr; } }
 
 /* === FULLSCREEN VIDEO OVERLAY === */
 .video-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(8px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s ease;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+    padding: 1rem;
 }
 
-/* Active (faded in) */
 .video-overlay.active {
-  opacity: 1;
-  pointer-events: auto;
+    opacity: 1;
+    pointer-events: auto;
 }
 
-/* Fade-out state (added briefly before removal) */
 .video-overlay.closing {
-  opacity: 0;
-  pointer-events: none;
+    opacity: 0;
+    pointer-events: none;
 }
 
-/* The 1080p video player */
-.video-overlay video {
-  width: auto;
-  max-width: 90vw;
-  max-height: 70vh; /* ✅ height-limited */
-  border-radius: 12px;
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
-  transform: scale(0.95);
-  transition: transform 0.4s ease;
+/* VIDEO SECTION: video + button */
+.video-section {
+    display: flex;
+    flex-direction: column;
+    height: 70vh;           /* total height for video + button */
+    width: auto;
+    max-width: 48vw;        /* for dual view */
+    margin: 0 1%;
 }
 
-.video-overlay.active video {
-  transform: scale(1);
+/* Video inside section */
+.video-section video {
+    flex: 0 0 90%;          /* video ~90% of section height */
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.4);
+    object-fit: contain;
+    transition: transform 0.4s ease, opacity 0.4s ease;
 }
 
-/* Shrink slightly when closing */
-.video-overlay.closing video {
-  transform: scale(0.9);
-}
-
-/* Responsive adjustment for smaller screens */
-@media (max-width: 1000px) {
-  .video-overlay video {
-    max-width: 95vw;
-    max-height: 60vh;
-  }
-}
-
-/* === Overlay Buttons === */
-.overlay-buttons {
-  margin-top: 1rem;
-  text-align: center;
+/* Button inside section */
+.video-section .overlay-buttons {
+    flex: 0 0 8%;           /* button ~8% */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2%;         /* gap ~2% */
 }
 
 .btn-primary {
-  background: rgba(255, 255, 255, 0.9);
-  color: #000;
-  font-weight: 500;
-  padding: 0.6rem 1.2rem;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.3s ease;
+    background: rgba(255, 255, 255, 0.9);
+    color: #000;
+    font-weight: 500;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
 }
 
 .btn-primary:hover {
-  background: rgba(255, 255, 255, 1);
+    background: rgba(255, 255, 255, 1);
 }
 
 /* Dual video mode */
 .overlay-content.dual {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  transition: all 0.4s ease;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 2%; /* gap between two video sections */
 }
 
-.overlay-content.dual video {
-  width: 48%;
-  height: auto;
-  transition: all 0.4s ease;
+/* Responsive overlay video */
+@media (max-width: 1000px) {
+    .video-section {
+        max-width: 90vw;
+    }
 }
-
-/* Smooth fade for switching modes */
-.overlay-content video {
-  transition: opacity 0.4s ease;
-}
-
