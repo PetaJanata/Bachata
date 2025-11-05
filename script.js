@@ -1,15 +1,8 @@
 // ✅ Only 480p videos in the gallery
 const videos = [
-  { src: "videos/1_480.mp4" },
-  { src: "videos/2_480.mp4" },
-  { src: "videos/3_480.mp4" },
-  { src: "videos/4_480.mp4" },
-  { src: "videos/5_480.mp4" },
+  
   { src: "videos/6_480.mp4" },
-  { src: "videos/8_480.mp4" },
-  { src: "videos/9_480.mp4" },
-  { src: "videos/10_480.mp4" },
-  { src: "videos/15_480.mp4" },
+
 
 ];
 
