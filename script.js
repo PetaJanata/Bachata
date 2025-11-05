@@ -1,7 +1,7 @@
 // Only 480p videos in the gallery
 const videos = [
   { src: "videos/6_480.mp4" },
-  { src: "videos/7_480.mp4" },
+  { src: "videos/9_480.mp4" },
 
 ];
 
