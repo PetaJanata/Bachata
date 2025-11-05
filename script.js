@@ -65,6 +65,7 @@ function lazyLoadVideos() {
 
 
 // HD overlay with alt video and buttons properly placed
+// HD overlay with alt video and buttons properly placed
 function openOverlay(src480) {
   const hdSrc = src480.replace("_480", "_1080");
   const altSrc = hdSrc.replace(".mp4", "_alt.mp4"); // e.g., 6_1080_alt.mp4
@@ -74,17 +75,14 @@ function openOverlay(src480) {
     .then(response => {
       if (!response.ok) return; // HD not available → do nothing
 
-      // overlay
       const overlay = document.createElement("div");
       overlay.classList.add("video-overlay");
 
-      // container for videos
       const videoContainer = document.createElement("div");
       videoContainer.style.display = "flex";
       videoContainer.style.gap = "20px";
       overlay.appendChild(videoContainer);
 
-      // function to create a video + button wrapper
       function createVideoWrapper(videoSrc, buttonText, buttonHandler) {
         const wrapper = document.createElement("div");
         wrapper.style.display = "flex";
@@ -110,25 +108,19 @@ function openOverlay(src480) {
         return { wrapper, video };
       }
 
-      // main video wrapper with "show alt angle" button
-      const showAltButton = { visible: true }; // track visibility
+      const showAltButton = { visible: true };
 
       const mainWrapperData = createVideoWrapper(hdSrc, "Ukaž video z jiného úhlu", () => {
-        // show alt video next to main
-        altVideoData = createVideoWrapper(altSrc, "chci jen tohle", () => {
-          // Show only alt video
+        const altVideoData = createVideoWrapper(altSrc, "chci jen tohle", () => {
           mainWrapperData.wrapper.remove();
           showAltButton.visible = true;
-          mainWrapperData.wrapper.querySelector("button").style.display = "block"; // restore button if needed
+          mainWrapperData.wrapper.querySelector("button").style.display = "block";
         });
         videoContainer.appendChild(altVideoData.wrapper);
 
-        // replace main button with "chci jen tohle"
         mainWrapperData.wrapper.querySelector("button").textContent = "chci jen tohle";
         mainWrapperData.wrapper.querySelector("button").onclick = () => {
-          // Show only main video
           if (altVideoData) altVideoData.wrapper.remove();
-          // Restore original button
           mainWrapperData.wrapper.querySelector("button").textContent = "Ukaž video z jiného úhlu";
           mainWrapperData.wrapper.querySelector("button").onclick = mainWrapperData.showAltHandler;
         };
@@ -137,7 +129,6 @@ function openOverlay(src480) {
         mainWrapperData.wrapper.querySelector("button").style.display = "block";
       });
 
-      // store handler for later restoration
       mainWrapperData.showAltHandler = mainWrapperData.wrapper.querySelector("button").onclick;
 
       videoContainer.appendChild(mainWrapperData.wrapper);
@@ -146,12 +137,10 @@ function openOverlay(src480) {
       fetch(altSrc, { method: 'HEAD' })
         .then(altResp => {
           if (!altResp.ok) {
-            // hide button if alt not available
             mainWrapperData.wrapper.querySelector("button").style.display = "none";
           }
         });
 
-      // overlay click outside videos closes overlay
       overlay.addEventListener("click", (e) => {
         if (e.target === overlay) {
           overlay.remove();
@@ -167,6 +156,3 @@ function openOverlay(src480) {
     });
 }
 
-      console.log("HD video not available:", hdSrc);
-    });
-}
