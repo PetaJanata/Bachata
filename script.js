@@ -1,17 +1,15 @@
 const videos = [
   { src: "videos/6_480.mp4" },
-
 ];
 
 const gallery = document.getElementById("video-gallery");
-const overlay = document.getElementById("video-overlay");
-const overlayContent = document.querySelector(".overlay-content");
 
 window.addEventListener("DOMContentLoaded", () => {
-  loadVideos(videos);
+  const randomizedVideos = shuffleArray([...videos]);
+  loadVideos(randomizedVideos);
 });
 
-// LOAD VIDEO GALLERY
+// Load video gallery
 function loadVideos(videoList) {
   gallery.innerHTML = "";
   videoList.forEach(v => {
@@ -24,7 +22,7 @@ function loadVideos(videoList) {
     video.loop = true;
     video.playsInline = true;
 
-    video.addEventListener("click", () => openHDPlayer(v.src));
+    video.addEventListener("click", () => openOverlay(v.src));
 
     card.appendChild(video);
     gallery.appendChild(card);
@@ -33,90 +31,97 @@ function loadVideos(videoList) {
   lazyLoadVideos();
 }
 
-// LAZY LOAD
+// Lazy load videos
 function lazyLoadVideos() {
-  const videoElements = document.querySelectorAll("video[data-src]");
+  const videoElements = document.querySelectorAll("video[data-src], video[src]");
   const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       const video = entry.target;
       if (entry.isIntersecting) {
-        video.src = video.dataset.src;
-        video.removeAttribute("data-src");
+        if (video.dataset.src) {
+          video.src = video.dataset.src;
+          video.removeAttribute("data-src");
+        }
         video.play().catch(() => {});
-      } else {
-        video.pause();
-      }
+      } else video.pause();
     });
   }, { rootMargin: "200px 0px", threshold: 0.25 });
 
   videoElements.forEach(video => observer.observe(video));
 }
 
-// OPEN 1080p PLAYER
-let mainVideo = null;
-let altVideo = null;
+// Shuffle array
+function shuffleArray(array) {
+  for (let i=array.length-1; i>0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
 
-async function openHDPlayer(videoSrc480) {
-  const videoSrc1080 = videoSrc480.replace("_480", "_1080");
-  overlayContent.innerHTML = "";
-  overlay.classList.add("active");
+// Open overlay dynamically
+async function openOverlay(video480) {
+  const video1080 = video480.replace("_480", "_1080");
+
+  // Create overlay section
+  const overlay = document.createElement("section");
+  overlay.classList.add("video-overlay-section");
+
+  // Close overlay when clicking outside
+  overlay.addEventListener("click", e => {
+    if (e.target === overlay) {
+      overlay.remove();
+      document.body.style.overflow = "";
+    }
+  });
+
+  const overlayContent = document.createElement("div");
+  overlayContent.classList.add("video-overlay-content");
+  overlay.appendChild(overlayContent);
+
+  document.body.appendChild(overlay);
   document.body.style.overflow = "hidden";
 
-  mainVideo = document.createElement("video");
-  mainVideo.src = videoSrc1080;
-  mainVideo.controls = true;
-  mainVideo.autoplay = true;
-  mainVideo.playsInline = true;
-
-  // BUTTON
-  const switchBtn = document.createElement("button");
-  switchBtn.textContent = "Ukaž video z jiného úhlu";
-  switchBtn.classList.add("btn-primary");
-
-  const btnWrapper = document.createElement("div");
-  btnWrapper.classList.add("overlay-buttons");
-  btnWrapper.appendChild(switchBtn);
-
-  overlayContent.appendChild(mainVideo);
-  overlayContent.appendChild(btnWrapper);
-
-  switchBtn.addEventListener("click", () => loadAltVideo(videoSrc1080));
+  // Create first video wrapper
+  createVideoWrapper(overlayContent, video1080);
 }
 
-// LOAD ALTERNATE VIDEO
-async function loadAltVideo(mainSrc) {
-  const altSrc = mainSrc.replace(".mp4", "_alt.mp4");
-  altVideo = document.createElement("video");
-  altVideo.src = altSrc;
-  altVideo.controls = true;
-  altVideo.autoplay = true;
-  altVideo.playsInline = true;
+// Create video wrapper with video + button
+async function createVideoWrapper(container, videoSrc) {
+  const wrapper = document.createElement("div");
+  wrapper.classList.add("video-wrapper");
 
-  // BUTTON
-  const altBtn = document.createElement("button");
-  altBtn.textContent = "Ukaž jenom tohle";
-  altBtn.classList.add("btn-primary");
-  const altBtnWrapper = document.createElement("div");
-  altBtnWrapper.classList.add("overlay-buttons");
-  altBtnWrapper.appendChild(altBtn);
+  // Video div
+  const videoDiv = document.createElement("div");
+  videoDiv.classList.add("video-div");
+  const video = document.createElement("video");
+  video.src = videoSrc;
+  video.controls = true;
+  video.autoplay = true;
+  video.playsInline = true;
+  videoDiv.appendChild(video);
 
-  overlayContent.innerHTML = "";
-  overlayContent.classList.add("dual");
-  overlayContent.appendChild(mainVideo);
-  overlayContent.appendChild(altVideo);
-  overlayContent.appendChild(altBtnWrapper);
+  // Button div
+  const buttonDiv = document.createElement("div");
+  buttonDiv.classList.add("button-div");
+  const btn = document.createElement("button");
+  btn.textContent = "Ukaž video z jiného úhlu";
+  buttonDiv.appendChild(btn);
+
+  wrapper.appendChild(videoDiv);
+  wrapper.appendChild(buttonDiv);
+  container.appendChild(wrapper);
+
+  // Alternate video functionality
+  btn.addEventListener("click", async () => {
+    const altSrc = videoSrc.replace(".mp4", "_alt.mp4");
+    try {
+      const response = await fetch(altSrc, { method: "HEAD" });
+      if (!response.ok) return console.warn("No alternate angle:", altSrc);
+
+      createVideoWrapper(container, altSrc);
+    } catch (err) {
+      console.warn(err);
+    }
+  });
 }
-
-// CLOSE OVERLAY
-overlay.addEventListener("click", e => {
-  if (e.target === overlay) {
-    overlay.classList.add("closing");
-    mainVideo?.pause();
-    altVideo?.pause();
-    overlay.addEventListener("transitionend", () => {
-      overlay.classList.remove("active", "closing", "dual");
-      overlayContent.innerHTML = "";
-      document.body.style.overflow = "";
-    }, { once: true });
-  }
-});
