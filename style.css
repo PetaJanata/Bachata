@@ -1,136 +1,65 @@
-:root {
-    --bg-color: #ffffff;
-}
+:root { --bg-color: #ffffff; }
 
-/* GLOBAL STYLES */
 body {
-    font-family: 'Winky Sans', sans-serif;
-    background-color: var(--bg-color);
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
+  font-family: 'Winky Sans', sans-serif;
+  background-color: var(--bg-color);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
 }
 
-html {
-    scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
-/* HERO section */
+/* HERO */
 .hero {
-    height: 100vh;
-    width: 100%;
-    background: url('images/background.jpg') center center no-repeat;
-    background-size: cover;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
+  height: 100vh;
+  width: 100%;
+  background: url('images/background.jpg') center center no-repeat;
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 /* VIDEO GALLERY */
 .video-block {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 20px;
-    padding: 2rem;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 20px;
+  padding: 2rem;
 }
 
 .video-card video {
-    width: 100%;
-    height: auto;
-    display: block;
-    border-radius: 8px;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
-/* Responsive grid adjustments */
+/* Responsive */
 @media (max-width: 1600px) { .video-block { grid-template-columns: repeat(5, 1fr); } }
 @media (max-width: 1300px) { .video-block { grid-template-columns: repeat(4, 1fr); } }
 @media (max-width: 1000px) { .video-block { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 700px)  { .video-block { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 500px)  { .video-block { grid-template-columns: 1fr; } }
 
-/* === FULLSCREEN OVERLAY === */
+/* FULLSCREEN OVERLAY */
 .video-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(8px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    overflow: hidden;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
-/* Section inside overlay: controls height (70vh) */
-.video-overlay-section {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    height: 70vh;       /* max height of video+button content */
-    width: 95vw;
-}
-
-/* Top-level wrapper for each video+button */
-.video-wrapper {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 2%; /* space between video and button */
-    height: 100%;
-    flex: 1; /* share space for multiple videos */
-}
-
-/* Video container */
-.video-div {
-    flex: 0 0 90%; /* video takes 90% of wrapper height */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.video-div video {
-    width: auto;
-    height: 100%;
-    max-width: 100%;
-    border-radius: 12px;
-    box-shadow: 0 0 30px rgba(0,0,0,0.4);
-    transition: transform 0.4s ease, opacity 0.4s ease;
-}
-
-/* Button container */
-.button-div {
-    flex: 0 0 8%; /* button takes 8% of wrapper height */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.button-div button {
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    font-weight: 500;
-    font-family: 'Winky Sans', sans-serif;
-    background: rgba(255,255,255,0.9);
-    color: #000;
-    cursor: pointer;
-    transition: background 0.3s ease;
-}
-
-.button-div button:hover {
-    background: rgba(255,255,255,1);
-}
-
-/* Responsive overlay for smaller screens */
-@media (max-width: 1000px) {
-    .video-overlay-section {
-        flex-direction: column;
-        height: auto;
-        max-height: 90vh;
-    }
-    .video-wrapper {
-        width: 90%;
-    }
+.video-overlay video {
+  width: auto;
+  max-width: 90vw;
+  max-height: 70vh;
+  border-radius: 12px;
+  box-shadow: 0 0 30px rgba(0,0,0,0.4);
 }
