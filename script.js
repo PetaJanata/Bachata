@@ -5,8 +5,7 @@ const videos = [
 const gallery = document.getElementById("video-gallery");
 
 window.addEventListener("DOMContentLoaded", () => {
-  const randomizedVideos = shuffleArray([...videos]);
-  loadVideos(randomizedVideos);
+  loadVideos(videos);
 });
 
 // Load video gallery
@@ -50,24 +49,13 @@ function lazyLoadVideos() {
   videoElements.forEach(video => observer.observe(video));
 }
 
-// Shuffle array
-function shuffleArray(array) {
-  for (let i=array.length-1; i>0; i--) {
-    const j = Math.floor(Math.random()*(i+1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
-}
-
 // Open overlay dynamically
 async function openOverlay(video480) {
   const video1080 = video480.replace("_480", "_1080");
 
-  // Create overlay section
-  const overlay = document.createElement("section");
-  overlay.classList.add("video-overlay-section");
-
-  // Close overlay when clicking outside
+  // Create full-screen overlay
+  const overlay = document.createElement("div");
+  overlay.classList.add("video-overlay");
   overlay.addEventListener("click", e => {
     if (e.target === overlay) {
       overlay.remove();
@@ -75,15 +63,16 @@ async function openOverlay(video480) {
     }
   });
 
-  const overlayContent = document.createElement("div");
-  overlayContent.classList.add("video-overlay-content");
-  overlay.appendChild(overlayContent);
+  // Create section inside overlay (controls height 70vh)
+  const section = document.createElement("section");
+  section.classList.add("video-overlay-section");
+  overlay.appendChild(section);
 
   document.body.appendChild(overlay);
   document.body.style.overflow = "hidden";
 
-  // Create first video wrapper
-  createVideoWrapper(overlayContent, video1080);
+  // First video wrapper
+  createVideoWrapper(section, video1080);
 }
 
 // Create video wrapper with video + button
@@ -118,7 +107,6 @@ async function createVideoWrapper(container, videoSrc) {
     try {
       const response = await fetch(altSrc, { method: "HEAD" });
       if (!response.ok) return console.warn("No alternate angle:", altSrc);
-
       createVideoWrapper(container, altSrc);
     } catch (err) {
       console.warn(err);
