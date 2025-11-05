@@ -75,10 +75,11 @@ function openOverlay(src480) {
     .then((response) => {
       if (!response.ok) return; // HD not available → do nothing
 
-      // Overlay setup
+      // Overlay
       const overlay = document.createElement("div");
       overlay.classList.add("video-overlay");
 
+      // Container for videos
       const videoContainer = document.createElement("div");
       videoContainer.style.display = "flex";
       videoContainer.style.gap = "20px";
@@ -109,75 +110,67 @@ function openOverlay(src480) {
         return { wrapper, video, button };
       }
 
-      // Create the main video
+      // Create main HD video
       const main = createVideoWrapper(hdSrc);
       main.button.textContent = "Ukaž video z jiného úhlu";
       videoContainer.appendChild(main.wrapper);
 
-      // Check if alt video exists first
+      // Check if alt video exists
       fetch(altSrc, { method: "HEAD" }).then((altResp) => {
         const altAvailable = altResp.ok;
-
         if (!altAvailable) {
-          main.button.style.display = "none"; // no alt video → hide button
+          main.button.style.display = "none";
           return;
         }
 
-        // Create alt video but don't show it yet
+        // Prepare alt video
         const alt = createVideoWrapper(altSrc);
-        alt.wrapper.style.display = "none"; // hidden initially
+        alt.wrapper.style.display = "none"; // hidden until shown
         videoContainer.appendChild(alt.wrapper);
 
-        // --- MAIN BUTTON HANDLER ---
-        main.button.addEventListener("click", () => {
-          // Switch to dual video view
+        // Define handlers ahead so they can reference each other cleanly
+        const showAlt = () => {
           alt.wrapper.style.display = "flex";
-          main.button.style.display = "none"; // hide "show alt" button
-
-          // Update alt buttons
-          alt.button.textContent = "chci jen tohle";
           main.button.textContent = "chci jen tohle";
-          main.button.style.display = "block"; // re-show under main
+          alt.button.textContent = "chci jen tohle";
+          main.button.onclick = showMainOnly;
+          alt.button.onclick = showAltOnly;
+          main.button.style.display = "block";
           alt.button.style.display = "block";
+        };
 
-          // --- MAIN "chci jen tohle" ---
-          main.button.onclick = () => {
-            // Show only main
-            alt.wrapper.style.display = "none";
-            main.button.textContent = "Ukaž video z jiného úhlu";
-            main.button.onclick = null;
-            // Restore "show alt" click
-            main.button.addEventListener("click", showAltHandler, { once: true });
-          };
+        const showMainOnly = () => {
+          alt.wrapper.style.display = "none";
+          main.button.textContent = "Ukaž video z jiného úhlu";
+          main.button.onclick = showAlt; // restore ability to reopen alt
+        };
 
-          // --- ALT "chci jen tohle" ---
-          alt.button.onclick = () => {
-            // Show only alt
-            main.wrapper.style.display = "none";
-            alt.button.style.display = "none";
-            // Re-show "Ukaž video..." button under alt
-            const backBtn = document.createElement("button");
-            backBtn.textContent = "Ukaž video z jiného úhlu";
-            backBtn.style.marginTop = "10px";
-            backBtn.addEventListener("click", () => {
-              // restore both
-              main.wrapper.style.display = "flex";
-              alt.wrapper.style.display = "flex";
-              alt.button.style.display = "block";
-              backBtn.remove();
-              main.button.textContent = "chci jen tohle";
-              main.button.onclick = mainOnlyHandler;
-            });
-            alt.wrapper.appendChild(backBtn);
-          };
+        const showAltOnly = () => {
+          main.wrapper.style.display = "none";
+          alt.button.style.display = "none";
 
-          // Save handler references to restore later
-          const showAltHandler = main.button.onclick;
-          const mainOnlyHandler = main.button.onclick;
-        });
+          // Create restore button under alt video
+          const backBtn = document.createElement("button");
+          backBtn.textContent = "Ukaž video z jiného úhlu";
+          backBtn.style.marginTop = "10px";
+          backBtn.addEventListener("click", () => {
+            main.wrapper.style.display = "flex";
+            alt.wrapper.style.display = "flex";
+            alt.button.style.display = "block";
+            backBtn.remove();
+
+            // restore two-video mode
+            main.button.textContent = "chci jen tohle";
+            main.button.onclick = showMainOnly;
+          });
+          alt.wrapper.appendChild(backBtn);
+        };
+
+        // Set the initial main button action
+        main.button.onclick = showAlt;
       });
 
-      // Close overlay on click outside videos
+      // Click outside overlay closes it
       overlay.addEventListener("click", (e) => {
         if (e.target === overlay) {
           overlay.remove();
