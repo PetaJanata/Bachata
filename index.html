@@ -28,14 +28,14 @@
   </section>
   
 <!-- HD Video Overlay -->
-<div id="video-overlay" class="video-overlay">
-  <div class="overlay-content">
-    <video id="overlay-video" controls playsinline></video>
-    <div id="overlay-buttons" class="overlay-buttons">
-      <button id="switch-angle" class="btn-primary">Ukaž video z jiného úhlu</button>
-    </div>
+ <!-- ✅ HD Video Overlay (fixed structure) -->
+  <div id="video-overlay" class="video-overlay">
+    <!-- Content area for main/alt videos -->
+    <div class="overlay-content"></div>
+
+    <!-- ✅ Buttons are now outside overlay-content so they won't get deleted -->
+    <div id="overlay-buttons" class="overlay-buttons"></div>
   </div>
-</div>
 
 
   <script src="script.js"></script>
