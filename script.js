@@ -65,7 +65,7 @@ function lazyLoadVideos() {
   videoElements.forEach((video) => observer.observe(video));
 }
 
-// HD overlay with correct muting and labeling
+// HD overlay with alternate-angle video and proper muting
 function openOverlay(src480) {
   const hdSrc = src480.replace("_480", "_1080");
   const altSrc = hdSrc.replace(".mp4", "_alt.mp4");
@@ -132,20 +132,20 @@ function openOverlay(src480) {
             alt.wrapper.style.display = "flex";
 
             mainButton.textContent = "pohled 1";
-            main.video.muted = true;  // only alt has sound initially
+            main.video.muted = true;  // alt has sound initially
             alt.video.muted = false;
+            alt.video.play().catch(() => {}); // ensure alt plays
 
-            // Create pohled 2 button
-            if (!altButton) {
-              altButton = document.createElement("button");
-              altButton.textContent = "pohled 2";
-              altButton.style.marginTop = "10px";
-              alt.wrapper.appendChild(altButton);
-            }
+            // Always recreate pohled 2 button
+            if (altButton) altButton.remove();
+            altButton = document.createElement("button");
+            altButton.textContent = "pohled 2";
+            altButton.style.marginTop = "10px";
+            alt.wrapper.appendChild(altButton);
 
-            // clicking pohled 1 → show main only
+            // pohled 1 → main only
             mainButton.onclick = showMainOnly;
-            // clicking pohled 2 → show alt only
+            // pohled 2 → alt only
             altButton.onclick = showAltOnly;
           };
 
@@ -173,6 +173,7 @@ function openOverlay(src480) {
 
             main.video.muted = true;
             alt.video.muted = false;
+            alt.video.play().catch(() => {}); // ensure alt keeps playing
 
             if (altButton) altButton.remove();
 
@@ -180,9 +181,11 @@ function openOverlay(src480) {
             backBtn.textContent = "Ukaž video z jiného úhlu";
             backBtn.style.marginTop = "10px";
             backBtn.addEventListener("click", () => {
-              backBtn.remove();
-              backBtn = null;
-              showDualView();
+              if (backBtn) {
+                backBtn.remove();
+                backBtn = null;
+              }
+              showDualView(); // restore dual view + both buttons
             });
             alt.wrapper.appendChild(backBtn);
           };
@@ -191,6 +194,7 @@ function openOverlay(src480) {
           mainButton.onclick = showDualView;
         });
 
+      // click outside closes overlay
       overlay.addEventListener("click", (e) => {
         if (e.target === overlay) {
           overlay.remove();
