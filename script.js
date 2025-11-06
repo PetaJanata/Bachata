@@ -46,24 +46,45 @@ function loadGallery(videoList) {
 // Lazy load 480p videos
 function lazyLoadVideos() {
   const videoElements = document.querySelectorAll("video[data-src]");
+
+  const loadVideo = (video) => {
+    if (!video.dataset.src) return;
+    video.src = video.dataset.src;
+    video.removeAttribute("data-src");
+    video.play().catch(() => {});
+  };
+
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
         const video = entry.target;
         if (entry.isIntersecting) {
-          video.src = video.dataset.src;
-          video.removeAttribute("data-src");
-          video.play().catch(() => {});
-        } else {
-          video.pause();
+          loadVideo(video);
+          observer.unobserve(video); // once loaded, no need to observe again
         }
       });
     },
-    { rootMargin: "200px 0px", threshold: 0.25 }
+    { rootMargin: "400px 0px", threshold: 0.1 } // bigger margin for mobile
   );
 
   videoElements.forEach((video) => observer.observe(video));
+
+  // Fallback: if IntersectionObserver misses some
+  const checkVisible = () => {
+    videoElements.forEach((video) => {
+      if (video.dataset.src) {
+        const rect = video.getBoundingClientRect();
+        if (rect.top < window.innerHeight + 300 && rect.bottom > -300) {
+          loadVideo(video);
+        }
+      }
+    });
+  };
+
+  window.addEventListener("scroll", checkVisible, { passive: true });
+  window.addEventListener("resize", checkVisible);
 }
+
 
 // HD overlay with alternate-angle video and proper muting
 function openOverlay(src480) {
