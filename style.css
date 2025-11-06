@@ -63,3 +63,22 @@ html { scroll-behavior: smooth; }
   border-radius: 12px;
   box-shadow: 0 0 30px rgba(0,0,0,0.4);
 }
+
+/* Mobile layout for HD overlay */
+@media (max-width: 768px) {
+  .video-overlay > div {
+    flex-direction: column !important;
+    align-items: center;
+    gap: 10px !important;
+  }
+
+  .video-overlay video {
+    max-width: 90vw;
+    max-height: 40vh;
+  }
+
+  .video-overlay button {
+    font-size: 0.9rem;
+  }
+}
+
