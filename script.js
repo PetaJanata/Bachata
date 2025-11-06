@@ -5,7 +5,7 @@ const videos = [
   { src: "videos/9_480.mp4" },
 ];
 
-// Shuffle function (Fisher-Yates algorithm)
+// Shuffle function (Fisher–Yates algorithm)
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -65,17 +65,15 @@ function lazyLoadVideos() {
   videoElements.forEach((video) => observer.observe(video));
 }
 
-// HD overlay with alternate-angle video and proper muting
+// HD overlay with correct muting and labeling
 function openOverlay(src480) {
   const hdSrc = src480.replace("_480", "_1080");
   const altSrc = hdSrc.replace(".mp4", "_alt.mp4");
 
-  // Check if HD version exists
   fetch(hdSrc, { method: "HEAD" })
     .then((response) => {
       if (!response.ok) return;
 
-      // Overlay container
       const overlay = document.createElement("div");
       overlay.classList.add("video-overlay");
 
@@ -87,7 +85,6 @@ function openOverlay(src480) {
       document.body.appendChild(overlay);
       document.body.style.overflow = "hidden";
 
-      // Helper to create video wrapper
       function createVideoWrapper(videoSrc) {
         const wrapper = document.createElement("div");
         wrapper.style.display = "flex";
@@ -106,9 +103,8 @@ function openOverlay(src480) {
         return { wrapper, video };
       }
 
-      // Main HD video
       const main = createVideoWrapper(hdSrc);
-      main.video.muted = false; // main has audio
+      main.video.muted = false; // start with sound
       videoContainer.appendChild(main.wrapper);
 
       // Check for alt video
@@ -117,7 +113,6 @@ function openOverlay(src480) {
           const altAvailable = altResp.ok;
           if (!altAvailable) return;
 
-          // Initial "Ukaž video..." button
           const mainButton = document.createElement("button");
           mainButton.textContent = "Ukaž video z jiného úhlu";
           mainButton.style.marginTop = "10px";
@@ -125,18 +120,22 @@ function openOverlay(src480) {
 
           const alt = createVideoWrapper(altSrc);
           alt.wrapper.style.display = "none";
-          alt.video.muted = true; // alt is muted initially
+          alt.video.muted = true; // preload muted
           videoContainer.appendChild(alt.wrapper);
 
           let altButton = null;
           let backBtn = null;
 
-          // Show both views
+          // --- Dual view ---
           const showDualView = () => {
+            main.wrapper.style.display = "flex";
             alt.wrapper.style.display = "flex";
-            mainButton.textContent = "pohled 1";
 
-            // Create pohled 2 button under alt video
+            mainButton.textContent = "pohled 1";
+            main.video.muted = true;  // only alt has sound initially
+            alt.video.muted = false;
+
+            // Create pohled 2 button
             if (!altButton) {
               altButton = document.createElement("button");
               altButton.textContent = "pohled 2";
@@ -144,26 +143,17 @@ function openOverlay(src480) {
               alt.wrapper.appendChild(altButton);
             }
 
-            // Ensure only main has sound by default in dual view
-            main.video.muted = false;
-            alt.video.muted = true;
-
-            // Button handlers
-            mainButton.onclick = () => {
-              main.video.muted = false;
-              alt.video.muted = true;
-            };
-            altButton.onclick = () => {
-              main.video.muted = true;
-              alt.video.muted = false;
-            };
+            // clicking pohled 1 → show main only
+            mainButton.onclick = showMainOnly;
+            // clicking pohled 2 → show alt only
+            altButton.onclick = showAltOnly;
           };
 
-          // Back to main only
+          // --- Show only main video ---
           const showMainOnly = () => {
+            main.wrapper.style.display = "flex";
             alt.wrapper.style.display = "none";
             mainButton.textContent = "Ukaž video z jiného úhlu";
-            mainButton.onclick = showDualView;
 
             main.video.muted = false;
             alt.video.muted = true;
@@ -172,35 +162,35 @@ function openOverlay(src480) {
               altButton.remove();
               altButton = null;
             }
+
+            mainButton.onclick = showDualView;
           };
 
-          // Alt-only mode
+          // --- Show only alt video ---
           const showAltOnly = () => {
             main.wrapper.style.display = "none";
             alt.wrapper.style.display = "flex";
+
             main.video.muted = true;
             alt.video.muted = false;
 
             if (altButton) altButton.remove();
 
-            // Back button to restore dual view
             backBtn = document.createElement("button");
             backBtn.textContent = "Ukaž video z jiného úhlu";
             backBtn.style.marginTop = "10px";
             backBtn.addEventListener("click", () => {
-              main.wrapper.style.display = "flex";
-              showDualView();
               backBtn.remove();
               backBtn = null;
+              showDualView();
             });
             alt.wrapper.appendChild(backBtn);
           };
 
-          // Initial setup
+          // initial setup
           mainButton.onclick = showDualView;
         });
 
-      // Click outside overlay closes it
       overlay.addEventListener("click", (e) => {
         if (e.target === overlay) {
           overlay.remove();
