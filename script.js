@@ -20,35 +20,36 @@ function shuffleArray(array) {
 // Load CSV and initialize gallery
 // ================================
 window.addEventListener("DOMContentLoaded", () => {
-  fetch("videos.csv") // path to your CSV in repository
+  fetch("videos.csv") // path to your CSV
     .then(res => res.text())
     .then(csvText => {
       const results = Papa.parse(csvText, { header: true, skipEmptyLines: true });
 
       // Build videos array from CSV
       videos = results.data.map(row => ({
-        src480: row.src_480 || null,
-        hd: row.src_1080 || null,
-        alt: row.src_alt || null
+        src480: row["480p"] || null,
+        hd: row["1080p"] || null,
+        alt: row["Alt"] || null
       }));
 
       // Shuffle and load gallery
       const shuffledVideos = shuffleArray([...videos]);
       loadGallery(shuffledVideos);
       lazyLoadVideos();
+
+      console.log("Videos loaded from CSV:", videos);
     })
     .catch(err => console.error("Error loading CSV:", err));
 });
 
 // ================================
 // LOAD GALLERY
-// Dynamically creates video cards for 480p previews
 // ================================
 function loadGallery(videoList) {
   gallery.innerHTML = "";
 
   videoList.forEach((v) => {
-    if (!v.src480) return; // skip if no 480p preview
+    if (!v.src480) return;
 
     const card = document.createElement("div");
     card.classList.add("video-card");
@@ -59,7 +60,6 @@ function loadGallery(videoList) {
     video.loop = true;
     video.playsInline = true;
 
-    // Open overlay with CSV info
     video.addEventListener("click", () => openOverlay(v));
 
     card.appendChild(video);
@@ -69,7 +69,6 @@ function loadGallery(videoList) {
 
 // ================================
 // LAZY LOAD 480P VIDEOS
-// IntersectionObserver + fallback
 // ================================
 function lazyLoadVideos() {
   const videoElements = document.querySelectorAll("video[data-src]");
@@ -96,7 +95,6 @@ function lazyLoadVideos() {
 
   videoElements.forEach(video => observer.observe(video));
 
-  // Fallback in case IntersectionObserver misses
   const checkVisible = () => {
     videoElements.forEach(video => {
       if (video.dataset.src) {
@@ -114,7 +112,6 @@ function lazyLoadVideos() {
 
 // ================================
 // OPEN OVERLAY
-// Handles HD / alt / dual view / proper muting
 // ================================
 function openOverlay(videoObj) {
   const { src480, hd, alt } = videoObj;
@@ -130,7 +127,6 @@ function openOverlay(videoObj) {
   document.body.appendChild(overlay);
   document.body.style.overflow = "hidden";
 
-  // Helper: create video wrapper
   function createVideoWrapper(src, muted = true) {
     const wrapper = document.createElement("div");
     wrapper.style.display = "flex";
@@ -150,25 +146,27 @@ function openOverlay(videoObj) {
     return { wrapper, video };
   }
 
-  // Main video: HD if exists, otherwise 480p
-  const main = createVideoWrapper(hd || src480, false);
+  // Main video: use 1080p if available
+  if (!hd) {
+    console.log("No HD video available for this video.");
+    return; // do nothing if no HD
+  }
+
+  const main = createVideoWrapper(hd, false);
   videoContainer.appendChild(main.wrapper);
 
   let altWrapper, mainButton, altButton, backBtn;
 
   if (alt) {
-    // Alt video exists
     altWrapper = createVideoWrapper(alt, true);
     altWrapper.wrapper.style.display = "none";
     videoContainer.appendChild(altWrapper.wrapper);
 
-    // Button on main video
     mainButton = document.createElement("button");
     mainButton.textContent = "Ukaž video z jiného úhlu";
     mainButton.style.marginTop = "10px";
     main.wrapper.appendChild(mainButton);
 
-    // --- Dual / toggle view functions ---
     const showDualView = () => {
       main.wrapper.style.display = "flex";
       altWrapper.wrapper.style.display = "flex";
@@ -222,11 +220,9 @@ function openOverlay(videoObj) {
       altWrapper.wrapper.appendChild(backBtn);
     };
 
-    // Initial click
     mainButton.onclick = showDualView;
   }
 
-  // Click outside overlay closes it
   overlay.addEventListener("click", e => {
     if (e.target === overlay) {
       overlay.remove();
