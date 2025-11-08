@@ -1,11 +1,12 @@
 // ================================
 // GLOBAL VARIABLES
 // ================================
-let videos = []; // Will hold all video metadata loaded from CSV
+let videos = []; // will hold all video metadata from CSV
+
+const gallery = document.getElementById("video-gallery");
 
 // ================================
-// SHUFFLE FUNCTION
-// Fisher-Yates algorithm to randomize videos
+// SHUFFLE FUNCTION (Fisher–Yates)
 // ================================
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -17,49 +18,24 @@ function shuffleArray(array) {
 
 // ================================
 // DOM CONTENT LOADED
-// Main entry point: fetch CSV and initialize gallery
+// Load CSV and initialize gallery
 // ================================
 window.addEventListener("DOMContentLoaded", () => {
-  // ------------------------
-  // 1. FETCH CSV FILE
-  // ------------------------
-  // Can be a relative path ("videos.csv") or raw GitHub URL
-  fetch("videos.csv")
+  fetch("videos.csv") // relative path or raw GitHub URL
     .then(res => res.text())
     .then(csvText => {
-      // ------------------------
-      // 2. PARSE CSV USING PAPAPARSE
-      // ------------------------
-      // header: true → use first row as keys
-      // skipEmptyLines: true → ignore empty rows
       const results = Papa.parse(csvText, { header: true, skipEmptyLines: true });
 
-      // ------------------------
-      // 3. BUILD VIDEOS ARRAY
-      // Each object contains:
-      // id: VideoID
-      // src: 480p video URL
-      // hd: 1080p video URL (optional)
-      // alt: alternate angle video URL (optional)
-      // type: "local" (all GitHub-hosted videos)
-      // ------------------------
+      // Build videos array from CSV
       videos = results.data.map(row => ({
-        id: row.VideoID,
-        src: row["480p"],
-        hd: row["1080p"] || null,
-        alt: row["Alt"] || null,
-        type: "local"
+        src480: row.src_480,
+        hd: row.src_1080 || null,
+        alt: row.src_alt || null
       }));
 
-      // ------------------------
-      // 4. SHUFFLE AND LOAD GALLERY
-      // ------------------------
+      // Shuffle and load gallery
       const shuffledVideos = shuffleArray([...videos]);
       loadGallery(shuffledVideos);
-
-      // ------------------------
-      // 5. LAZY LOAD 480P VIDEOS
-      // ------------------------
       lazyLoadVideos();
     })
     .catch(err => console.error("Error loading CSV:", err));
@@ -67,23 +43,22 @@ window.addEventListener("DOMContentLoaded", () => {
 
 // ================================
 // LOAD GALLERY
-// Dynamically creates video cards for each 480p video
+// Dynamically creates video cards for 480p previews
 // ================================
 function loadGallery(videoList) {
-  const gallery = document.getElementById("video-gallery");
-  gallery.innerHTML = ""; // clear previous content
+  gallery.innerHTML = "";
 
   videoList.forEach(v => {
     const card = document.createElement("div");
     card.classList.add("video-card");
 
     const video = document.createElement("video");
-    video.dataset.src = v.src; // lazy-load src
+    video.dataset.src = v.src480; // lazy load
     video.muted = true;
     video.loop = true;
     video.playsInline = true;
 
-    // Open overlay on click using preloaded metadata
+    // Click: open overlay with CSV info
     video.addEventListener("click", () => openOverlay(v));
 
     card.appendChild(video);
@@ -93,26 +68,25 @@ function loadGallery(videoList) {
 
 // ================================
 // LAZY LOAD 480P VIDEOS
-// Uses IntersectionObserver and fallback for older browsers
+// IntersectionObserver + fallback
 // ================================
 function lazyLoadVideos() {
   const videoElements = document.querySelectorAll("video[data-src]");
 
-  const loadVideo = (video) => {
+  const loadVideo = video => {
     if (!video.dataset.src) return;
     video.src = video.dataset.src;
     video.removeAttribute("data-src");
-    video.play().catch(() => {}); // ignore autoplay errors
+    video.play().catch(() => {});
   };
 
-  // IntersectionObserver for efficient lazy loading
   const observer = new IntersectionObserver(
-    (entries) => {
+    entries => {
       entries.forEach(entry => {
         const video = entry.target;
         if (entry.isIntersecting) {
           loadVideo(video);
-          observer.unobserve(video); // no longer need to observe
+          observer.unobserve(video);
         }
       });
     },
@@ -121,7 +95,7 @@ function lazyLoadVideos() {
 
   videoElements.forEach(video => observer.observe(video));
 
-  // Fallback in case IntersectionObserver misses videos
+  // Fallback in case IntersectionObserver misses
   const checkVisible = () => {
     videoElements.forEach(video => {
       if (video.dataset.src) {
@@ -139,82 +113,123 @@ function lazyLoadVideos() {
 
 // ================================
 // OPEN OVERLAY
-// Displays HD video and optional alternate angle
+// Handles HD / alt / dual view / proper muting
 // ================================
 function openOverlay(videoObj) {
-  // ------------------------
-  // Create overlay container
-  // ------------------------
+  const { src480, hd, alt } = videoObj;
+
   const overlay = document.createElement("div");
   overlay.classList.add("video-overlay");
-  document.body.appendChild(overlay);
-  document.body.style.overflow = "hidden"; // prevent background scrolling
 
   const videoContainer = document.createElement("div");
   videoContainer.style.display = "flex";
   videoContainer.style.gap = "20px";
   overlay.appendChild(videoContainer);
 
-  // ------------------------
-  // Main video: HD if exists, else 480p
-  // ------------------------
-  const main = createVideoWrapper(videoObj.hd || videoObj.src, false);
-  videoContainer.appendChild(main.wrapper);
+  document.body.appendChild(overlay);
+  document.body.style.overflow = "hidden";
 
-  // ------------------------
-  // Optional alternate angle
-  // ------------------------
-  if (videoObj.alt) {
-    const alt = createVideoWrapper(videoObj.alt, true);
-    alt.wrapper.style.display = "none";
-    videoContainer.appendChild(alt.wrapper);
+  // Helper: create video wrapper
+  function createVideoWrapper(src, muted = true) {
+    const wrapper = document.createElement("div");
+    wrapper.style.display = "flex";
+    wrapper.style.flexDirection = "column";
+    wrapper.style.alignItems = "center";
 
-    const toggleButton = document.createElement("button");
-    toggleButton.textContent = "Show alternate angle";
-    toggleButton.style.marginTop = "10px";
-    main.wrapper.appendChild(toggleButton);
+    const video = document.createElement("video");
+    video.src = src;
+    video.controls = true;
+    video.autoplay = true;
+    video.loop = true;
+    video.playsInline = true;
+    video.muted = muted;
+    video.classList.add("overlay-video");
 
-    toggleButton.onclick = () => {
-      if (alt.wrapper.style.display === "none") {
-        alt.wrapper.style.display = "flex";
-        main.wrapper.style.display = "none";
-      } else {
-        alt.wrapper.style.display = "none";
-        main.wrapper.style.display = "flex";
-      }
-    };
+    wrapper.appendChild(video);
+    return { wrapper, video };
   }
 
-  // ------------------------
+  // Main video (HD if exists, else 480p)
+  const main = createVideoWrapper(hd || src480, false);
+  videoContainer.appendChild(main.wrapper);
+
+  let altWrapper, mainButton, altButton, backBtn;
+
+  if (alt) {
+    // Alt video exists
+    altWrapper = createVideoWrapper(alt, true);
+    altWrapper.wrapper.style.display = "none";
+    videoContainer.appendChild(altWrapper.wrapper);
+
+    // Button on main video
+    mainButton = document.createElement("button");
+    mainButton.textContent = "Ukaž video z jiného úhlu";
+    mainButton.style.marginTop = "10px";
+    main.wrapper.appendChild(mainButton);
+
+    // --- Dual / toggle view functions ---
+    const showDualView = () => {
+      main.wrapper.style.display = "flex";
+      altWrapper.wrapper.style.display = "flex";
+
+      main.video.muted = true;
+      altWrapper.video.muted = false;
+      altWrapper.video.play().catch(() => {});
+
+      mainButton.textContent = "pohled 1";
+      if (altButton) altButton.remove();
+      altButton = document.createElement("button");
+      altButton.textContent = "pohled 2";
+      altButton.style.marginTop = "10px";
+      altWrapper.wrapper.appendChild(altButton);
+
+      mainButton.onclick = showMainOnly;
+      altButton.onclick = showAltOnly;
+    };
+
+    const showMainOnly = () => {
+      main.wrapper.style.display = "flex";
+      altWrapper.wrapper.style.display = "none";
+
+      main.video.muted = false;
+      altWrapper.video.muted = true;
+
+      mainButton.textContent = "Ukaž video z jiného úhlu";
+      if (altButton) { altButton.remove(); altButton = null; }
+
+      mainButton.onclick = showDualView;
+    };
+
+    const showAltOnly = () => {
+      main.wrapper.style.display = "none";
+      altWrapper.wrapper.style.display = "flex";
+
+      main.video.muted = true;
+      altWrapper.video.muted = false;
+      altWrapper.video.play().catch(() => {});
+
+      if (altButton) altButton.remove();
+
+      backBtn = document.createElement("button");
+      backBtn.textContent = "Ukaž video z jiného úhlu";
+      backBtn.style.marginTop = "10px";
+      backBtn.addEventListener("click", () => {
+        backBtn.remove();
+        backBtn = null;
+        showDualView();
+      });
+      altWrapper.wrapper.appendChild(backBtn);
+    };
+
+    // Initial click
+    mainButton.onclick = showDualView;
+  }
+
   // Click outside overlay closes it
-  // ------------------------
   overlay.addEventListener("click", e => {
     if (e.target === overlay) {
       overlay.remove();
       document.body.style.overflow = "";
     }
   });
-}
-
-// ================================
-// CREATE VIDEO WRAPPER
-// Helper function to create a video element with controls
-// ================================
-function createVideoWrapper(src, muted = true) {
-  const wrapper = document.createElement("div");
-  wrapper.style.display = "flex";
-  wrapper.style.flexDirection = "column";
-  wrapper.style.alignItems = "center";
-
-  const video = document.createElement("video");
-  video.src = src;
-  video.controls = true;
-  video.autoplay = true;
-  video.loop = true;
-  video.playsInline = true;
-  video.muted = muted;
-  video.classList.add("overlay-video");
-
-  wrapper.appendChild(video);
-  return { wrapper, video };
 }
