@@ -1,7 +1,7 @@
 // ================================
 // GLOBAL VARIABLES
 // ================================
-let videos = []; // will hold all video metadata from CSV
+let videos = []; // holds all video metadata from CSV
 const gallery = document.getElementById("video-gallery");
 
 // ================================
@@ -20,23 +20,20 @@ function shuffleArray(array) {
 // Load CSV and initialize gallery
 // ================================
 window.addEventListener("DOMContentLoaded", () => {
-  fetch("videos.csv") // path to your CSV
+  fetch("videos.csv")
     .then(res => res.text())
     .then(csvText => {
       const results = Papa.parse(csvText, { header: true, skipEmptyLines: true });
 
-      // Build videos array from CSV
       videos = results.data.map(row => ({
         src480: row["480p"] || null,
         hd: row["1080p"] || null,
         alt: row["Alt"] || null
       }));
 
-      // Shuffle and load gallery
       const shuffledVideos = shuffleArray([...videos]);
       loadGallery(shuffledVideos);
       lazyLoadVideos();
-
       console.log("Videos loaded from CSV:", videos);
     })
     .catch(err => console.error("Error loading CSV:", err));
@@ -48,28 +45,27 @@ window.addEventListener("DOMContentLoaded", () => {
 function loadGallery(videoList) {
   gallery.innerHTML = "";
 
-  videoList.forEach((v) => {
-  if (!v.src480) return;
+  videoList.forEach(v => {
+    if (!v.src480) return;
 
-  const card = document.createElement("div");
-  card.classList.add("video-card");
+    const card = document.createElement("div");
+    card.classList.add("video-card");
 
-  const video = document.createElement("video");
-  video.dataset.src = v.src480; // lazy load
-  video.muted = true;
-  video.loop = true;
-  video.playsInline = true;
+    const video = document.createElement("video");
+    video.dataset.src = v.src480; // lazy load
+    video.muted = true;
+    video.loop = true;
+    video.playsInline = true;
 
-  // Only attach click and pointer if HD exists
-  if (v.hd) {
-    video.style.cursor = "pointer";
-    video.addEventListener("click", () => openOverlay(v));
-  } else {
-    video.style.cursor = "default"; // explicitly override any pointer
-  }
+    if (v.hd) {
+      video.style.cursor = "pointer";
+      video.addEventListener("click", () => openOverlay(v));
+    } else {
+      video.style.cursor = "default";
+    }
 
-  card.appendChild(video);
-  gallery.appendChild(card);
+    card.appendChild(video);
+    gallery.appendChild(card);
   });
 }
 
@@ -79,7 +75,7 @@ function loadGallery(videoList) {
 function lazyLoadVideos() {
   const videoElements = document.querySelectorAll("video[data-src]");
 
-  const loadVideo = (video) => {
+  const loadVideo = video => {
     if (!video.dataset.src) return;
     video.src = video.dataset.src;
     video.removeAttribute("data-src");
@@ -122,11 +118,7 @@ function lazyLoadVideos() {
 function openOverlay(videoObj) {
   const { hd, alt } = videoObj;
 
-  // If no 1080p video exists, do nothing
-  if (!hd) {
-    console.log("No HD video available for this video. Overlay will not open.");
-    return;
-  }
+  if (!hd) return; // nothing happens if no 1080p
 
   const overlay = document.createElement("div");
   overlay.classList.add("video-overlay");
@@ -174,35 +166,31 @@ function openOverlay(videoObj) {
     main.wrapper.appendChild(mainButton);
 
     const showDualView = () => {
-  main.wrapper.style.display = "flex";
-  altWrapper.wrapper.style.display = "flex";
+      main.wrapper.style.display = "flex";
+      altWrapper.wrapper.style.display = "flex";
 
-  // Determine which video was active before dual view
-  if (!main.video.muted) {
-    // 1080p was active → now alt should have audio
-    main.video.muted = true;
-    altWrapper.video.muted = false;
-  } else if (!altWrapper.video.muted) {
-    // Alt was active → now 1080p should have audio
-    main.video.muted = false;
-    altWrapper.video.muted = true;
-  }
+      // Keep only the correct audio playing
+      if (!main.video.muted) {
+        main.video.muted = true;
+        altWrapper.video.muted = false;
+      } else if (!altWrapper.video.muted) {
+        main.video.muted = false;
+        altWrapper.video.muted = true;
+      }
 
-  // Always play both videos
-  main.video.play().catch(() => {});
-  altWrapper.video.play().catch(() => {});
+      main.video.play().catch(() => {});
+      altWrapper.video.play().catch(() => {});
 
-  mainButton.textContent = "pohled 1";
-  if (altButton) altButton.remove();
-  altButton = document.createElement("button");
-  altButton.textContent = "pohled 2";
-  altButton.style.marginTop = "10px";
-  altWrapper.wrapper.appendChild(altButton);
+      mainButton.textContent = "pohled 1";
+      if (altButton) altButton.remove();
+      altButton = document.createElement("button");
+      altButton.textContent = "pohled 2";
+      altButton.style.marginTop = "10px";
+      altWrapper.wrapper.appendChild(altButton);
 
-  mainButton.onclick = showMainOnly;
-  altButton.onclick = showAltOnly;
-};
-
+      mainButton.onclick = showMainOnly;
+      altButton.onclick = showAltOnly;
+    };
 
     const showMainOnly = () => {
       main.wrapper.style.display = "flex";
@@ -217,27 +205,26 @@ function openOverlay(videoObj) {
       mainButton.onclick = showDualView;
     };
 
-   const showAltOnly = () => {
-  main.wrapper.style.display = "none";
-  altWrapper.wrapper.style.display = "flex";
+    const showAltOnly = () => {
+      main.wrapper.style.display = "none";
+      altWrapper.wrapper.style.display = "flex";
 
-  // Mute 1080p, unmute alt
-  main.video.muted = true;
-  altWrapper.video.muted = false;
-  altWrapper.video.play().catch(() => {});
+      main.video.muted = true;
+      altWrapper.video.muted = false;
+      altWrapper.video.play().catch(() => {});
 
-  if (altButton) altButton.remove();
+      if (altButton) altButton.remove();
 
-  backBtn = document.createElement("button");
-  backBtn.textContent = "Ukaž video z jiného úhlu";
-  backBtn.style.marginTop = "10px";
-  backBtn.addEventListener("click", () => {
-    backBtn.remove();
-    backBtn = null;
-    showDualView(); // restore dual view + both buttons
-  });
-  altWrapper.wrapper.appendChild(backBtn);
-};
+      backBtn = document.createElement("button");
+      backBtn.textContent = "Ukaž video z jiného úhlu";
+      backBtn.style.marginTop = "10px";
+      backBtn.addEventListener("click", () => {
+        backBtn.remove();
+        backBtn = null;
+        showDualView();
+      });
+      altWrapper.wrapper.appendChild(backBtn);
+    };
 
     mainButton.onclick = showDualView;
   }
