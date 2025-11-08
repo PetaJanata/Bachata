@@ -208,26 +208,27 @@ function openOverlay(videoObj) {
       mainButton.onclick = showDualView;
     };
 
-    const showAltOnly = () => {
-      main.wrapper.style.display = "none";
-      altWrapper.wrapper.style.display = "flex";
+   const showAltOnly = () => {
+  main.wrapper.style.display = "none";
+  altWrapper.wrapper.style.display = "flex";
 
-      main.video.muted = true;
-      altWrapper.video.muted = false;
-      altWrapper.video.play().catch(() => {});
+  // Mute 1080p, unmute alt
+  main.video.muted = true;
+  altWrapper.video.muted = false;
+  altWrapper.video.play().catch(() => {});
 
-      if (altButton) altButton.remove();
+  if (altButton) altButton.remove();
 
-      backBtn = document.createElement("button");
-      backBtn.textContent = "Ukaž video z jiného úhlu";
-      backBtn.style.marginTop = "10px";
-      backBtn.addEventListener("click", () => {
-        backBtn.remove();
-        backBtn = null;
-        showDualView();
-      });
-      altWrapper.wrapper.appendChild(backBtn);
-    };
+  backBtn = document.createElement("button");
+  backBtn.textContent = "Ukaž video z jiného úhlu";
+  backBtn.style.marginTop = "10px";
+  backBtn.addEventListener("click", () => {
+    backBtn.remove();
+    backBtn = null;
+    showDualView(); // restore dual view + both buttons
+  });
+  altWrapper.wrapper.appendChild(backBtn);
+};
 
     mainButton.onclick = showDualView;
   }
