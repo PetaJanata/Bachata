@@ -5,7 +5,10 @@ const videos = [
   { src: "videos/9_480.mp4" },
   { src: "videos/102_480.mp4" },
   { src: "videos/103_480.mp4" },
+  { src: "https://drive.google.com/uc?export=download&id=1mnK8A3KMC0vwE1PH8GdN0iHPHeK3FyIQ" },
 ];
+
+
 
 // Shuffle function (Fisher–Yates algorithm)
 function shuffleArray(array) {
