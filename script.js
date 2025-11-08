@@ -1,10 +1,11 @@
 // ================================
-// Global videos array
+// GLOBAL VARIABLES
 // ================================
-let videos = []; // holds all video metadata
+let videos = []; // Will hold all video metadata loaded from CSV
 
 // ================================
-// Shuffle function (Fisher-Yates)
+// SHUFFLE FUNCTION
+// Fisher-Yates algorithm to randomize videos
 // ================================
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -15,38 +16,62 @@ function shuffleArray(array) {
 }
 
 // ================================
-// Load CSV metadata and initialize gallery
+// DOM CONTENT LOADED
+// Main entry point: fetch CSV and initialize gallery
 // ================================
 window.addEventListener("DOMContentLoaded", () => {
-  fetch("videos.csv") // path to your CSV file
+  // ------------------------
+  // 1. FETCH CSV FILE
+  // ------------------------
+  // Can be a relative path ("videos.csv") or raw GitHub URL
+  fetch("videos.csv")
     .then(res => res.text())
     .then(csvText => {
-      // Parse CSV with PapaParse
+      // ------------------------
+      // 2. PARSE CSV USING PAPAPARSE
+      // ------------------------
+      // header: true → use first row as keys
+      // skipEmptyLines: true → ignore empty rows
       const results = Papa.parse(csvText, { header: true, skipEmptyLines: true });
 
-      // Build videos array
+      // ------------------------
+      // 3. BUILD VIDEOS ARRAY
+      // Each object contains:
+      // id: VideoID
+      // src: 480p video URL
+      // hd: 1080p video URL (optional)
+      // alt: alternate angle video URL (optional)
+      // type: "local" (all GitHub-hosted videos)
+      // ------------------------
       videos = results.data.map(row => ({
         id: row.VideoID,
-        src: row["480p"],          // 480p version for gallery
-        hd: row["1080p"] || null,  // HD version
-        alt: row["Alt"] || null,   // Alternate angle
+        src: row["480p"],
+        hd: row["1080p"] || null,
+        alt: row["Alt"] || null,
         type: "local"
       }));
 
-      // Shuffle and load gallery
+      // ------------------------
+      // 4. SHUFFLE AND LOAD GALLERY
+      // ------------------------
       const shuffledVideos = shuffleArray([...videos]);
       loadGallery(shuffledVideos);
+
+      // ------------------------
+      // 5. LAZY LOAD 480P VIDEOS
+      // ------------------------
       lazyLoadVideos();
     })
     .catch(err => console.error("Error loading CSV:", err));
 });
 
 // ================================
-// Load gallery dynamically
+// LOAD GALLERY
+// Dynamically creates video cards for each 480p video
 // ================================
 function loadGallery(videoList) {
   const gallery = document.getElementById("video-gallery");
-  gallery.innerHTML = "";
+  gallery.innerHTML = ""; // clear previous content
 
   videoList.forEach(v => {
     const card = document.createElement("div");
@@ -67,7 +92,8 @@ function loadGallery(videoList) {
 }
 
 // ================================
-// Lazy load 480p videos
+// LAZY LOAD 480P VIDEOS
+// Uses IntersectionObserver and fallback for older browsers
 // ================================
 function lazyLoadVideos() {
   const videoElements = document.querySelectorAll("video[data-src]");
@@ -76,16 +102,17 @@ function lazyLoadVideos() {
     if (!video.dataset.src) return;
     video.src = video.dataset.src;
     video.removeAttribute("data-src");
-    video.play().catch(() => {});
+    video.play().catch(() => {}); // ignore autoplay errors
   };
 
+  // IntersectionObserver for efficient lazy loading
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach(entry => {
         const video = entry.target;
         if (entry.isIntersecting) {
           loadVideo(video);
-          observer.unobserve(video);
+          observer.unobserve(video); // no longer need to observe
         }
       });
     },
@@ -94,7 +121,7 @@ function lazyLoadVideos() {
 
   videoElements.forEach(video => observer.observe(video));
 
-  // Fallback for videos that might not be detected by IntersectionObserver
+  // Fallback in case IntersectionObserver misses videos
   const checkVisible = () => {
     videoElements.forEach(video => {
       if (video.dataset.src) {
@@ -111,32 +138,37 @@ function lazyLoadVideos() {
 }
 
 // ================================
-// Overlay for HD / Alt videos
+// OPEN OVERLAY
+// Displays HD video and optional alternate angle
 // ================================
 function openOverlay(videoObj) {
-  // Create overlay
+  // ------------------------
+  // Create overlay container
+  // ------------------------
   const overlay = document.createElement("div");
   overlay.classList.add("video-overlay");
   document.body.appendChild(overlay);
-  document.body.style.overflow = "hidden"; // prevent background scroll
+  document.body.style.overflow = "hidden"; // prevent background scrolling
 
-  // Container for videos
   const videoContainer = document.createElement("div");
   videoContainer.style.display = "flex";
   videoContainer.style.gap = "20px";
   overlay.appendChild(videoContainer);
 
-  // Main video (HD if exists, else 480p)
+  // ------------------------
+  // Main video: HD if exists, else 480p
+  // ------------------------
   const main = createVideoWrapper(videoObj.hd || videoObj.src, false);
   videoContainer.appendChild(main.wrapper);
 
-  // Alternate angle
+  // ------------------------
+  // Optional alternate angle
+  // ------------------------
   if (videoObj.alt) {
     const alt = createVideoWrapper(videoObj.alt, true);
     alt.wrapper.style.display = "none";
     videoContainer.appendChild(alt.wrapper);
 
-    // Toggle button
     const toggleButton = document.createElement("button");
     toggleButton.textContent = "Show alternate angle";
     toggleButton.style.marginTop = "10px";
@@ -153,7 +185,9 @@ function openOverlay(videoObj) {
     };
   }
 
+  // ------------------------
   // Click outside overlay closes it
+  // ------------------------
   overlay.addEventListener("click", e => {
     if (e.target === overlay) {
       overlay.remove();
@@ -163,7 +197,8 @@ function openOverlay(videoObj) {
 }
 
 // ================================
-// Helper to create a video wrapper
+// CREATE VIDEO WRAPPER
+// Helper function to create a video element with controls
 // ================================
 function createVideoWrapper(src, muted = true) {
   const wrapper = document.createElement("div");
