@@ -114,8 +114,8 @@ function lazyLoadVideos() {
 // OPEN OVERLAY
 // ================================
 function openOverlay(videoObj) {
-  const { src480, hd, alt } = videoObj;
-
+  const { hd, alt } = videoObj;
+  
   const overlay = document.createElement("div");
   overlay.classList.add("video-overlay");
 
