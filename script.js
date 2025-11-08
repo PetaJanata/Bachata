@@ -177,10 +177,20 @@ function openOverlay(videoObj) {
   main.wrapper.style.display = "flex";
   altWrapper.wrapper.style.display = "flex";
 
-  // 1080p audio plays, alt is muted
-  main.video.muted = false;
-  altWrapper.video.muted = true;
-  altWrapper.video.play().catch(() => {}); // keep alt playing silently
+  // Determine which video was active before dual view
+  if (!main.video.muted) {
+    // 1080p was active → now alt should have audio
+    main.video.muted = true;
+    altWrapper.video.muted = false;
+  } else if (!altWrapper.video.muted) {
+    // Alt was active → now 1080p should have audio
+    main.video.muted = false;
+    altWrapper.video.muted = true;
+  }
+
+  // Always play both videos
+  main.video.play().catch(() => {});
+  altWrapper.video.play().catch(() => {});
 
   mainButton.textContent = "pohled 1";
   if (altButton) altButton.remove();
@@ -189,11 +199,10 @@ function openOverlay(videoObj) {
   altButton.style.marginTop = "10px";
   altWrapper.wrapper.appendChild(altButton);
 
-  // pohled 1 → main only
   mainButton.onclick = showMainOnly;
-  // pohled 2 → alt only
   altButton.onclick = showAltOnly;
 };
+
 
     const showMainOnly = () => {
       main.wrapper.style.display = "flex";
