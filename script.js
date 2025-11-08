@@ -49,25 +49,27 @@ function loadGallery(videoList) {
   gallery.innerHTML = "";
 
   videoList.forEach((v) => {
-    if (!v.src480) return;
+  if (!v.src480) return;
 
-    const card = document.createElement("div");
-    card.classList.add("video-card");
+  const card = document.createElement("div");
+  card.classList.add("video-card");
 
-    const video = document.createElement("video");
-    video.dataset.src = v.src480; // lazy load
-    video.muted = true;
-    video.loop = true;
-    video.playsInline = true;
+  const video = document.createElement("video");
+  video.dataset.src = v.src480; // lazy load
+  video.muted = true;
+  video.loop = true;
+  video.playsInline = true;
 
-    // Only attach click if HD exists
-    if (v.hd) {
-      video.style.cursor = "pointer";
-      video.addEventListener("click", () => openOverlay(v));
-    }
+  // Only attach click and pointer if HD exists
+  if (v.hd) {
+    video.style.cursor = "pointer";
+    video.addEventListener("click", () => openOverlay(v));
+  } else {
+    video.style.cursor = "default"; // explicitly override any pointer
+  }
 
-    card.appendChild(video);
-    gallery.appendChild(card);
+  card.appendChild(video);
+  gallery.appendChild(card);
   });
 }
 
