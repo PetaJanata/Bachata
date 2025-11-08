@@ -174,23 +174,26 @@ function openOverlay(videoObj) {
     main.wrapper.appendChild(mainButton);
 
     const showDualView = () => {
-      main.wrapper.style.display = "flex";
-      altWrapper.wrapper.style.display = "flex";
+  main.wrapper.style.display = "flex";
+  altWrapper.wrapper.style.display = "flex";
 
-      main.video.muted = true;
-      altWrapper.video.muted = false;
-      altWrapper.video.play().catch(() => {});
+  // 1080p audio plays, alt is muted
+  main.video.muted = false;
+  altWrapper.video.muted = true;
+  altWrapper.video.play().catch(() => {}); // keep alt playing silently
 
-      mainButton.textContent = "pohled 1";
-      if (altButton) altButton.remove();
-      altButton = document.createElement("button");
-      altButton.textContent = "pohled 2";
-      altButton.style.marginTop = "10px";
-      altWrapper.wrapper.appendChild(altButton);
+  mainButton.textContent = "pohled 1";
+  if (altButton) altButton.remove();
+  altButton = document.createElement("button");
+  altButton.textContent = "pohled 2";
+  altButton.style.marginTop = "10px";
+  altWrapper.wrapper.appendChild(altButton);
 
-      mainButton.onclick = showMainOnly;
-      altButton.onclick = showAltOnly;
-    };
+  // pohled 1 → main only
+  mainButton.onclick = showMainOnly;
+  // pohled 2 → alt only
+  altButton.onclick = showAltOnly;
+};
 
     const showMainOnly = () => {
       main.wrapper.style.display = "flex";
