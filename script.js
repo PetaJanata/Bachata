@@ -2,7 +2,6 @@
 // GLOBAL VARIABLES
 // ================================
 let videos = []; // will hold all video metadata from CSV
-
 const gallery = document.getElementById("video-gallery");
 
 // ================================
@@ -21,14 +20,14 @@ function shuffleArray(array) {
 // Load CSV and initialize gallery
 // ================================
 window.addEventListener("DOMContentLoaded", () => {
-  fetch("videos.csv") // relative path or raw GitHub URL
+  fetch("videos.csv") // path to your CSV in repository
     .then(res => res.text())
     .then(csvText => {
       const results = Papa.parse(csvText, { header: true, skipEmptyLines: true });
 
       // Build videos array from CSV
       videos = results.data.map(row => ({
-        src480: row.src_480,
+        src480: row.src_480 || null,
         hd: row.src_1080 || null,
         alt: row.src_alt || null
       }));
@@ -48,7 +47,9 @@ window.addEventListener("DOMContentLoaded", () => {
 function loadGallery(videoList) {
   gallery.innerHTML = "";
 
-  videoList.forEach(v => {
+  videoList.forEach((v) => {
+    if (!v.src480) return; // skip if no 480p preview
+
     const card = document.createElement("div");
     card.classList.add("video-card");
 
@@ -58,7 +59,7 @@ function loadGallery(videoList) {
     video.loop = true;
     video.playsInline = true;
 
-    // Click: open overlay with CSV info
+    // Open overlay with CSV info
     video.addEventListener("click", () => openOverlay(v));
 
     card.appendChild(video);
@@ -73,7 +74,7 @@ function loadGallery(videoList) {
 function lazyLoadVideos() {
   const videoElements = document.querySelectorAll("video[data-src]");
 
-  const loadVideo = video => {
+  const loadVideo = (video) => {
     if (!video.dataset.src) return;
     video.src = video.dataset.src;
     video.removeAttribute("data-src");
@@ -149,7 +150,7 @@ function openOverlay(videoObj) {
     return { wrapper, video };
   }
 
-  // Main video (HD if exists, else 480p)
+  // Main video: HD if exists, otherwise 480p
   const main = createVideoWrapper(hd || src480, false);
   videoContainer.appendChild(main.wrapper);
 
