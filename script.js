@@ -3,8 +3,7 @@ const videos = [
   { src: "videos/3_480.mp4" },
   { src: "videos/6_480.mp4" },
   { src: "videos/9_480.mp4" },
-  { src: "videos/100_480.mp4" },
-   { src: "videos/102_480.mp4" },
+  { src: "videos/102_480.mp4" },
   { src: "videos/103_480.mp4" },
 ];
 
