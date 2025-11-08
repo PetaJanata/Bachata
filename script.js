@@ -60,7 +60,11 @@ function loadGallery(videoList) {
     video.loop = true;
     video.playsInline = true;
 
-    video.addEventListener("click", () => openOverlay(v));
+    // Only attach click if HD exists
+    if (v.hd) {
+      video.style.cursor = "pointer";
+      video.addEventListener("click", () => openOverlay(v));
+    }
 
     card.appendChild(video);
     gallery.appendChild(card);
@@ -115,7 +119,13 @@ function lazyLoadVideos() {
 // ================================
 function openOverlay(videoObj) {
   const { hd, alt } = videoObj;
-  
+
+  // If no 1080p video exists, do nothing
+  if (!hd) {
+    console.log("No HD video available for this video. Overlay will not open.");
+    return;
+  }
+
   const overlay = document.createElement("div");
   overlay.classList.add("video-overlay");
 
@@ -144,12 +154,6 @@ function openOverlay(videoObj) {
 
     wrapper.appendChild(video);
     return { wrapper, video };
-  }
-
-  // Main video: use 1080p if available
-  if (!hd) {
-    console.log("No HD video available for this video.");
-    return; // do nothing if no HD
   }
 
   const main = createVideoWrapper(hd, false);
