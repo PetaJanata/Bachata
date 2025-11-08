@@ -64,6 +64,29 @@ html { scroll-behavior: smooth; }
   box-shadow: 0 0 30px rgba(0,0,0,0.4);
 }
 
+.video-overlay button {
+  background-color: #ffffff;        /* white background */
+  color: #000000;                   /* black text */
+  border: none;                     /* remove default border */
+  border-radius: 8px;               /* soft corners */
+  padding: 0.5rem 1rem;             /* comfortable size */
+  cursor: pointer;                  /* pointer cursor on hover */
+  font-weight: 500;                 /* slightly bolder text */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2); /* subtle shadow for depth */
+  transition: all 0.2s ease-in-out; /* smooth hover animation */
+}
+
+.video-overlay button:hover {
+  background-color: #f0f0f0;        /* light gray hover */
+  transform: translateY(-2px);      /* small lift on hover */
+}
+
+.video-overlay button:active {
+  transform: translateY(0);         /* reset on click */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+
 /* Mobile layout for HD overlay */
 @media (max-width: 768px) {
   .video-overlay > div {
