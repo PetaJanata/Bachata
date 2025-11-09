@@ -22,6 +22,22 @@ html { scroll-behavior: smooth; }
   text-align: center;
 }
 
+.filter-btn {
+  padding: 10px 16px;
+  margin: 5px;
+  border: none;
+  border-radius: 8px;
+  background: #ddd;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.filter-btn.active {
+  background: #333;
+  color: white;
+}
+
+
 /* VIDEO GALLERY */
 .video-block {
   display: grid;
