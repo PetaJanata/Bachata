@@ -31,6 +31,7 @@ html { scroll-behavior: smooth; }
   display: flex;
   gap: 10px;
   z-index: 3;
+  }
 
 .filter-btn {
   padding: 10px 16px;
