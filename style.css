@@ -87,21 +87,30 @@ html { scroll-behavior: smooth; }
 }
 
 
-/* Different heights for single HD vs dual-view on mobile */
+/* Mobile layout for overlay */
 @media (max-width: 768px) {
-  /* Default: single HD view */
-  .video-overlay:not(.dual-view) video {
-    max-height: 80vh;
+  /* Stack videos vertically in dual view */
+  .video-overlay.dual-view > div {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 10px !important;
   }
 
-  /* Dual-view: both videos visible */
+  /* Dual view videos (smaller stacked) */
   .video-overlay.dual-view video {
+    max-width: 90vw;
     max-height: 35vh;
   }
-}
+
+  /* Single HD view (larger, near fullscreen) */
+  .video-overlay:not(.dual-view) video {
+    max-width: 90vw;
+    max-height: 80vh;
+  }
 
   .video-overlay button {
     font-size: 0.9rem;
   }
 }
+
 
