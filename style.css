@@ -87,18 +87,18 @@ html { scroll-behavior: smooth; }
 }
 
 
-/* Mobile layout for HD overlay */
+/* Different heights for single HD vs dual-view on mobile */
 @media (max-width: 768px) {
-  .video-overlay > div {
-    flex-direction: column !important;
-    align-items: center;
-    gap: 10px !important;
+  /* Default: single HD view */
+  .video-overlay:not(.dual-view) video {
+    max-height: 80vh;
   }
 
-  .video-overlay video {
-    max-width: 90vw;
+  /* Dual-view: both videos visible */
+  .video-overlay.dual-view video {
     max-height: 35vh;
   }
+}
 
   .video-overlay button {
     font-size: 0.9rem;
