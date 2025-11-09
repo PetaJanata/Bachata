@@ -2,6 +2,7 @@
 // GLOBAL VARIABLES
 // ================================
 let videos = []; // holds all video metadata from CSV
+let activeFilter = null; // current active filter
 const gallery = document.getElementById("video-gallery");
 
 // ================================
@@ -13,6 +14,27 @@ function shuffleArray(array) {
     [array[i], array[j]] = [array[j], array[i]];
   }
   return array;
+}
+
+// ================================
+// FILTER FUNCTION
+// ================================
+function applyFilter(filterValue) {
+  activeFilter = filterValue;
+
+  // Update button active styles
+  document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
+  if (filterValue === "Peťák a Renča") document.getElementById("btn-renča").classList.add("active");
+  else if (filterValue === "Peťa a Peťa") document.getElementById("btn-peta").classList.add("active");
+
+  // Filter videos based on CSV column
+  const filteredVideos = !filterValue
+    ? [...videos]
+    : videos.filter(v => v.button === filterValue);
+
+  const shuffledVideos = shuffleArray(filteredVideos);
+  loadGallery(shuffledVideos);
+  lazyLoadVideos();
 }
 
 // ================================
@@ -28,13 +50,26 @@ window.addEventListener("DOMContentLoaded", () => {
       videos = results.data.map(row => ({
         src480: row["480p"] || null,
         hd: row["1080p"] || null,
-        alt: row["Alt"] || null
+        alt: row["Alt"] || null,
+        button: row["Button"] || null // new filter column
       }));
 
-      const shuffledVideos = shuffleArray([...videos]);
-      loadGallery(shuffledVideos);
-      lazyLoadVideos();
       console.log("Videos loaded from CSV:", videos);
+
+      // Initial load — show everything
+      applyFilter(null);
+
+      // Set up filter buttons
+      const btnRenCa = document.getElementById("btn-renča");
+      const btnPeta = document.getElementById("btn-peta");
+
+      if (btnRenCa) btnRenCa.addEventListener("click", () => {
+        applyFilter(activeFilter === "Peťák a Renča" ? null : "Peťák a Renča");
+      });
+
+      if (btnPeta) btnPeta.addEventListener("click", () => {
+        applyFilter(activeFilter === "Peťa a Peťa" ? null : "Peťa a Peťa");
+      });
     })
     .catch(err => console.error("Error loading CSV:", err));
 });
@@ -170,7 +205,7 @@ function openOverlay(videoObj) {
       main.wrapper.style.display = "flex";
       altWrapper.wrapper.style.display = "flex";
 
-      // Keep only the correct audio playing
+      // Keep only one video with sound (switch depending on last active)
       if (!main.video.muted) {
         main.video.muted = true;
         altWrapper.video.muted = false;
