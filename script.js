@@ -166,6 +166,7 @@ function openOverlay(videoObj) {
     main.wrapper.appendChild(mainButton);
 
     const showDualView = () => {
+      overlay.classList.add("dual-view");
       main.wrapper.style.display = "flex";
       altWrapper.wrapper.style.display = "flex";
 
@@ -193,6 +194,7 @@ function openOverlay(videoObj) {
     };
 
     const showMainOnly = () => {
+      overlay.classList.remove("dual-view");
       main.wrapper.style.display = "flex";
       altWrapper.wrapper.style.display = "none";
 
@@ -206,6 +208,7 @@ function openOverlay(videoObj) {
     };
 
     const showAltOnly = () => {
+      overlay.classList.remove("dual-view");
       main.wrapper.style.display = "none";
       altWrapper.wrapper.style.display = "flex";
 
