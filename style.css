@@ -22,6 +22,16 @@ html { scroll-behavior: smooth; }
   text-align: center;
 }
 
+/* Buttons positioned at bottom center */
+.hero-buttons {
+  position: absolute;
+  bottom: 40px; /* adjust distance from bottom */
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 3;
+
 .filter-btn {
   padding: 10px 16px;
   margin: 5px;
