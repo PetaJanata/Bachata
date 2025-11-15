@@ -56,12 +56,13 @@ html { scroll-behavior: smooth; }
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 
-  display: flex;
+  display: inline-flex;  /* <-- was 'flex', now only as wide as content */
   gap: 10px;
 
-  width: auto;  /* only as wide as buttons */
-  height: auto; /* prevent stretching */
+  width: auto;   /* ensures buttons container doesn't stretch */
+  height: auto;  /* ensures buttons container doesn't stretch */
 }
+
 
 
 
