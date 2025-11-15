@@ -17,26 +17,27 @@ html { scroll-behavior: smooth; }
   background: url('images/background.jpg') center center no-repeat;
   background-size: cover;
   display: flex;
-  justify-content: center;
+  flex-direction: column;        /* stack headline + buttons vertically */
+  justify-content: flex-end;     /* push buttons to bottom */
   align-items: center;
   text-align: center;
+  padding-bottom: 40px;          /* space for buttons */
+  position: relative;
 }
 
 /* container for sticky buttons */
 .hero-buttons-wrapper {
-  position: relative;
   width: 100%;
   display: flex;
   justify-content: center;
+  position: relative;            /* needed for sticky/fixed */
 }
 
-/* Buttons positioned at bottom center */
+/* Buttons positioned at bottom initially */
 .hero-buttons {
- display: flex;
+  display: flex;
   gap: 10px;
-  position: sticky;
-  bottom: 0;                        /* start at bottom of hero */
-  top: 0;                           /* when sticky, sticks to top */
+  position: relative;            /* start relative inside hero */
   z-index: 99;
   transition: all 0.3s ease;
 }
@@ -56,6 +57,7 @@ html { scroll-behavior: smooth; }
 
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
+
 
 
 .filter-btn {
