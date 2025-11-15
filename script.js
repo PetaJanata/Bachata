@@ -113,8 +113,14 @@ function loadGallery(videoList) {
 }
 
 // ================================
-// LAZY LOAD + AUTO-PAUSE VIDEOS
+// LAZY LOAD + AUTO-PAUSE VIDEOS (NO DUPLICATE OBSERVERS)
 // ================================
+
+// Global observers — created once
+let lazyObserver = null;
+let pauseObserver = null;
+let visibilityCheckAttached = false;
+
 function lazyLoadVideos() {
   const videoElements = document.querySelectorAll("video[data-src]");
 
@@ -125,57 +131,65 @@ function lazyLoadVideos() {
     video.play().catch(() => {});
   };
 
-  // ---------- Lazy loader ----------
-  const observer = new IntersectionObserver(
-    entries => {
-      entries.forEach(entry => {
-        const video = entry.target;
-        if (entry.isIntersecting) {
-          loadVideo(video);
-          observer.unobserve(video);
-        }
-      });
-    },
-    { rootMargin: "400px 0px", threshold: 0.1 }
-  );
+  // ---------- Create Lazy Observer once ----------
+  if (!lazyObserver) {
+    lazyObserver = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          const video = entry.target;
+          if (entry.isIntersecting) {
+            loadVideo(video);
+            lazyObserver.unobserve(video);
+          }
+        });
+      },
+      { rootMargin: "400px 0px", threshold: 0.1 }
+    );
+  }
 
-  videoElements.forEach(video => observer.observe(video));
+  // Register videos to Lazy Observer
+  videoElements.forEach(video => lazyObserver.observe(video));
 
-  // ---------- Extra visibility check ----------
+  // ---------- Extra visibility check (scroll/resize) ----------
   const checkVisible = () => {
-    videoElements.forEach(video => {
-      if (video.dataset.src) {
-        const rect = video.getBoundingClientRect();
-        if (rect.top < window.innerHeight + 300 && rect.bottom > -300) {
-          loadVideo(video);
-        }
+    document.querySelectorAll("video[data-src]").forEach(video => {
+      const rect = video.getBoundingClientRect();
+      if (rect.top < window.innerHeight + 300 && rect.bottom > -300) {
+        loadVideo(video);
       }
     });
   };
 
-  window.addEventListener("scroll", checkVisible, { passive: true });
-  window.addEventListener("resize", checkVisible);
+  // Attach scroll/resize only once
+  if (!visibilityCheckAttached) {
+    window.addEventListener("scroll", checkVisible, { passive: true });
+    window.addEventListener("resize", checkVisible);
+    visibilityCheckAttached = true;
+  }
 
   // =======================
   // PAUSE WHEN NOT VISIBLE
   // =======================
-  const pauseObserver = new IntersectionObserver(
-    entries => {
-      entries.forEach(entry => {
-        const video = entry.target;
+  if (!pauseObserver) {
+    pauseObserver = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          const video = entry.target;
+          if (!entry.isIntersecting) {
+            if (!video.paused) video.pause();
+          } else {
+            if (video.paused && !video.dataset.src) video.play().catch(() => {});
+          }
+        });
+      },
+      { threshold: 0.25 }
+    );
+  }
 
-        if (!entry.isIntersecting) {
-          if (!video.paused) video.pause();
-        } else {
-          if (video.paused) video.play().catch(() => {});
-        }
-      });
-    },
-    { threshold: 0.25 }
-  );
-
+  // Register every video (new or old) to pauseObserver
   document.querySelectorAll("video").forEach(video => pauseObserver.observe(video));
 }
+
 
 // ================================
 // OPEN OVERLAY
