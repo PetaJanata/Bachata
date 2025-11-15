@@ -22,10 +22,12 @@ html { scroll-behavior: smooth; }
   text-align: center;
 }
 
+/* container for sticky buttons */
 .hero-buttons-wrapper {
   position: relative;
-  height: 100vh;     /* same height as hero */
   width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 /* Buttons positioned at bottom center */
