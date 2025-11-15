@@ -39,6 +39,7 @@ function applyFilter(filterValue) {
 
 // ================================
 // DOM CONTENT LOADED
+// ================================
 // Load CSV and initialize gallery
 // ================================
 window.addEventListener("DOMContentLoaded", () => {
@@ -51,15 +52,13 @@ window.addEventListener("DOMContentLoaded", () => {
         src480: row["480p"] || null,
         hd: row["1080p"] || null,
         alt: row["Alt"] || null,
-        button: row["Button"] || null // new filter column
+        button: row["Button"] || null
       }));
 
       console.log("Videos loaded from CSV:", videos);
 
-      // Initial load — show everything
       applyFilter(null);
 
-      // Set up filter buttons
       const btnRenCa = document.getElementById("btn-renča");
       const btnPeta = document.getElementById("btn-peta");
 
@@ -87,7 +86,7 @@ function loadGallery(videoList) {
     card.classList.add("video-card");
 
     const video = document.createElement("video");
-    video.dataset.src = v.src480; // lazy load
+    video.dataset.src = v.src480;
     video.muted = true;
     video.loop = true;
     video.playsInline = true;
@@ -105,7 +104,7 @@ function loadGallery(videoList) {
 }
 
 // ================================
-// LAZY LOAD 480P VIDEOS
+// LAZY LOAD + AUTO-PAUSE VIDEOS
 // ================================
 function lazyLoadVideos() {
   const videoElements = document.querySelectorAll("video[data-src]");
@@ -117,6 +116,7 @@ function lazyLoadVideos() {
     video.play().catch(() => {});
   };
 
+  // ---------- Lazy loader ----------
   const observer = new IntersectionObserver(
     entries => {
       entries.forEach(entry => {
@@ -132,6 +132,7 @@ function lazyLoadVideos() {
 
   videoElements.forEach(video => observer.observe(video));
 
+  // ---------- Extra visibility check ----------
   const checkVisible = () => {
     videoElements.forEach(video => {
       if (video.dataset.src) {
@@ -145,6 +146,26 @@ function lazyLoadVideos() {
 
   window.addEventListener("scroll", checkVisible, { passive: true });
   window.addEventListener("resize", checkVisible);
+
+  // =======================
+  // PAUSE WHEN NOT VISIBLE
+  // =======================
+  const pauseObserver = new IntersectionObserver(
+    entries => {
+      entries.forEach(entry => {
+        const video = entry.target;
+
+        if (!entry.isIntersecting) {
+          if (!video.paused) video.pause();
+        } else {
+          if (video.paused) video.play().catch(() => {});
+        }
+      });
+    },
+    { threshold: 0.25 }
+  );
+
+  document.querySelectorAll("video").forEach(video => pauseObserver.observe(video));
 }
 
 // ================================
@@ -153,7 +174,7 @@ function lazyLoadVideos() {
 function openOverlay(videoObj) {
   const { hd, alt } = videoObj;
 
-  if (!hd) return; // nothing happens if no 1080p
+  if (!hd) return;
 
   const overlay = document.createElement("div");
   overlay.classList.add("video-overlay");
@@ -205,7 +226,6 @@ function openOverlay(videoObj) {
       main.wrapper.style.display = "flex";
       altWrapper.wrapper.style.display = "flex";
 
-      // Keep only one video with sound (switch depending on last active)
       if (!main.video.muted) {
         main.video.muted = true;
         altWrapper.video.muted = false;
@@ -249,6 +269,7 @@ function openOverlay(videoObj) {
 
       main.video.muted = true;
       altWrapper.video.muted = false;
+
       altWrapper.video.play().catch(() => {});
 
       if (altButton) altButton.remove();
