@@ -22,16 +22,24 @@ html { scroll-behavior: smooth; }
   text-align: center;
 }
 
+.hero-buttons-wrapper {
+  position: relative;
+  height: 100vh;     /* same height as hero */
+  width: 100%;
+}
+
 /* Buttons positioned at bottom center */
 .hero-buttons {
-  position: absolute;
-  bottom: 40px; /* adjust distance from bottom */
-  left: 50%;
-  transform: translateX(-50%);
+  position: sticky;
+  bottom: 20px;      /* controls where they start inside hero */
+  top: 0;            /* where they stick in the next section */
+  width: 100%;
   display: flex;
+  justify-content: center;
   gap: 10px;
-  z-index: 3;
-  }
+  z-index: 99;
+  transition: all 0.3s ease;
+}
 
 /* Sticky buttons after scrolling past hero */
 .hero-buttons.sticky {
