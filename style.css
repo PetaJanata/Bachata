@@ -17,25 +17,32 @@ html { scroll-behavior: smooth; }
   background: url('images/background.jpg') center center no-repeat;
   background-size: cover;
   display: flex;
-  justify-content: center;
-  align-items: center; /* keeps headline centered vertically */
+  flex-direction: column; /* vertical layout */
+  justify-content: center; /* centers headline */
+  align-items: center;
+  position: relative;
   text-align: center;
-  position: relative;  /* for absolutely positioned buttons */
 }
 
-/* Buttons positioned at bottom center */
+/* Headline stays centered */
+.hero-title {
+  margin-bottom: 40px; /* space for buttons */
+}
+
+/* Buttons start at bottom inside hero */
 .hero-buttons {
-  position: absolute;  /* absolute inside hero */
-  bottom: 40px;        /* distance from bottom of hero */
+  position: absolute;
+  bottom: 40px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   gap: 10px;
   z-index: 99;
-  transition: all 0.3s ease;
+  width: auto;
+  height: auto;
 }
 
-/* Sticky buttons after scrolling past hero */
+/* Sticky buttons when scrolling past hero */
 .hero-buttons.sticky {
   position: fixed !important;
   top: 10px;
@@ -47,16 +54,15 @@ html { scroll-behavior: smooth; }
   backdrop-filter: blur(6px);
   padding: 8px 14px;
   border-radius: 12px;
-
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 
   display: flex;
   gap: 10px;
 
-  /* Fix: make sure height is only as tall as the content */
-  height: auto;       /* previously it stretched */
-  width: auto;        /* optional: shrink to fit buttons */
+  width: auto;  /* only as wide as buttons */
+  height: auto; /* prevent stretching */
 }
+
 
 
 
