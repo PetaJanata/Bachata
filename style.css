@@ -39,7 +39,7 @@ html { scroll-behavior: smooth; }
   gap: 10px;
   z-index: 99;
   width: auto;
-  height: auto;
+  height: 5vh;
 }
 
 /* Sticky buttons when scrolling past hero */
