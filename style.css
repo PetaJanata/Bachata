@@ -49,10 +49,14 @@ html { scroll-behavior: smooth; }
   border-radius: 12px;
 
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+
   display: flex;
   gap: 10px;
-}
 
+  /* Fix: make sure height is only as tall as the content */
+  height: auto;       /* previously it stretched */
+  width: auto;        /* optional: shrink to fit buttons */
+}
 
 
 
