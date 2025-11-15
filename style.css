@@ -17,27 +17,20 @@ html { scroll-behavior: smooth; }
   background: url('images/background.jpg') center center no-repeat;
   background-size: cover;
   display: flex;
-  flex-direction: column;        /* stack headline + buttons vertically */
-  justify-content: flex-end;     /* push buttons to bottom */
-  align-items: center;
-  text-align: center;
-  padding-bottom: 40px;          /* space for buttons */
-  position: relative;
-}
-
-/* container for sticky buttons */
-.hero-buttons-wrapper {
-  width: 100%;
-  display: flex;
   justify-content: center;
-  position: relative;            /* needed for sticky/fixed */
+  align-items: center; /* keeps headline centered vertically */
+  text-align: center;
+  position: relative;  /* for absolutely positioned buttons */
 }
 
-/* Buttons positioned at bottom initially */
+/* Buttons positioned at bottom center */
 .hero-buttons {
+  position: absolute;  /* absolute inside hero */
+  bottom: 40px;        /* distance from bottom of hero */
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   gap: 10px;
-  position: relative;            /* start relative inside hero */
   z-index: 99;
   transition: all 0.3s ease;
 }
@@ -56,7 +49,10 @@ html { scroll-behavior: smooth; }
   border-radius: 12px;
 
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  display: flex;
+  gap: 10px;
 }
+
 
 
 
