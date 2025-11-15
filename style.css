@@ -32,13 +32,11 @@ html { scroll-behavior: smooth; }
 
 /* Buttons positioned at bottom center */
 .hero-buttons {
-  position: sticky;
-  bottom: 20px;      /* controls where they start inside hero */
-  top: 0;            /* where they stick in the next section */
-  width: 100%;
-  display: flex;
-  justify-content: center;
+ display: flex;
   gap: 10px;
+  position: sticky;
+  bottom: 0;                        /* start at bottom of hero */
+  top: 0;                           /* when sticky, sticks to top */
   z-index: 99;
   transition: all 0.3s ease;
 }
@@ -46,7 +44,6 @@ html { scroll-behavior: smooth; }
 /* Sticky buttons after scrolling past hero */
 .hero-buttons.sticky {
   position: fixed !important;
-  bottom: auto !important;
   top: 10px;
   left: 50%;
   transform: translateX(-50%);
@@ -58,9 +55,6 @@ html { scroll-behavior: smooth; }
   border-radius: 12px;
 
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-
-  display: flex;
-  gap: 10px;
 }
 
 
