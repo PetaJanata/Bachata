@@ -35,7 +35,16 @@ function applyFilter(filterValue) {
   const shuffledVideos = shuffleArray(filteredVideos);
   loadGallery(shuffledVideos);
   lazyLoadVideos();
+
+  // === SCROLL TO VIDEO GALLERY ===
+  if (filterValue) {
+    document.getElementById("video-gallery").scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }
 }
+
 
 // ================================
 // DOM CONTENT LOADED
