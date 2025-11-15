@@ -33,6 +33,27 @@ html { scroll-behavior: smooth; }
   z-index: 3;
   }
 
+/* Sticky buttons after scrolling past hero */
+.hero-buttons.sticky {
+  position: fixed !important;
+  bottom: auto !important;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(6px);
+  padding: 8px 14px;
+  border-radius: 12px;
+
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+
+  display: flex;
+  gap: 10px;
+}
+
+
 .filter-btn {
   padding: 10px 16px;
   margin: 5px;
