@@ -21,13 +21,10 @@ html { scroll-behavior: smooth; }
   background-size: cover;
   display: flex;
   flex-direction: column; /* vertical layout */
-  justify-content: space-beween; /* centers headline */
+  justify-content: center; /* centers headline */
   align-items: center;
 }
 
-.section-bottom-placeholder {
-  height: 50px;  /* matches button height */
-}
 
 .hero-buttons {
   position: sticky;
@@ -39,7 +36,7 @@ html { scroll-behavior: smooth; }
   border-radius: 10px;
   z-index: 10;       /* above the hero image */
   justify-content: center;
-  /*margin-top: -100px; */
+  margin-top: -100px; 
   
 }
 
