@@ -30,24 +30,19 @@ html { scroll-behavior: smooth; }
   display: flex;     /* horizontal layout for buttons */
   gap: 10px;         /* spacing between buttons */
   padding: 10px 0;   /* optional vertical padding */
-  background: transparent; /* keeps look the same as in hero */
+  justify-content: center;
 }
 
 /* The buttons appear at the bottom of the hero until sticking */
 .hero-buttons {
-  position: absolute;
-  bottom: 20px;       /* distance from bottom of hero */
-  left: 50%;
-  transform: translateX(-50%);
-  
+    
   display: flex;
   gap: 10px;
   padding: 10px;
-
   background: rgba(0,0,0,0.6);
   border-radius: 10px;
-
   z-index: 200;       /* above the hero image */
+  
 }
 
 
