@@ -1,4 +1,7 @@
-:root { --bg-color: #ffffff; }
+:root { --bg-color: #ffffff;
+      --button-bottom: 20px; /* distance from bottom of hero where buttons should appear */
+      --hero-height: 100vh;
+      }
 
 body {
   font-family: 'Winky Sans', sans-serif;
@@ -12,7 +15,7 @@ html { scroll-behavior: smooth; }
 
 /* HERO */
 .hero {
-  height: 100vh;
+  height: var(--hero-height);
   width: 100%;
   background: url('images/background.jpg') center center no-repeat;
   background-size: cover;
@@ -22,6 +25,7 @@ html { scroll-behavior: smooth; }
   flex-direction: column; /* vertical layout */
   justify-content: center; /* centers headline */
   align-items: center;
+  margin: 0;
 }
 
 /* Make wrapper sticky */
@@ -29,12 +33,17 @@ html { scroll-behavior: smooth; }
   position: sticky;  /* sticky behavior */
   bottom: 20px;  /* initial location inside hero */
   top: 0;        /* stick to top when reached */
-  z-index: 10;       /* stays above other content */
+  z-index: 50;       /* stays above other content */
   display: flex;     /* horizontal layout for buttons */
+  width: 100%;
   justify-content: center;
+  pointer-events: auto;
+
+  /* Move wrapper up so it appears inside/over the hero at page load */
+  margin-top: calc(-1 * (var(--hero-height) - var(--button-bottom)));
+  /* This equals: margin-top: -(100vh - 20px) -> moves wrapper up to hero bottom */
 }
 
-/* The buttons appear at the bottom of the hero until sticking */
 .hero-buttons {
     
   display: flex;
@@ -45,7 +54,6 @@ html { scroll-behavior: smooth; }
   z-index: 200;       /* above the hero image */
   
 }
-
 
 .filter-btn {
   padding: 10px 16px;
