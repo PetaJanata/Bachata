@@ -24,83 +24,90 @@ function applyFilter(filterValue) {
 
   // Update button active styles
   document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
-  if (filterValue === "Peťák a Renča") document.getElementById("btn-renča").classList.add("active");
-  else if (filterValue === "Peťa a Peťa") document.getElementById("btn-peta").classList.add("active");
+  if (filterValue === "Peťák a Renča") document.getElementById("btn-renča")?.classList.add("active");
+  else if (filterValue === "Peťa a Peťa") document.getElementById("btn-peta")?.classList.add("active");
 
-  // Filter videos based on CSV column
-  const filteredVideos = !filterValue
-    ? [...videos]
-    : videos.filter(v => v.button === filterValue);
-
+  // Filter videos
+  const filteredVideos = !filterValue ? [...videos] : videos.filter(v => v.button === filterValue);
   const shuffledVideos = shuffleArray(filteredVideos);
+
   loadGallery(shuffledVideos);
   lazyLoadVideos();
 
-  // === SCROLL TO VIDEO GALLERY ===
+  // Scroll to gallery when filter applied
   if (filterValue) {
-    document.getElementById("video-gallery").scrollIntoView({
+    document.getElementById("video-gallery")?.scrollIntoView({
       behavior: "smooth",
       block: "start"
     });
   }
 }
 
-
 // ================================
-// DOM CONTENT LOADED
+// LAZY LOAD + AUTO-PAUSE VIDEOS
 // ================================
-// Load CSV and initialize gallery
-// ================================
-window.addEventListener("DOMContentLoaded", () => {
-  fetch("videos.csv")
-    .then(res => res.text())
-    .then(csvText => {
-      const results = Papa.parse(csvText, { header: true, skipEmptyLines: true });
+let lazyObserver = null;
+let pauseObserver = null;
+let visibilityCheckAttached = false;
 
-      videos = results.data.map(row => ({
-        src480: row["480p"] || null,
-        hd: row["1080p"] || null,
-        alt: row["Alt"] || null,
-        button: row["Button"] || null
-      }));
+function lazyLoadVideos() {
+  const videoElements = document.querySelectorAll("video[data-src]");
 
-      console.log("Videos loaded from CSV:", videos);
+  const loadVideo = video => {
+    if (!video.dataset.src) return;
+    video.src = video.dataset.src;
+    video.removeAttribute("data-src");
+    video.play().catch(() => {});
+  };
 
-      applyFilter(null);
-
-      const btnRenCa = document.getElementById("btn-renča");
-      const btnPeta = document.getElementById("btn-peta");
-
-      if (btnRenCa) btnRenCa.addEventListener("click", () => {
-        applyFilter(activeFilter === "Peťák a Renča" ? null : "Peťák a Renča");
+  // Lazy Observer
+  if (!lazyObserver) {
+    lazyObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          loadVideo(entry.target);
+          lazyObserver.unobserve(entry.target);
+        }
       });
-
-      if (btnPeta) btnPeta.addEventListener("click", () => {
-        applyFilter(activeFilter === "Peťa a Peťa" ? null : "Peťa a Peťa");
-      });
-    })
-    .catch(err => console.error("Error loading CSV:", err));
-
- // Detect when buttons become sticky
-const wrapper = document.querySelector('.sticky-wrapper');
-
-window.addEventListener('scroll', () => {
-  if (!wrapper) return; // <-- important fix
-
-  const rect = wrapper.getBoundingClientRect();
-  if (rect.top === 0) {
-    wrapper.classList.add('is-sticky');
-  } else {
-    wrapper.classList.remove('is-sticky');
+    }, { rootMargin: "400px 0px", threshold: 0.1 });
   }
-});
 
+  videoElements.forEach(video => lazyObserver.observe(video));
 
+  // Extra visibility check
+  if (!visibilityCheckAttached) {
+    const checkVisible = () => {
+      document.querySelectorAll("video[data-src]").forEach(video => {
+        const rect = video.getBoundingClientRect();
+        if (rect.top < window.innerHeight + 300 && rect.bottom > -300) {
+          loadVideo(video);
+        }
+      });
+    };
+    window.addEventListener("scroll", checkVisible, { passive: true });
+    window.addEventListener("resize", checkVisible);
+    visibilityCheckAttached = true;
+  }
+
+  // Pause Observer
+  if (!pauseObserver) {
+    pauseObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        const video = entry.target;
+        if (!entry.isIntersecting) video.pause();
+        else if (video.paused && !video.dataset.src) video.play().catch(() => {});
+      });
+    }, { threshold: 0.25 });
+  }
+
+  document.querySelectorAll("video").forEach(video => pauseObserver.observe(video));
+}
 
 // ================================
 // LOAD GALLERY
 // ================================
 function loadGallery(videoList) {
+  if (!gallery) return;
   gallery.innerHTML = "";
 
   videoList.forEach(v => {
@@ -128,90 +135,10 @@ function loadGallery(videoList) {
 }
 
 // ================================
-// LAZY LOAD + AUTO-PAUSE VIDEOS (NO DUPLICATE OBSERVERS)
-// ================================
-
-// Global observers — created once
-let lazyObserver = null;
-let pauseObserver = null;
-let visibilityCheckAttached = false;
-
-function lazyLoadVideos() {
-  const videoElements = document.querySelectorAll("video[data-src]");
-
-  const loadVideo = video => {
-    if (!video.dataset.src) return;
-    video.src = video.dataset.src;
-    video.removeAttribute("data-src");
-    video.play().catch(() => {});
-  };
-
-  // ---------- Create Lazy Observer once ----------
-  if (!lazyObserver) {
-    lazyObserver = new IntersectionObserver(
-      entries => {
-        entries.forEach(entry => {
-          const video = entry.target;
-          if (entry.isIntersecting) {
-            loadVideo(video);
-            lazyObserver.unobserve(video);
-          }
-        });
-      },
-      { rootMargin: "400px 0px", threshold: 0.1 }
-    );
-  }
-
-  // Register videos to Lazy Observer
-  videoElements.forEach(video => lazyObserver.observe(video));
-
-  // ---------- Extra visibility check (scroll/resize) ----------
-  const checkVisible = () => {
-    document.querySelectorAll("video[data-src]").forEach(video => {
-      const rect = video.getBoundingClientRect();
-      if (rect.top < window.innerHeight + 300 && rect.bottom > -300) {
-        loadVideo(video);
-      }
-    });
-  };
-
-  // Attach scroll/resize only once
-  if (!visibilityCheckAttached) {
-    window.addEventListener("scroll", checkVisible, { passive: true });
-    window.addEventListener("resize", checkVisible);
-    visibilityCheckAttached = true;
-  }
-
-  // =======================
-  // PAUSE WHEN NOT VISIBLE
-  // =======================
-  if (!pauseObserver) {
-    pauseObserver = new IntersectionObserver(
-      entries => {
-        entries.forEach(entry => {
-          const video = entry.target;
-          if (!entry.isIntersecting) {
-            if (!video.paused) video.pause();
-          } else {
-            if (video.paused && !video.dataset.src) video.play().catch(() => {});
-          }
-        });
-      },
-      { threshold: 0.25 }
-    );
-  }
-
-  // Register every video (new or old) to pauseObserver
-  document.querySelectorAll("video").forEach(video => pauseObserver.observe(video));
-}
-
-
-// ================================
 // OPEN OVERLAY
 // ================================
 function openOverlay(videoObj) {
   const { hd, alt } = videoObj;
-
   if (!hd) return;
 
   const overlay = document.createElement("div");
@@ -264,19 +191,15 @@ function openOverlay(videoObj) {
       main.wrapper.style.display = "flex";
       altWrapper.wrapper.style.display = "flex";
 
-      if (!main.video.muted) {
-        main.video.muted = true;
-        altWrapper.video.muted = false;
-      } else if (!altWrapper.video.muted) {
-        main.video.muted = false;
-        altWrapper.video.muted = true;
-      }
+      main.video.muted = true;
+      altWrapper.video.muted = false;
 
       main.video.play().catch(() => {});
       altWrapper.video.play().catch(() => {});
 
       mainButton.textContent = "pohled 1";
       if (altButton) altButton.remove();
+
       altButton = document.createElement("button");
       altButton.textContent = "pohled 2";
       altButton.style.marginTop = "10px";
@@ -295,7 +218,8 @@ function openOverlay(videoObj) {
       altWrapper.video.muted = true;
 
       mainButton.textContent = "Ukaž video z jiného úhlu";
-      if (altButton) { altButton.remove(); altButton = null; }
+      altButton?.remove();
+      altButton = null;
 
       mainButton.onclick = showDualView;
     };
@@ -310,7 +234,7 @@ function openOverlay(videoObj) {
 
       altWrapper.video.play().catch(() => {});
 
-      if (altButton) altButton.remove();
+      altButton?.remove();
 
       backBtn = document.createElement("button");
       backBtn.textContent = "Ukaž video z jiného úhlu";
@@ -334,5 +258,48 @@ function openOverlay(videoObj) {
   });
 }
 
+// ================================
+// DOM CONTENT LOADED — INIT
+// ================================
+window.addEventListener("DOMContentLoaded", () => {
+  // ---- Sticky buttons ----
+  const wrapper = document.querySelector('.sticky-wrapper');
+  if (wrapper) {
+    window.addEventListener('scroll', () => {
+      const rect = wrapper.getBoundingClientRect();
+      if (rect.top <= 0) wrapper.classList.add('is-sticky');
+      else wrapper.classList.remove('is-sticky');
+    }, { passive: true });
+  }
 
+  // ---- Load CSV and init gallery ----
+  fetch("videos.csv")
+    .then(res => res.text())
+    .then(csvText => {
+      const results = Papa.parse(csvText, { header: true, skipEmptyLines: true });
 
+      videos = results.data.map(row => ({
+        src480: row["480p"] || null,
+        hd: row["1080p"] || null,
+        alt: row["Alt"] || null,
+        button: row["Button"] || null
+      }));
+
+      console.log("Videos loaded from CSV:", videos);
+
+      applyFilter(null);
+
+      // Setup filter buttons
+      const btnRenCa = document.getElementById("btn-renča");
+      const btnPeta = document.getElementById("btn-peta");
+
+      if (btnRenCa) btnRenCa.addEventListener("click", () => {
+        applyFilter(activeFilter === "Peťák a Renča" ? null : "Peťák a Renča");
+      });
+
+      if (btnPeta) btnPeta.addEventListener("click", () => {
+        applyFilter(activeFilter === "Peťa a Peťa" ? null : "Peťa a Peťa");
+      });
+    })
+    .catch(err => console.error("Error loading CSV:", err));
+});
