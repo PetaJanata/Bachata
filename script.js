@@ -262,15 +262,6 @@ function openOverlay(videoObj) {
 // DOM CONTENT LOADED — INIT
 // ================================
 window.addEventListener("DOMContentLoaded", () => {
-  // ---- Sticky buttons ----
-  const wrapper = document.querySelector('.sticky-wrapper');
-  if (wrapper) {
-    window.addEventListener('scroll', () => {
-      const rect = wrapper.getBoundingClientRect();
-      if (rect.top <= 0) wrapper.classList.add('is-sticky');
-      else wrapper.classList.remove('is-sticky');
-    }, { passive: true });
-  }
 
   // ---- Load CSV and init gallery ----
   fetch("videos.csv")
