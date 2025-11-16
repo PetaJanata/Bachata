@@ -22,11 +22,6 @@ html { scroll-behavior: smooth; }
   align-items: center;
 }
 
-/* Headline stays centered */
-.hero-title {
-  margin-bottom: 40px; /* space for buttons */
-}
-
 
 .hero-buttons {
   position: sticky;
