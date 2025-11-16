@@ -20,8 +20,6 @@ html { scroll-behavior: smooth; }
   flex-direction: column; /* vertical layout */
   justify-content: center; /* centers headline */
   align-items: center;
-  position: relative;
-  text-align: center;
 }
 
 /* Headline stays centered */
