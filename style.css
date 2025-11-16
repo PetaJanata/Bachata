@@ -70,7 +70,6 @@ html { scroll-behavior: smooth; }
   grid-template-columns: repeat(6, 1fr);
   gap: 20px;
   padding: 2rem;
-  padding-top: calc(var(--btn-h) + var(--button-bottom));
 }
 
 .video-card video {
