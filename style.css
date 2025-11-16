@@ -33,10 +33,10 @@ html { scroll-behavior: smooth; }
 .hero-buttons {
   position: sticky;
   top: 0;
-  left: 50%;
   display: flex;
+  justify-content: center;
+  align-items: center;
   gap: 10px;
-  z-index: 99;
   width: auto;
   height: auto;
   
