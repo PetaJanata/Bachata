@@ -1,7 +1,9 @@
 :root { --bg-color: #ffffff;
-      --button-bottom: 20px; /* distance from bottom of hero where buttons should appear */
-      --hero-height: 100vh;
-      }
+  --hero-height: 100vh;      /* keep as 100vh unless you changed hero */
+  --button-bottom: 20px;     /* desired distance from hero bottom */
+  --btn-h: 52px;             /* total height of .hero-buttons (adjust if needed) */
+}
+
 
 body {
   font-family: 'Winky Sans', sans-serif;
@@ -45,7 +47,7 @@ html { scroll-behavior: smooth; }
 }
 
 .hero-buttons {
-    
+  height: var(--btn-h);  
   display: flex;
   gap: 10px;
   padding: 10px;
@@ -77,6 +79,7 @@ html { scroll-behavior: smooth; }
   grid-template-columns: repeat(6, 1fr);
   gap: 20px;
   padding: 2rem;
+  padding-top: calc(var(--btn-h) + var(--button-bottom));
 }
 
 .video-card video {
