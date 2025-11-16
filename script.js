@@ -80,7 +80,22 @@ window.addEventListener("DOMContentLoaded", () => {
       });
     })
     .catch(err => console.error("Error loading CSV:", err));
+
+ // Detect when buttons become sticky
+const wrapper = document.querySelector('.sticky-wrapper');
+
+window.addEventListener('scroll', () => {
+  if (!wrapper) return; // <-- important fix
+
+  const rect = wrapper.getBoundingClientRect();
+  if (rect.top === 0) {
+    wrapper.classList.add('is-sticky');
+  } else {
+    wrapper.classList.remove('is-sticky');
+  }
 });
+
+
 
 // ================================
 // LOAD GALLERY
@@ -318,5 +333,6 @@ function openOverlay(videoObj) {
     }
   });
 }
+
 
 
