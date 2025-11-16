@@ -22,12 +22,15 @@ html { scroll-behavior: smooth; }
   align-items: center;
 }
 
-
-/* This container does the sticking */
+/* Make wrapper sticky */
 .sticky-wrapper {
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  position: sticky;  /* sticky behavior */
+  top: 0;            /* sticks at the top of viewport */
+  z-index: 10;       /* stays above other content */
+  display: flex;     /* horizontal layout for buttons */
+  gap: 10px;         /* spacing between buttons */
+  padding: 10px 0;   /* optional vertical padding */
+  background: transparent; /* keeps look the same as in hero */
 }
 
 /* The buttons appear at the bottom of the hero until sticking */
@@ -45,19 +48,6 @@ html { scroll-behavior: smooth; }
   border-radius: 10px;
 
   z-index: 200;       /* above the hero image */
-}
-
-/* When the wrapper becomes sticky, we want it to turn into a top bar */
-.sticky-wrapper.is-sticky .hero-buttons {
-  position: fixed;
-  top: 0;
-  bottom: auto;
-  width: 100%;
-  left: 0;
-  transform: none;
-
-  justify-content: center;
-  border-radius: 0;
 }
 
 
