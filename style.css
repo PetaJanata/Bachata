@@ -1,7 +1,5 @@
 :root { --bg-color: #ffffff;
-  --hero-height: 100vh;      /* keep as 100vh unless you changed hero */
-  --button-bottom: 20px;     /* desired distance from hero bottom */
-  --btn-h: 52px;             /* total height of .hero-buttons (adjust if needed) */
+
 }
 
 
@@ -15,39 +13,32 @@ body {
 
 html { scroll-behavior: smooth; }
 
-/* HERO */
+* HERO */
 .hero {
-  height: var(--hero-height);
+  height: 100vh;
   width: 100%;
   background: url('images/background.jpg') center center no-repeat;
   background-size: cover;
-
-  position:relative; /* required for bottom placement */
   display: flex;
   flex-direction: column; /* vertical layout */
   justify-content: center; /* centers headline */
   align-items: center;
-  margin: 0;
 }
 
 /* Make wrapper sticky */
 .sticky-wrapper {
   position: sticky;  /* sticky behavior */
-  bottom: 20px;  /* initial location inside hero */
-  top: 0;        /* stick to top when reached */
-  z-index: 50;       /* stays above other content */
+  top: 0;            /* sticks at the top of viewport */
+  z-index: 10;       /* stays above other content */
   display: flex;     /* horizontal layout for buttons */
-  width: 100%;
+  gap: 10px;         /* spacing between buttons */
+  padding: 10px 0;   /* optional vertical padding */
   justify-content: center;
-  pointer-events: auto;
-
-  /* Move wrapper up so it appears inside/over the hero at page load */
-  margin-top: calc(-1 * (var(--hero-height) - var(--button-bottom)));
-  /* This equals: margin-top: -(100vh - 20px) -> moves wrapper up to hero bottom */
 }
 
+/* The buttons appear at the bottom of the hero until sticking */
 .hero-buttons {
-  height: var(--btn-h);  
+    
   display: flex;
   gap: 10px;
   padding: 10px;
