@@ -23,13 +23,43 @@ html { scroll-behavior: smooth; }
 }
 
 
-.hero-buttons {
+/* This container does the sticking */
+.sticky-wrapper {
   position: sticky;
   top: 0;
+  z-index: 100;
+}
+
+/* The buttons appear at the bottom of the hero until sticking */
+.hero-buttons {
+  position: absolute;
+  bottom: 20px;       /* distance from bottom of hero */
+  left: 50%;
+  transform: translateX(-50%);
+  
+  display: flex;
   gap: 10px;
   padding: 10px;
-  background-color: #000000;
+
+  background: rgba(0,0,0,0.6);
+  border-radius: 10px;
+
+  z-index: 200;       /* above the hero image */
 }
+
+/* When the wrapper becomes sticky, we want it to turn into a top bar */
+.sticky-wrapper.is-sticky .hero-buttons {
+  position: fixed;
+  top: 0;
+  bottom: auto;
+  width: 100%;
+  left: 0;
+  transform: none;
+
+  justify-content: center;
+  border-radius: 0;
+}
+
 
 .filter-btn {
   padding: 10px 16px;
