@@ -295,19 +295,3 @@ window.addEventListener("DOMContentLoaded", () => {
     .catch(err => console.error("Error loading CSV:", err));
 });
 
-let scrollTimer;
-
-const buttons = document.querySelector('.hero-buttons');
-
-window.addEventListener('scroll', () => {
-  // Show buttons immediately when scrolling
-  buttons.classList.remove('hidden');
-
-  // Clear previous timer
-  clearTimeout(scrollTimer);
-
-  // Set timer to hide after 2 seconds of no scrolling
-  scrollTimer = setTimeout(() => {
-    buttons.classList.add('hidden');
-  }, 2000); // 2000ms = 2 seconds
-});
