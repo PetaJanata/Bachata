@@ -16,6 +16,8 @@ html { scroll-behavior: smooth; }
   width: 100%;
   background: url('images/background.jpg') center center no-repeat;
   background-size: cover;
+
+  position:relative; /* required for bottom placement */
   display: flex;
   flex-direction: column; /* vertical layout */
   justify-content: center; /* centers headline */
@@ -25,11 +27,10 @@ html { scroll-behavior: smooth; }
 /* Make wrapper sticky */
 .sticky-wrapper {
   position: sticky;  /* sticky behavior */
-  top: 0;            /* sticks at the top of viewport */
+  bottom: 20px;  /* initial location inside hero */
+  top: 0;        /* stick to top when reached */
   z-index: 10;       /* stays above other content */
   display: flex;     /* horizontal layout for buttons */
-  gap: 10px;         /* spacing between buttons */
-  padding: 10px 0;   /* optional vertical padding */
   justify-content: center;
 }
 
