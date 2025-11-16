@@ -34,12 +34,8 @@ html { scroll-behavior: smooth; }
   position: sticky;
   top: 0;
   gap: 10px;
-  width: auto;
-  height: auto;
-  
   padding: 10px;
-  background-color: #cae8ca;
-  border: 2px solid #4CAF50;
+  background-color: #000000;
 }
 
 .filter-btn {
