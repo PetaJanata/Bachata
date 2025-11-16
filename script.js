@@ -320,24 +320,3 @@ function openOverlay(videoObj) {
 }
 
 
-// ================================
-// STICKY BUTTONS ON SCROLL
-// ================================
-document.addEventListener("DOMContentLoaded", () => {
-  const buttons = document.querySelector(".hero-buttons");
-  const marker = document.getElementById("hero-end-marker");
-
-  if (!buttons || !marker) return;
-
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) {
-        buttons.classList.add("sticky");
-      } else {
-        buttons.classList.remove("sticky");
-      }
-    });
-  }, { threshold: 0 });
-
-  observer.observe(marker);
-});
