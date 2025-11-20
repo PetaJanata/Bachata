@@ -116,6 +116,15 @@ function loadGallery(videoList) {
     const card = document.createElement("div");
     card.classList.add("video-card");
 
+    // Apply border by knowledge level
+if (v.znam === "znám") {
+  card.classList.add("know-green");
+} else if (v.znam === "potřebuju zlepšit") {
+  card.classList.add("know-yellow");
+} else if (v.znam === "neznám") {
+  card.classList.add("know-red");
+}
+    
     const video = document.createElement("video");
     video.dataset.src = v.src480;
     video.muted = true;
@@ -273,7 +282,8 @@ window.addEventListener("DOMContentLoaded", () => {
         src480: row["480p"] || null,
         hd: row["1080p"] || null,
         alt: row["Alt"] || null,
-        button: row["Button"] || null
+        button: row["Button"] || null,
+        znam: row["znám?"] || null
       }));
 
       console.log("Videos loaded from CSV:", videos);
