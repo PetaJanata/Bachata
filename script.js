@@ -116,7 +116,15 @@ function loadGallery(videoList) {
     const card = document.createElement("div");
     card.classList.add("video-card");
 
-    // Apply border by knowledge level
+ 
+    
+    const video = document.createElement("video");
+    video.dataset.src = v.src480;
+    video.muted = true;
+    video.loop = true;
+    video.playsInline = true;
+
+       // Apply border by knowledge level
 if (v.znam === "znám") {
   card.classList.add("know-green");
 } else if (v.znam === "potřebuju zlepšit") {
@@ -124,12 +132,6 @@ if (v.znam === "znám") {
 } else if (v.znam === "neznám") {
   card.classList.add("know-red");
 }
-    
-    const video = document.createElement("video");
-    video.dataset.src = v.src480;
-    video.muted = true;
-    video.loop = true;
-    video.playsInline = true;
 
     if (v.hd) {
       video.style.cursor = "pointer";
