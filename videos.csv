@@ -1,89 +1,89 @@
-﻿VideoID,480p,1080p,Alt,Button,type,figures,,notes,source
-1,videos/1_360.mp4,videos/1.mp4,videos/2.mp4,Peťák a Renča,Choreo,"Pinza, Cambré",,,nofeet
-2,videos/3_360.mp4,videos/3.mp4,videos/4.mp4,Peťák a Renča,Choreo,"Rompo Delante, Culito, X",,,nofeet
-3,videos/5_360.mp4,videos/5.mp4,videos/6.mp4,Peťák a Renča,Choreo,"Yo Yo, Wave, Headroll",,,nofeet
-4,videos/7_360.mp4,videos/7.mp4,videos/8.mp4,Peťák a Renča,Choreo,,,,nofeet
-5,videos/9_360.mp4,videos/9.mp4,videos/10.mp4,Peťák a Renča,Choreo,,,,nofeet
-6,videos/11_360.mp4,videos/11.mp4,,Peťák a Renča,Choreo,,,,nofeet
-7,videos/12_360.mp4,videos/12.mp4,videos/13.mp4,Peťák a Renča,Choreo,,,Tom a Kači,nofeet
-8,videos/14_360.mp4,videos/14.mp4,videos/15.mp4,Peťák a Renča,Choreo,,,,nofeet
-9,videos/16_360.mp4,videos/16.mp4,videos/17.mp4,Peťák a Renča,Choreo,,,,nofeet
-10,videos/18_360.mp4,videos/18.mp4,videos/19.mp4,Peťák a Renča,Choreo,,,,nofeet
-11,videos/20_360.mp4,videos/20.mp4,videos/21.mp4,Peťák a Renča,Choreo,,,,nofeet
-12,videos/22_360.mp4,videos/22.mp4,videos/23.mp4,Peťák a Renča,Choreo,,,,nofeet
-13,videos/24_360.mp4,videos/24.mp4,videos/25.mp4,Peťák a Renča,Choreo,,,,nofeet
-14,videos/26_360.mp4,videos/26.mp4,,Peťák a Renča,Figure,Diagonal,,,nofeet
-15,videos/27_360.mp4,videos/27.mp4,videos/28.mp4,Peťák a Renča,Choreo,,,,nofeet
-16,videos/29_360.mp4,videos/29.mp4,,Peťák a Renča,Choreo,,,,nofeet
-17,videos/30_360.mp4,videos/30.mp4,,Peťák a Renča,Figure,"Shadow Position,",,,nofeet
-18,videos/31_360.mp4,videos/31.mp4,videos/32.mp4,Peťák a Renča,Choreo,,,,nofeet
-19,videos/33_360.mp4,videos/33.mp4,videos/34.mp4,Peťák a Renča,Choreo,Drop,,,nofeet
-20,videos/35_360.mp4,videos/35.mp4,,Peťák a Renča,Choreo,,,,nofeet
-21,videos/36_360.mp4,videos/36.mp4,,Peťák a Renča,Choreo,,,another version of 35,nofeet
-22,videos/37_360.mp4,videos/37.mp4,videos/38.mp4,Peťák a Renča,Choreo,,,,nofeet
-23,videos/39_360.mp4,videos/39.mp4,,Peťák a Renča,Choreo,,,,nofeet
-24,videos/40_360.mp4,videos/40.mp4,videos/41.mp4,Peťák a Renča,Choreo,,,,nofeet
-25,videos/42_360.mp4,videos/42.mp4,videos/43.mp4,Peťák a Renča,Choreo,,,,nofeet
-26,videos/44_360.mp4,videos/44.mp4,videos/45.mp4,Peťák a Renča,Choreo,,,,
-27,videos/46_360.mp4,videos/46.mp4,videos/47.mp4,Peťák a Renča,Choreo,,,Tom a Kači,
-28,videos/48_360.mp4,videos/48.mp4,videos/49.mp4,Peťák a Renča,Choreo,,,Tom a Kači,
-29,videos/50_360.mp4,videos/50.mp4,videos/51.mp4,Peťák a Renča,Choreo,,,Tom a Kači,
-30,videos/52_360.mp4,videos/52.mp4,videos/53.mp4,Peťák a Renča,Choreo,Rompo Delante,,,
-31,videos/54_360.mp4,videos/54.mp4,videos/55.mp4,Peťák a Renča,Choreo,,,,
-32,videos/56_360.mp4,videos/56.mp4,,Peťák a Renča,Choreo,Rompo Delante,,"52,53,54,55",
-33,videos/57_360.mp4,videos/57.mp4,videos/58.mp4,Peťák a Renča,Choreo,Lamfáza,,,
-34,videos/59_360.mp4,videos/59.mp4,,Peťák a Renča,Choreo,,,"60,61",
-35,videos/60_360.mp4,videos/60.mp4,,Peťák a Renča,Choreo,,,"59,61",
-36,videos/61_360.mp4,videos/61.mp4,,Peťák a Renča,Choreo,,,"59,60",
-37,videos/62_360.mp4,videos/62.mp4,videos/63.mp4,Peťák a Renča,Choreo,,,,
-38,videos/64_360.mp4,videos/64.mp4,,Peťák a Renča,Choreo,"Culito, Turn",,,
-39,videos/65_360.mp4,videos/65.mp4,,Peťák a Renča,Choreo,"Footwork, Turn",,,
-40,videos/66_360.mp4,videos/66.mp4,videos/67.mp4,Peťák a Renča,Choreo,"Rompo Delante, Titanic",,,
-41,videos/68_360.mp4,videos/68.mp4,videos/69.mp4,Peťák a Renča,Choreo,SP,,,
-42,videos/70_360.mp4,videos/70.mp4,videos/71.mp4,Peťák a Renča,Choreo,,,,
-43,videos/72_360.mp4,videos/72.mp4,videos/73.mp4,Peťák a Renča,Choreo,,,,
-44,videos/74_360.mp4,videos/74.mp4,videos/75.mp4,Peťák a Renča,Choreo,,,,
-45,videos/76_360.mp4,videos/76.mp4,,Peťák a Renča,Choreo,"Rompo Delante, ",,,
-46,videos/77_360.mp4,videos/77.mp4,,Peťák a Renča,Choreo,,,,
-47,videos/78_360.mp4,videos/78.mp4,,Peťák a Renča,Choreo,,,,
-48,videos/79_360.mp4,videos/79.mp4,videos/80.mp4,Peťák a Renča,Choreo,,,,
-49,videos/81_360.mp4,videos/81.mp4,videos/82.mp4,Peťák a Renča,Choreo,"Yo Yo, Headroll",,,
-50,videos/83_360.mp4,videos/83.mp4,videos/84.mp4,Peťák a Renča,Choreo,"Yo Yo,",,,
-51,videos/85_360.mp4,videos/85.mp4,videos/86.mp4,Peťák a Renča,Choreo,,,,
-52,videos/87_360.mp4,videos/87.mp4,videos/88.mp4,Peťák a Renča,Choreo,Diagonal,,,
-53,videos/89_360.mp4,videos/89.mp4,videos/90.mp4,Peťák a Renča,Choreo,,,,
-54,videos/91_360.mp4,videos/91.mp4,,Peťák a Renča,Choreo,,,fast 92,
-55,videos/92_360.mp4,videos/92.mp4,,Peťák a Renča,Choreo,,,slow 91,
-56,videos/93_360.mp4,videos/93.mp4,,Peťák a Renča,Choreo,,,another version of 94,
-57,videos/94_360.mp4,videos/94.mp4,,Peťák a Renča,Choreo,,,another version of 93,
-58,videos/95_360.mp4,videos/95.mp4,,Peťák a Renča,Choreo,,,,
-59,videos/97_360.mp4,videos/97.mp4,videos/96.mp4,Peťák a Renča,Choreo,,,,
-60,videos/98_360.mp4,videos/98.mp4,,Peťák a Renča,Choreo,"Yo Yo, RSP",,,
-61,videos/99_360.mp4,videos/99.mp4,,Peťák a Renča,Choreo,,,,
-62,videos/100_360.mp4,videos/100.mp4,,Peťák a Renča,Choreo,,,,
-63,videos/101_360.mp4,videos/101.mp4,videos/102.mp4,Peťák a Renča,Choreo,,,,
-64,videos/103_360.mp4,videos/103.mp4,videos/104.mp4,Peťák a Renča,Choreo,,,101+,
-65,videos/105_360.mp4,videos/105.mp4,videos/106.mp4,Peťák a Renča,Choreo,,,,
-66,videos/107_360.mp4,videos/107.mp4,,Peťák a Renča,Figure,,,another version of 108,
-67,videos/108_360.mp4,videos/108.mp4,,Peťák a Renča,Figure,,,another version of 107,
-68,videos/109_360.mp4,videos/109.mp4,,Peťák a Renča,Choreo,Diagonal,,,
-69,videos/110_360.mp4,videos/110.mp4,,Peťák a Renča,Choreo,,,,
-70,videos/111_360.mp4,videos/111.mp4,videos/112.mp4,Peťák a Renča,Choreo,,,,
-71,videos/113_360.mp4,videos/113.mp4,,Peťák a Renča,Choreo,,,,
-72,videos/114_360.mp4,videos/114.mp4,videos/115.mp4,Peťák a Renča,Choreo,,,,
-73,videos/116_360.mp4,videos/116.mp4,,Peťák a Renča,Choreo,Diagonal,,"117,118",
-74,videos/117_360.mp4,videos/117.mp4,,Peťák a Renča,Choreo,Diagonal,,"116,118",
-75,videos/118_360.mp4,videos/118.mp4,,Peťák a Renča,Choreo,Diagonal,,"116,117",
-76,videos/119_360.mp4,videos/119.mp4,,Peťák a Renča,Choreo,"Diagonal, Lamfáza",,,
-77,videos/120_360.mp4,videos/120.mp4,videos/121.mp4,Peťák a Renča,Choreo,,,Tom a Kači,
-1001,videos/1001_360.mp4,videos/1001.mp4,,Peťa a Peťa,Choreo,,,,
-1002,videos/monotonia 01_480.mp4,videos/monotonia 01.mp4,,Peťa a Peťa,,,,,
-1003,videos/monotonia 02_480.mp4,videos/monotonia 02.mp4,,Peťa a Peťa,,,,,
-1004,videos/monotonia 03_480.mp4,videos/monotonia 03.mp4,,Peťa a Peťa,,,,,
-1005,videos/monotonia 04_480.mp4,videos/monotonia 04.mp4,,Peťa a Peťa,,,,,
-1006,videos/monotonia 05_480.mp4,videos/monotonia 05.mp4,,Peťa a Peťa,,,,,
-1007,videos/monotonia 06_480.mp4,videos/monotonia 06.mp4,,Peťa a Peťa,,,,,
-1008,videos/monotonia 07_480.mp4,videos/monotonia 07.mp4,,Peťa a Peťa,,,,,
-1009,videos/clavaito 01_480.mp4,videos/clavaito 01.mp4,,Peťa a Peťa,,,,,
-1010,videos/clavaito 02_480.mp4,videos/clavaito 02.mp4,,Peťa a Peťa,,,,,
-1011,videos/clavaito 03_480.mp4,videos/clavaito 03.mp4,,Peťa a Peťa,,,,,
+﻿VideoID,480p,1080p,Alt,Button,znám?,type,figures,,notes,source
+1,videos/1_360.mp4,videos/1.mp4,videos/2.mp4,Peťák a Renča,znám,Choreo,"Pinza, Cambré",,,nofeet
+2,videos/3_360.mp4,videos/3.mp4,videos/4.mp4,Peťák a Renča,znám,Choreo,"Rompo Delante, Culito, X",,,nofeet
+3,videos/5_360.mp4,videos/5.mp4,videos/6.mp4,Peťák a Renča,znám,Choreo,"Yo Yo, Wave, Headroll",,,nofeet
+4,videos/7_360.mp4,videos/7.mp4,videos/8.mp4,Peťák a Renča,znám,Choreo,,,,nofeet
+5,videos/9_360.mp4,videos/9.mp4,videos/10.mp4,Peťák a Renča,znám,Choreo,,,,nofeet
+6,videos/11_360.mp4,videos/11.mp4,,Peťák a Renča,znám,Choreo,,,,nofeet
+7,videos/12_360.mp4,videos/12.mp4,videos/13.mp4,Peťák a Renča,znám,Choreo,,,Tom a Kači,nofeet
+8,videos/14_360.mp4,videos/14.mp4,videos/15.mp4,Peťák a Renča,znám,Choreo,,,,nofeet
+9,videos/16_360.mp4,videos/16.mp4,videos/17.mp4,Peťák a Renča,znám,Choreo,,,,nofeet
+10,videos/18_360.mp4,videos/18.mp4,videos/19.mp4,Peťák a Renča,znám,Choreo,,,,nofeet
+11,videos/20_360.mp4,videos/20.mp4,videos/21.mp4,Peťák a Renča,znám,Choreo,,,,nofeet
+12,videos/22_360.mp4,videos/22.mp4,videos/23.mp4,Peťák a Renča,znám,Choreo,,,,nofeet
+13,videos/24_360.mp4,videos/24.mp4,videos/25.mp4,Peťák a Renča,znám,Choreo,,,,nofeet
+14,videos/26_360.mp4,videos/26.mp4,,Peťák a Renča,znám,Figure,Diagonal,,,nofeet
+15,videos/27_360.mp4,videos/27.mp4,videos/28.mp4,Peťák a Renča,znám,Choreo,,,,nofeet
+16,videos/29_360.mp4,videos/29.mp4,,Peťák a Renča,znám,Choreo,,,,nofeet
+17,videos/30_360.mp4,videos/30.mp4,,Peťák a Renča,znám,Figure,"Shadow Position,",,,nofeet
+18,videos/31_360.mp4,videos/31.mp4,videos/32.mp4,Peťák a Renča,znám,Choreo,,,,nofeet
+19,videos/33_360.mp4,videos/33.mp4,videos/34.mp4,Peťák a Renča,znám,Choreo,Drop,,,nofeet
+20,videos/35_360.mp4,videos/35.mp4,,Peťák a Renča,znám,Choreo,,,,nofeet
+21,videos/36_360.mp4,videos/36.mp4,,Peťák a Renča,znám,Choreo,,,another version of 35,nofeet
+22,videos/37_360.mp4,videos/37.mp4,videos/38.mp4,Peťák a Renča,znám,Choreo,,,,nofeet
+23,videos/39_360.mp4,videos/39.mp4,,Peťák a Renča,znám,Choreo,,,,nofeet
+24,videos/40_360.mp4,videos/40.mp4,videos/41.mp4,Peťák a Renča,znám,Choreo,,,,nofeet
+25,videos/42_360.mp4,videos/42.mp4,videos/43.mp4,Peťák a Renča,znám,Choreo,,,,nofeet
+26,videos/44_360.mp4,videos/44.mp4,videos/45.mp4,Peťák a Renča,znám,Choreo,,,,
+27,videos/46_360.mp4,videos/46.mp4,videos/47.mp4,Peťák a Renča,znám,Choreo,,,Tom a Kači,
+28,videos/48_360.mp4,videos/48.mp4,videos/49.mp4,Peťák a Renča,znám,Choreo,,,Tom a Kači,
+29,videos/50_360.mp4,videos/50.mp4,videos/51.mp4,Peťák a Renča,znám,Choreo,,,Tom a Kači,
+30,videos/52_360.mp4,videos/52.mp4,videos/53.mp4,Peťák a Renča,znám,Choreo,Rompo Delante,,,
+31,videos/54_360.mp4,videos/54.mp4,videos/55.mp4,Peťák a Renča,znám,Choreo,,,,
+32,videos/56_360.mp4,videos/56.mp4,,Peťák a Renča,znám,Choreo,Rompo Delante,,"52,53,54,55",
+33,videos/57_360.mp4,videos/57.mp4,videos/58.mp4,Peťák a Renča,znám,Choreo,Lamfáza,,,
+34,videos/59_360.mp4,videos/59.mp4,,Peťák a Renča,znám,Choreo,,,"60,61",
+35,videos/60_360.mp4,videos/60.mp4,,Peťák a Renča,znám,Choreo,,,"59,61",
+36,videos/61_360.mp4,videos/61.mp4,,Peťák a Renča,potřebuju zlepšit,Choreo,,,"59,60",
+37,videos/62_360.mp4,videos/62.mp4,videos/63.mp4,Peťák a Renča,potřebuju zlepšit,Choreo,,,,
+38,videos/64_360.mp4,videos/64.mp4,,Peťák a Renča,potřebuju zlepšit,Choreo,"Culito, Turn",,,
+39,videos/65_360.mp4,videos/65.mp4,,Peťák a Renča,potřebuju zlepšit,Choreo,"Footwork, Turn",,,
+40,videos/66_360.mp4,videos/66.mp4,videos/67.mp4,Peťák a Renča,potřebuju zlepšit,Choreo,"Rompo Delante, Titanic",,,
+41,videos/68_360.mp4,videos/68.mp4,videos/69.mp4,Peťák a Renča,potřebuju zlepšit,Choreo,SP,,,
+42,videos/70_360.mp4,videos/70.mp4,videos/71.mp4,Peťák a Renča,potřebuju zlepšit,Choreo,,,,
+43,videos/72_360.mp4,videos/72.mp4,videos/73.mp4,Peťák a Renča,potřebuju zlepšit,Choreo,,,,
+44,videos/74_360.mp4,videos/74.mp4,videos/75.mp4,Peťák a Renča,potřebuju zlepšit,Choreo,,,,
+45,videos/76_360.mp4,videos/76.mp4,,Peťák a Renča,potřebuju zlepšit,Choreo,"Rompo Delante, ",,,
+46,videos/77_360.mp4,videos/77.mp4,,Peťák a Renča,potřebuju zlepšit,Choreo,,,,
+47,videos/78_360.mp4,videos/78.mp4,,Peťák a Renča,potřebuju zlepšit,Choreo,,,,
+48,videos/79_360.mp4,videos/79.mp4,videos/80.mp4,Peťák a Renča,potřebuju zlepšit,Choreo,,,,
+49,videos/81_360.mp4,videos/81.mp4,videos/82.mp4,Peťák a Renča,potřebuju zlepšit,Choreo,"Yo Yo, Headroll",,,
+50,videos/83_360.mp4,videos/83.mp4,videos/84.mp4,Peťák a Renča,potřebuju zlepšit,Choreo,"Yo Yo,",,,
+51,videos/85_360.mp4,videos/85.mp4,videos/86.mp4,Peťák a Renča,potřebuju zlepšit,Choreo,,,,
+52,videos/87_360.mp4,videos/87.mp4,videos/88.mp4,Peťák a Renča,potřebuju zlepšit,Choreo,Diagonal,,,
+53,videos/89_360.mp4,videos/89.mp4,videos/90.mp4,Peťák a Renča,potřebuju zlepšit,Choreo,,,,
+54,videos/91_360.mp4,videos/91.mp4,,Peťák a Renča,potřebuju zlepšit,Choreo,,,fast 92,
+55,videos/92_360.mp4,videos/92.mp4,,Peťák a Renča,potřebuju zlepšit,Choreo,,,slow 91,
+56,videos/93_360.mp4,videos/93.mp4,,Peťák a Renča,potřebuju zlepšit,Choreo,,,another version of 94,
+57,videos/94_360.mp4,videos/94.mp4,,Peťák a Renča,neznám,Choreo,,,another version of 93,
+58,videos/95_360.mp4,videos/95.mp4,,Peťák a Renča,neznám,Choreo,,,,
+59,videos/97_360.mp4,videos/97.mp4,videos/96.mp4,Peťák a Renča,neznám,Choreo,,,,
+60,videos/98_360.mp4,videos/98.mp4,,Peťák a Renča,neznám,Choreo,"Yo Yo, RSP",,,
+61,videos/99_360.mp4,videos/99.mp4,,Peťák a Renča,neznám,Choreo,,,,
+62,videos/100_360.mp4,videos/100.mp4,,Peťák a Renča,neznám,Choreo,,,,
+63,videos/101_360.mp4,videos/101.mp4,videos/102.mp4,Peťák a Renča,neznám,Choreo,,,,
+64,videos/103_360.mp4,videos/103.mp4,videos/104.mp4,Peťák a Renča,neznám,Choreo,,,101+,
+65,videos/105_360.mp4,videos/105.mp4,videos/106.mp4,Peťák a Renča,neznám,Choreo,,,,
+66,videos/107_360.mp4,videos/107.mp4,,Peťák a Renča,neznám,Figure,,,another version of 108,
+67,videos/108_360.mp4,videos/108.mp4,,Peťák a Renča,neznám,Figure,,,another version of 107,
+68,videos/109_360.mp4,videos/109.mp4,,Peťák a Renča,neznám,Choreo,Diagonal,,,
+69,videos/110_360.mp4,videos/110.mp4,,Peťák a Renča,neznám,Choreo,,,,
+70,videos/111_360.mp4,videos/111.mp4,videos/112.mp4,Peťák a Renča,neznám,Choreo,,,,
+71,videos/113_360.mp4,videos/113.mp4,,Peťák a Renča,neznám,Choreo,,,,
+72,videos/114_360.mp4,videos/114.mp4,videos/115.mp4,Peťák a Renča,neznám,Choreo,,,,
+73,videos/116_360.mp4,videos/116.mp4,,Peťák a Renča,neznám,Choreo,Diagonal,,"117,118",
+74,videos/117_360.mp4,videos/117.mp4,,Peťák a Renča,neznám,Choreo,Diagonal,,"116,118",
+75,videos/118_360.mp4,videos/118.mp4,,Peťák a Renča,neznám,Choreo,Diagonal,,"116,117",
+76,videos/119_360.mp4,videos/119.mp4,,Peťák a Renča,neznám,Choreo,"Diagonal, Lamfáza",,,
+77,videos/120_360.mp4,videos/120.mp4,videos/121.mp4,Peťák a Renča,neznám,Choreo,,,Tom a Kači,
+1001,videos/1001_360.mp4,videos/1001.mp4,,Peťa a Peťa,,Choreo,,,,
+1002,videos/monotonia 01_480.mp4,videos/monotonia 01.mp4,,Peťa a Peťa,,,,,,
+1003,videos/monotonia 02_480.mp4,videos/monotonia 02.mp4,,Peťa a Peťa,,,,,,
+1004,videos/monotonia 03_480.mp4,videos/monotonia 03.mp4,,Peťa a Peťa,,,,,,
+1005,videos/monotonia 04_480.mp4,videos/monotonia 04.mp4,,Peťa a Peťa,,,,,,
+1006,videos/monotonia 05_480.mp4,videos/monotonia 05.mp4,,Peťa a Peťa,,,,,,
+1007,videos/monotonia 06_480.mp4,videos/monotonia 06.mp4,,Peťa a Peťa,,,,,,
+1008,videos/monotonia 07_480.mp4,videos/monotonia 07.mp4,,Peťa a Peťa,,,,,,
+1009,videos/clavaito 01_480.mp4,videos/clavaito 01.mp4,,Peťa a Peťa,,,,,,
+1010,videos/clavaito 02_480.mp4,videos/clavaito 02.mp4,,Peťa a Peťa,,,,,,
+1011,videos/clavaito 03_480.mp4,videos/clavaito 03.mp4,,Peťa a Peťa,,,,,,
