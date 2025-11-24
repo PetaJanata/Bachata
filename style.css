@@ -60,7 +60,7 @@ html { scroll-behavior: smooth; }
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 20px;
-  padding: 2rem;
+  padding: 3rem;
 }
 
 .video-card video {
