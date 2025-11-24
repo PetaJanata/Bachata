@@ -36,7 +36,7 @@ html { scroll-behavior: smooth; }
  /* border-radius: 10px; */
   z-index: 10;       /* above the hero image */
   justify-content: center;
-  margin-top: -100px; 
+  margin-top: -70px; 
 }
 
 .filter-btn {
@@ -60,7 +60,7 @@ html { scroll-behavior: smooth; }
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 20px;
-  padding: 3rem;
+  padding: 2rem;
 }
 
 .video-card video {
