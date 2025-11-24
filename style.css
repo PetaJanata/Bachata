@@ -31,9 +31,9 @@ html { scroll-behavior: smooth; }
   top: 0;
   display: flex;
   gap: 10px;
-  padding: 10px;
+ /* padding: 10px; */
   background: rgba(0,0,0,0.6);
-  border-radius: 10px;
+ /* border-radius: 10px; */
   z-index: 10;       /* above the hero image */
   justify-content: center;
   margin-top: -100px; 
