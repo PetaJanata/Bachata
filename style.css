@@ -102,7 +102,7 @@ html { scroll-behavior: smooth; }
 }
 
 /*speed label*/
-.speed-icon {
+.speed-label {
   position: absolute;
   top: 6px;
   left: 6px;
@@ -122,10 +122,6 @@ html { scroll-behavior: smooth; }
   transition: all 0.2s ease;
 }
 
-.video-card:hover .speed-icon,
-.video-card:hover .fullscreen-icon {
-  display: block;
-}
 
 /* FULLSCREEN OVERLAY */
 .video-overlay {
