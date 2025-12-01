@@ -420,9 +420,13 @@ let hideTimeout = null;
 
 // Check if scroll is on a video OR on the speed icon
 function isScrollOnVideo(e) {
-  // closest() will traverse up the DOM tree to find matching ancestor
-  return e.target.closest("video") || e.target.closest(".speed-icon");
+  const el = e.target;
+  // Only check if el is an Element
+  if (!(el instanceof Element)) return false;
+
+  return el.closest("video") || el.closest(".speed-icon");
 }
+
 
 function showHeroBar() {
   heroBar.classList.remove("hidden-hero");
