@@ -162,7 +162,7 @@ html { scroll-behavior: smooth; }
 
 
 /*fullscreen icon setting*/
-.fullscreen-icon:hover {
+.fullscreen-icon {
   background: rgba(0,0,0,0.7);
   transform: scale(1.1);
   transition: all 0.2s ease;
