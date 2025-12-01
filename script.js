@@ -132,15 +132,34 @@ function loadGallery(videoList) {
       video.classList.add("know-red");
     }
 
- // --- ADD SPEED LABEL ---
-    const speedLabel = document.createElement("div");
-    speedLabel.className = "speed-label";
-    speedLabel.style.display = "none";
-    speedLabel.textContent = "1×";
-    card.appendChild(speedLabel);
+// --- PLAYBACK SPEED ICON ---
+const speedIcon = document.createElement("div");
+speedIcon.classList.add("speed-icon");
+speedIcon.textContent = "1×"; // initial display
+speedIcon.style.position = "absolute";
+speedIcon.style.top = "6px";
+speedIcon.style.left = "6px";
+speedIcon.style.fontSize = "0.9rem";
+speedIcon.style.color = "white";
+speedIcon.style.background = "rgba(0,0,0,0.5)";
+speedIcon.style.padding = "2px 6px";
+speedIcon.style.borderRadius = "4px";
+speedIcon.style.cursor = "default";
+speedIcon.style.display = "none";
+speedIcon.style.zIndex = 10;
+card.appendChild(speedIcon);
 
-    // --- ADD SCROLL SPEED CONTROL ---
-    attachSpeedScroll(video, speedLabel);   
+// Show speed icon only on hover over video card
+card.addEventListener("mouseenter", () => {
+  speedIcon.style.display = "block";
+});
+card.addEventListener("mouseleave", () => {
+  speedIcon.style.display = "none";
+});
+
+// Attach scroll-to-adjust only on the speed icon
+attachSpeedScroll(video, speedIcon, true);
+  
 
         // --- HD click removed ---
     video.style.cursor = "default"; // <- video itself is no longer clickable
@@ -347,34 +366,43 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 /* adjust video speed based on mouse hover and wheel scrolling */
-function attachSpeedScroll(video, label) {
+function attachSpeedScroll(video, label, iconOnly = false) {
   const speeds = [0.5, 0.75, 1, 1.25, 1.5];
   let index = speeds.indexOf(1);
 
   const showLabel = () => {
     if (speeds[index] === 1) {
-      label.style.display = "none";
+      label.style.display = iconOnly ? "block" : "none"; // icon always visible on hover
+      label.textContent = "1×";
     } else {
       label.textContent = speeds[index] + "×";
       label.style.display = "block";
     }
   };
 
-  video.addEventListener("wheel", e => {
+  const wheelHandler = e => {
     e.preventDefault();
-
     if (e.deltaY < 0) index = Math.min(index + 1, speeds.length - 1);
     else index = Math.max(index - 1, 0);
 
     video.playbackRate = speeds[index];
     showLabel();
-  });
+  };
 
-  // Reset label when mouse leaves
-  video.addEventListener("mouseleave", () => {
-    if (speeds[index] === 1) label.style.display = "none";
-  });
+  if (iconOnly) {
+    label.addEventListener("wheel", wheelHandler);
+  } else {
+    video.addEventListener("wheel", wheelHandler);
+  }
+
+  // Optional: reset label when mouse leaves video (for normal video scroll)
+  if (!iconOnly) {
+    video.addEventListener("mouseleave", () => {
+      if (speeds[index] === 1) label.style.display = "none";
+    });
+  }
 }
+
 
 // ================================
 // HERO BUTTON AUTO-HIDE (only after leaving hero)
