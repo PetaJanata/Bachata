@@ -115,35 +115,40 @@ function loadGallery(videoList) {
 
     const card = document.createElement("div");
     card.classList.add("video-card");
+    card.style.position = "relative"; // needed for speed label
 
- 
-    
     const video = document.createElement("video");
     video.dataset.src = v.src480;
     video.muted = true;
     video.loop = true;
     video.playsInline = true;
 
-       // Apply border by knowledge level
-if (v.znam === "znám") {
-  video.classList.add("know-green");
-} else if (v.znam === "potřebuju zlepšit") {
-  video.classList.add("know-yellow");
-} else if (v.znam === "neznám") {
-  video.classList.add("know-red");
-}
+    // Knowledge border
+    if (v.znam === "znám") video.classList.add("know-green");
+    else if (v.znam === "potřebuju zlepšit") video.classList.add("know-yellow");
+    else if (v.znam === "neznám") video.classList.add("know-red");
 
+    // --- ADD SPEED LABEL ---
+    const speedLabel = document.createElement("div");
+    speedLabel.className = "speed-label";
+    speedLabel.style.display = "none";
+    speedLabel.textContent = "1×";
+    card.appendChild(speedLabel);
+
+    // --- ADD SCROLL SPEED CONTROL ---
+    attachSpeedScroll(video, speedLabel);
+
+    // HD overlay click
     if (v.hd) {
       video.style.cursor = "pointer";
       video.addEventListener("click", () => openOverlay(v));
-    } else {
-      video.style.cursor = "default";
     }
 
     card.appendChild(video);
     gallery.appendChild(card);
   });
 }
+
 
 // ================================
 // OPEN OVERLAY
@@ -306,4 +311,33 @@ window.addEventListener("DOMContentLoaded", () => {
     })
     .catch(err => console.error("Error loading CSV:", err));
 });
+
+function attachSpeedScroll(video, label) {
+  const speeds = [0.5, 0.75, 1, 1.25, 1.5];
+  let index = speeds.indexOf(1);
+
+  const showLabel = () => {
+    if (speeds[index] === 1) {
+      label.style.display = "none";
+    } else {
+      label.textContent = speeds[index] + "×";
+      label.style.display = "block";
+    }
+  };
+
+  video.addEventListener("wheel", e => {
+    e.preventDefault();
+
+    if (e.deltaY < 0) index = Math.min(index + 1, speeds.length - 1);
+    else index = Math.max(index - 1, 0);
+
+    video.playbackRate = speeds[index];
+    showLabel();
+  });
+
+  // Reset label when mouse leaves
+  video.addEventListener("mouseleave", () => {
+    if (speeds[index] === 1) label.style.display = "none";
+  });
+}
 
