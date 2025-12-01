@@ -418,8 +418,10 @@ function isHeroOutOfView() {
 const heroBar = document.querySelector(".hero-buttons");
 let hideTimeout = null;
 
+// Check if scroll is on a video OR on the speed icon
 function isScrollOnVideo(e) {
-  return e.target instanceof HTMLVideoElement;
+  // closest() will traverse up the DOM tree to find matching ancestor
+  return e.target.closest("video") || e.target.closest(".speed-icon");
 }
 
 function showHeroBar() {
@@ -451,6 +453,7 @@ function onPageScroll(e) {
   }, 2000);
 }
 
+// Listen to scroll and wheel events
 window.addEventListener("wheel", onPageScroll, { passive: true });
 window.addEventListener("scroll", onPageScroll, { passive: true });
 
