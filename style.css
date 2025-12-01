@@ -118,7 +118,7 @@ html { scroll-behavior: smooth; }
 /* Circle under fullscreen icon */
 .revision-circle {
   position: absolute;
-  bottom: 6px;
+  top: 32px;
   right: 6px; /* slightly left from fullscreen icon if needed */
   width: 12px;
   height: 12px;
@@ -166,6 +166,17 @@ html { scroll-behavior: smooth; }
   background: rgba(0,0,0,0.7);
   transform: scale(1.1);
   transition: all 0.2s ease;
+  position: absolute;
+  top: 6px;       /* top-right corner */
+  right: 6px;
+  font-size: 1.5rem; /* adjust as needed */
+  color: white;
+  background: rgba(0,0,0,0.5);
+  padding: 4px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  z-index: 15;    /* above video */
+  display: none;  /* show on hover */
 }
 
 
