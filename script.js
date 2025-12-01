@@ -312,6 +312,7 @@ window.addEventListener("DOMContentLoaded", () => {
     .catch(err => console.error("Error loading CSV:", err));
 });
 
+/* adjust video speed based on mouse hover and wheel scrolling */
 function attachSpeedScroll(video, label) {
   const speeds = [0.5, 0.75, 1, 1.25, 1.5];
   let index = speeds.indexOf(1);
@@ -340,4 +341,39 @@ function attachSpeedScroll(video, label) {
     if (speeds[index] === 1) label.style.display = "none";
   });
 }
+
+// ================================
+// HERO BUTTON AUTO-HIDE ON PAGE SCROLL
+// ================================
+const heroBar = document.querySelector(".hero-buttons");
+let hideTimeout = null;
+
+// Check if event is on a video (speed scroll) instead of page scroll
+function isScrollOnVideo(e) {
+  return e.target.tagName.toLowerCase() === "video";
+}
+
+// Show hero bar
+function showHeroBar() {
+  heroBar.classList.remove("hidden-hero");
+}
+
+// Hide hero bar
+function hideHeroBar() {
+  heroBar.classList.add("hidden-hero");
+}
+
+// Triggered when user scrolls the *page*
+function onPageScroll(e) {
+  if (isScrollOnVideo(e)) return; // ignore video speed-scroll
+
+  showHeroBar();
+
+  if (hideTimeout) clearTimeout(hideTimeout);
+  hideTimeout = setTimeout(() => hideHeroBar(), 2000);
+}
+
+window.addEventListener("wheel", onPageScroll, { passive: true });
+window.addEventListener("scroll", onPageScroll, { passive: true });
+
 
