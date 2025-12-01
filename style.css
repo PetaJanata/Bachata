@@ -102,7 +102,7 @@ html { scroll-behavior: smooth; }
 }
 
 /*speed label*/
-.speed-label {
+.speed-icon {
   position: absolute;
   top: 6px;
   left: 6px;
@@ -144,12 +144,6 @@ html { scroll-behavior: smooth; }
   color: white;
   z-index: 1000;
   display: none; /* initially hidden */
-}
-
-.revision-bar span {
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-weight: 600;
 }
 
 .revision-bar .green { background: #2ecc71; }
