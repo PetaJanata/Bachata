@@ -250,6 +250,67 @@ function attachSpeedScroll(video, label, iconOnly = false) {
 }
 
 // ================================
+// HERO BUTTON AUTO-HIDE (only after leaving hero)
+// ================================
+/* hero out of view check*/
+function isHeroOutOfView() {
+  const hero = document.querySelector(".hero");
+  const rect = hero.getBoundingClientRect();
+  return rect.bottom <= 0; 
+}
+/*auto hide*/
+
+const heroBar = document.querySelector(".hero-buttons");
+let hideTimeout = null;
+
+// Check if scroll is on a video OR on the speed icon
+function isScrollOnVideo(e) {
+  const el = e.target;
+  // Only check if el is an Element
+  if (!(el instanceof Element)) return false;
+
+  return el.closest("video") || el.closest(".speed-icon");
+}
+
+
+function showHeroBar() {
+  heroBar.classList.remove("hidden-hero");
+}
+
+function hideHeroBar() {
+  heroBar.classList.add("hidden-hero");
+}
+
+function onPageScroll(e) {
+  // Ignore scroll used for video speed control
+  if (isScrollOnVideo(e)) return;
+
+  // Always show hero bar as long as hero is visible
+  if (!isHeroOutOfView()) {
+    showHeroBar();
+    if (hideTimeout) clearTimeout(hideTimeout);
+    return;
+  }
+
+  // When hero is OUT of view → enable auto-hide
+  showHeroBar();
+
+  if (hideTimeout) clearTimeout(hideTimeout);
+
+  hideTimeout = setTimeout(() => {
+    hideHeroBar();
+  }, 2000);
+}
+
+// Listen to scroll and wheel events
+window.addEventListener("wheel", onPageScroll, { passive: true });
+window.addEventListener("scroll", onPageScroll, { passive: true });
+
+
+
+
+
+// ================================
 // DOM LOADED — INIT
 // ================================
 window.addEventListener("DOMContentLoaded", () => {
