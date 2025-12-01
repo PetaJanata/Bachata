@@ -94,6 +94,21 @@ html { scroll-behavior: smooth; }
   border-radius: 10px;
 }
 
+/*speed label*/
+.speed-label {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  padding: 3px 6px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+
 /* FULLSCREEN OVERLAY */
 .video-overlay {
   position: fixed;
