@@ -166,6 +166,107 @@ attachSpeedScroll(video, speedIcon, true);
 
     card.appendChild(video);
 
+// Store revision state
+const revisionState = {
+  hiddenVideos: new Set(), // tracks hidden video elements
+  counts: { green: 0, yellow: 0, red: 0 }
+};
+
+// Create the bottom revision bar
+const revisionBar = document.createElement("div");
+revisionBar.classList.add("revision-bar");
+revisionBar.innerHTML = `
+  <span class="green">0/0</span>
+  <span class="yellow">0/0</span>
+  <span class="red">0/0</span>
+`;
+document.body.appendChild(revisionBar);
+
+const [greenSpan, yellowSpan, redSpan] = revisionBar.querySelectorAll("span");
+
+// Function to update counts
+function updateRevisionBar() {
+  const total = {
+    green: document.querySelectorAll(".know-green").length,
+    yellow: document.querySelectorAll(".know-yellow").length,
+    red: document.querySelectorAll(".know-red").length
+  };
+
+  greenSpan.textContent = `${revisionState.counts.green}/${total.green}`;
+  yellowSpan.textContent = `${revisionState.counts.yellow}/${total.yellow}`;
+  redSpan.textContent = `${revisionState.counts.red}/${total.red}`;
+}
+
+// Function to create revision circle under a video
+function createRevisionCircle(videoCard, colorClass) {
+  const circle = document.createElement("div");
+  circle.classList.add("revision-circle");
+  if (colorClass === "know-green") circle.style.background = "#2ecc71";
+  if (colorClass === "know-yellow") circle.style.background = "#f1c40f";
+  if (colorClass === "know-red") circle.style.background = "#e74c3c";
+
+  videoCard.appendChild(circle);
+
+  let hiddenOverlay = null;
+
+  circle.addEventListener("click", (e) => {
+    e.stopPropagation();
+
+    // Show bottom revision bar
+    revisionBar.style.display = "flex";
+
+    // If video already hidden, unhide it
+    if (revisionState.hiddenVideos.has(videoCard)) {
+      if (hiddenOverlay) hiddenOverlay.remove();
+      revisionState.hiddenVideos.delete(videoCard);
+      revisionState.counts[colorClassToName(colorClass)]--;
+    } else {
+      // Hide video with white overlay
+      hiddenOverlay = document.createElement("div");
+      hiddenOverlay.classList.add("video-hidden-overlay");
+      videoCard.appendChild(hiddenOverlay);
+      revisionState.hiddenVideos.add(videoCard);
+      revisionState.counts[colorClassToName(colorClass)]++;
+    }
+
+    updateRevisionBar();
+
+    // Clicking white overlay unhides the video
+    if (hiddenOverlay) {
+      hiddenOverlay.addEventListener("click", (ev) => {
+        hiddenOverlay.remove();
+        revisionState.hiddenVideos.delete(videoCard);
+        revisionState.counts[colorClassToName(colorClass)]--;
+        updateRevisionBar();
+      });
+    }
+  });
+}
+
+// Helper to convert class to color name
+function colorClassToName(colorClass) {
+  if (colorClass === "know-green") return "green";
+  if (colorClass === "know-yellow") return "yellow";
+  if (colorClass === "know-red") return "red";
+  return null;
+}
+
+// Attach circles to existing videos after gallery loads
+function attachRevisionCircles() {
+  document.querySelectorAll(".video-card").forEach(card => {
+    if (card.querySelector(".know-green")) createRevisionCircle(card, "know-green");
+    else if (card.querySelector(".know-yellow")) createRevisionCircle(card, "know-yellow");
+    else if (card.querySelector(".know-red")) createRevisionCircle(card, "know-red");
+  });
+}
+
+// Call this after loadGallery() or whenever gallery updates
+window.addEventListener("DOMContentLoaded", () => {
+  attachRevisionCircles();
+});
+
+
+    
     // --- FULLSCREEN ICON ---
     if (v.hd) {
       const fullscreenIcon = document.createElement("div");
