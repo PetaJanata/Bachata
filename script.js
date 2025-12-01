@@ -115,7 +115,7 @@ function loadGallery(videoList) {
 
     const card = document.createElement("div");
     card.classList.add("video-card");
-    card.style.position = "relative"; // needed for speed label
+    card.style.position = "relative"; // ← Needed for fullscreen icon positioning
 
     const video = document.createElement("video");
     video.dataset.src = v.src480;
@@ -123,12 +123,16 @@ function loadGallery(videoList) {
     video.loop = true;
     video.playsInline = true;
 
-    // Knowledge border
-    if (v.znam === "znám") video.classList.add("know-green");
-    else if (v.znam === "potřebuju zlepšit") video.classList.add("know-yellow");
-    else if (v.znam === "neznám") video.classList.add("know-red");
+    // Apply border by knowledge level
+    if (v.znam === "znám") {
+      video.classList.add("know-green");
+    } else if (v.znam === "potřebuju zlepšit") {
+      video.classList.add("know-yellow");
+    } else if (v.znam === "neznám") {
+      video.classList.add("know-red");
+    }
 
-    // --- ADD SPEED LABEL ---
+ // --- ADD SPEED LABEL ---
     const speedLabel = document.createElement("div");
     speedLabel.className = "speed-label";
     speedLabel.style.display = "none";
@@ -136,18 +140,48 @@ function loadGallery(videoList) {
     card.appendChild(speedLabel);
 
     // --- ADD SCROLL SPEED CONTROL ---
-    attachSpeedScroll(video, speedLabel);
+    attachSpeedScroll(video, speedLabel);   
 
-    // HD overlay click
-    if (v.hd) {
-      video.style.cursor = "pointer";
-      video.addEventListener("click", () => openOverlay(v));
-    }
+        // --- HD click removed ---
+    video.style.cursor = "default"; // <- video itself is no longer clickable
 
     card.appendChild(video);
+
+    // --- FULLSCREEN ICON ---
+    if (v.hd) {
+      const fullscreenIcon = document.createElement("div");
+      fullscreenIcon.classList.add("fullscreen-icon");
+      fullscreenIcon.innerHTML = "⤢"; // can replace with SVG
+      fullscreenIcon.style.position = "absolute";
+      fullscreenIcon.style.top = "6px";
+      fullscreenIcon.style.right = "6px";
+      fullscreenIcon.style.fontSize = "1.5rem";
+      fullscreenIcon.style.color = "white";
+      fullscreenIcon.style.background = "rgba(0,0,0,0.5)";
+      fullscreenIcon.style.padding = "4px 6px";
+      fullscreenIcon.style.borderRadius = "4px";
+      fullscreenIcon.style.cursor = "pointer";
+      fullscreenIcon.style.display = "none";
+      fullscreenIcon.style.zIndex = 10;
+
+      card.appendChild(fullscreenIcon);
+
+      // Show icon on hover
+      card.addEventListener("mouseenter", () => {
+        fullscreenIcon.style.display = "block";
+      });
+      card.addEventListener("mouseleave", () => {
+        fullscreenIcon.style.display = "none";
+      });
+
+      // Open HD overlay when icon clicked
+      fullscreenIcon.addEventListener("click", () => openOverlay(v));
+    }
+
     gallery.appendChild(card);
   });
 }
+
 
 
 // ================================
