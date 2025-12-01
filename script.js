@@ -343,34 +343,50 @@ function attachSpeedScroll(video, label) {
 }
 
 // ================================
-// HERO BUTTON AUTO-HIDE ON PAGE SCROLL
+// HERO BUTTON AUTO-HIDE (only after leaving hero)
 // ================================
+/* hero out of view check*/
+function isHeroOutOfView() {
+  const hero = document.querySelector(".hero");
+  const rect = hero.getBoundingClientRect();
+  return rect.bottom <= 0; 
+}
+/*auto hide*/
+
 const heroBar = document.querySelector(".hero-buttons");
 let hideTimeout = null;
 
-// Check if event is on a video (speed scroll) instead of page scroll
 function isScrollOnVideo(e) {
   return e.target.tagName.toLowerCase() === "video";
 }
 
-// Show hero bar
 function showHeroBar() {
   heroBar.classList.remove("hidden-hero");
 }
 
-// Hide hero bar
 function hideHeroBar() {
   heroBar.classList.add("hidden-hero");
 }
 
-// Triggered when user scrolls the *page*
 function onPageScroll(e) {
-  if (isScrollOnVideo(e)) return; // ignore video speed-scroll
+  // Ignore scroll used for video speed control
+  if (isScrollOnVideo(e)) return;
 
+  // Always show hero bar as long as hero is visible
+  if (!isHeroOutOfView()) {
+    showHeroBar();
+    if (hideTimeout) clearTimeout(hideTimeout);
+    return;
+  }
+
+  // When hero is OUT of view → enable auto-hide
   showHeroBar();
 
   if (hideTimeout) clearTimeout(hideTimeout);
-  hideTimeout = setTimeout(() => hideHeroBar(), 2000);
+
+  hideTimeout = setTimeout(() => {
+    hideHeroBar();
+  }, 2000);
 }
 
 window.addEventListener("wheel", onPageScroll, { passive: true });
