@@ -122,6 +122,10 @@ html { scroll-behavior: smooth; }
   transition: all 0.2s ease;
 }
 
+.video-card:hover .speed-icon,
+.video-card:hover .fullscreen-icon {
+  display: block;
+}
 
 /* FULLSCREEN OVERLAY */
 .video-overlay {
