@@ -102,7 +102,7 @@ html { scroll-behavior: smooth; }
 }
 
 /*speed label*/
-.speed-icon {
+.speed-label {
   position: absolute;
   top: 6px;
   left: 6px;
@@ -115,68 +115,11 @@ html { scroll-behavior: smooth; }
   z-index: 5;
 }
 
-/* Circle under fullscreen icon */
-.revision-circle {
-  position: absolute;
-  top: 32px;
-  right: 6px; /* slightly left from fullscreen icon if needed */
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 1px solid white;
-  z-index: 15;
-}
-
-/* Bottom sticky revision bar */
-.revision-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background: rgba(0,0,0,0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
-  padding: 10px 0;
-  font-size: 1rem;
-  color: white;
-  z-index: 1000;
-  display: none; /* initially hidden */
-}
-
-.revision-bar .green { background: #2ecc71; }
-.revision-bar .yellow { background: #f1c40f; }
-.revision-bar .red { background: #e74c3c; }
-
-/* White overlay on hidden videos */
-.video-hidden-overlay {
-  position: absolute;
-  inset: 0;
-  background: #fff;
-  z-index: 12;
-  cursor: pointer;
-  border-radius: 8px;
-}
-
-
 /*fullscreen icon setting*/
-.fullscreen-icon {
+.fullscreen-icon:hover {
   background: rgba(0,0,0,0.7);
   transform: scale(1.1);
   transition: all 0.2s ease;
-  position: absolute;
-  top: 6px;       /* top-right corner */
-  right: 6px;
-  font-size: 1.5rem; /* adjust as needed */
-  color: white;
-  background: rgba(0,0,0,0.5);
-  padding: 4px 6px;
-  border-radius: 4px;
-  cursor: pointer;
-  z-index: 15;    /* above video */
-  display: none;  /* show on hover */
 }
 
 
