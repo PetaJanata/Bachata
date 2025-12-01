@@ -102,7 +102,7 @@ html { scroll-behavior: smooth; }
 }
 
 /*speed label*/
-.speed-label {
+.speed-icon {
   position: absolute;
   top: 6px;
   left: 6px;
