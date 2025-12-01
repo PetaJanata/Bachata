@@ -357,7 +357,7 @@ const heroBar = document.querySelector(".hero-buttons");
 let hideTimeout = null;
 
 function isScrollOnVideo(e) {
-  return e.target.tagName.toLowerCase() === "video";
+  return e.target instanceof HTMLVideoElement;
 }
 
 function showHeroBar() {
