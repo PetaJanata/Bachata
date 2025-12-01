@@ -115,6 +115,13 @@ html { scroll-behavior: smooth; }
   z-index: 5;
 }
 
+/*fullscreen icon setting*/
+.fullscreen-icon:hover {
+  background: rgba(0,0,0,0.7);
+  transform: scale(1.1);
+  transition: all 0.2s ease;
+}
+
 
 /* FULLSCREEN OVERLAY */
 .video-overlay {
