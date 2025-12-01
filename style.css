@@ -37,6 +37,13 @@ html { scroll-behavior: smooth; }
   z-index: 10;       /* above the hero image */
   justify-content: center;
   margin-top: -70px; 
+  transition: opacity 0.4s ease, transform 0.4s ease; /* to hide hero buttons seamlessly*/
+}
+
+.hero-buttons.hidden-hero {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-20px);
 }
 
 .filter-btn {
