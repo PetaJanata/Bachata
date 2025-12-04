@@ -33,6 +33,10 @@ html { scroll-behavior: smooth; }
   color: #000000; /* black headline */
   text-align: center;
   margin-bottom: 2rem;
+
+  /* Responsive font size: min 2rem, preferred 5vw, max 5rem */
+  font-size: clamp(2rem, 5vw, 5rem);
+  line-height: 1.2;
 }
 
 /* ================================ */
@@ -121,6 +125,9 @@ html { scroll-behavior: smooth; }
   justify-content: center;
   margin-top: -70px; 
   transition: opacity 0.4s ease, transform 0.4s ease; /* to hide hero buttons seamlessly*/
+
+  /* Responsive padding */
+  padding: clamp(5px, 1vw, 12px) clamp(10px, 2vw, 20px);
 }
 
 .hero-buttons.hidden-hero {
@@ -130,13 +137,16 @@ html { scroll-behavior: smooth; }
 }
 
 .filter-btn {
-  padding: 10px 16px;
+  padding: clamp(6px, 1vw, 12px) clamp(10px, 2vw, 20px);
   margin: 5px;
   border: none;
   border-radius: 8px;
   background: #ddd;
   cursor: pointer;
   transition: background 0.3s;
+
+  /* Responsive font size */
+  font-size: clamp(0.8rem, 1.2vw, 1.2rem);
 }
 
 .filter-btn.active {
