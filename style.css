@@ -102,7 +102,7 @@ html { scroll-behavior: smooth; }
 }
 
 /*speed label*/
-.speed-label {
+.speed-icon {
   position: absolute;
   top: 6px;
   left: 6px;
@@ -117,15 +117,14 @@ html { scroll-behavior: smooth; }
   display: none;
 }
 
-}
 /*speed label icon setting*/
-.speed-label:hover {
+.speed-icon:hover {
   background: rgba(0,0,0,0.7);
   transform: scale(1.1);
   transition: all 0.2s ease;
 }
 
- .fullscreenIcon{  
+ .fullscreen-icon{  
       innerHTML: "⤢"; /* can replace with SVG*/
       position: absolute;
       top: 6px;
