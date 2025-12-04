@@ -23,9 +23,18 @@ function applyFilter(filterValue) {
   activeFilter = filterValue;
 
   // Update button active styles
-  document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
-  if (filterValue === "Peťák a Renča") document.getElementById("btn-renča")?.classList.add("active");
-  else if (filterValue === "Peťa a Peťa") document.getElementById("btn-peta")?.classList.add("active");
+document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
+
+if (filterValue === null) {
+    document.getElementById("btn-all")?.classList.add("active");
+}
+else if (filterValue === "Peťák a Renča") {
+    document.getElementById("btn-renča")?.classList.add("active");
+}
+else if (filterValue === "Peťa a Peťa") {
+    document.getElementById("btn-peta")?.classList.add("active");
+}
+
 
   // Filter videos
   const filteredVideos = !filterValue ? [...videos] : videos.filter(v => v.button === filterValue);
@@ -330,6 +339,10 @@ window.addEventListener("DOMContentLoaded", () => {
       // Setup filter buttons
       const btnRenCa = document.getElementById("btn-renča");
       const btnPeta = document.getElementById("btn-peta");
+      const btnAll = document.getElementById("btn-all");
+      
+
+
 
       if (btnRenCa) btnRenCa.addEventListener("click", () => {
         applyFilter(activeFilter === "Peťák a Renča" ? null : "Peťák a Renča");
@@ -338,6 +351,11 @@ window.addEventListener("DOMContentLoaded", () => {
       if (btnPeta) btnPeta.addEventListener("click", () => {
         applyFilter(activeFilter === "Peťa a Peťa" ? null : "Peťa a Peťa");
       });
+
+      if (btnAll) btnAll.addEventListener("click", () => {
+        applyFilter(null);  // show all videos
+      });
+      
     })
     .catch(err => console.error("Error loading CSV:", err));
 });
