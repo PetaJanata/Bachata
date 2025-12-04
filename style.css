@@ -24,6 +24,8 @@ html { scroll-behavior: smooth; }
   flex-direction: column; /* vertical layout */
   justify-content: center; /* centers headline */
   align-items: center;
+  padding-top: 3rem; /* push headline down a little */
+  padding-bottom: 3rem; /* space between carousel and hero buttons */
 }
 
 /* Headline text */
@@ -44,7 +46,8 @@ html { scroll-behavior: smooth; }
   justify-content: center;
   align-items: center;
   overflow: visible;
-  margin-top: 20px;
+  margin-top: 0;
+  margin-bottom: 3rem; /* gap to hero buttons */
 }
 
 .hero-carousel img {
