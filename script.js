@@ -1,3 +1,90 @@
+// ================================
+// HERO CAROUSEL
+// ================================
+
+// Hard-coded images (replace with your actual image paths)
+let carouselImages = [
+  "images/photo1.jpg",
+  "images/photo2.jpg",
+  "images/photo3.jpg",
+  "images/photo4.jpg",
+  "images/photo5.jpg",
+  "images/photo6.jpg",
+  "images/photo7.jpg",
+  "images/photo8.jpg",
+  "images/photo9.jpg",
+  "images/photo10.jpg"
+];
+
+// Shuffle function for carousel
+function shuffleImages(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+// Shuffle images initially
+carouselImages = shuffleImages(carouselImages);
+
+// Create carousel container
+const heroSection = document.querySelector(".hero");
+const carouselContainer = document.createElement("div");
+carouselContainer.classList.add("hero-carousel");
+
+heroSection.insertBefore(carouselContainer, heroSection.querySelector(".hero-buttons"));
+
+// Carousel state
+let currentIndex = 0;
+const visibleCount = 5; // main + 2 layers on each side
+
+function getVisibleIndexes(centerIndex) {
+  const total = carouselImages.length;
+  let indexes = [];
+  for (let i = -2; i <= 2; i++) {
+    let idx = (centerIndex + i + total) % total;
+    indexes.push(idx);
+  }
+  return indexes;
+}
+
+function renderCarousel() {
+  carouselContainer.innerHTML = "";
+  const indexes = getVisibleIndexes(currentIndex);
+
+  indexes.forEach((imgIdx, position) => {
+    const img = document.createElement("img");
+    img.src = carouselImages[imgIdx];
+    img.classList.add("carousel-img");
+
+    // Set classes for position (main, first, second)
+    if (position === 2) img.classList.add("main-img");
+    else if (position === 1 || position === 3) img.classList.add("first-layer");
+    else img.classList.add("second-layer");
+
+    // Clickable side images
+    if (position === 1 || position === 3) {
+      img.addEventListener("click", () => {
+        currentIndex = position < 2
+          ? (currentIndex - 1 + carouselImages.length) % carouselImages.length
+          : (currentIndex + 1) % carouselImages.length;
+        renderCarousel();
+      });
+    }
+
+    carouselContainer.appendChild(img);
+  });
+}
+
+// Initial render
+renderCarousel();
+
+// Make carousel responsive on resize
+window.addEventListener("resize", renderCarousel);
+
+
+
 // ================================ 
 // GLOBAL VARIABLES
 // ================================
