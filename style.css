@@ -113,8 +113,32 @@ html { scroll-behavior: smooth; }
   border-radius: 4px;
   pointer-events: none;
   z-index: 5;
+  cursor: default;
+  display: none;
 }
 
+}
+/*speed label icon setting*/
+.speed-label:hover {
+  background: rgba(0,0,0,0.7);
+  transform: scale(1.1);
+  transition: all 0.2s ease;
+}
+
+ .fullscreenIcon{  
+      innerHTML: "⤢"; /* can replace with SVG*/
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      fontSize: 1.5rem;
+      color: white;
+      background:rgba(0,0,0,0.5);
+      padding: 4px 6px;
+      borderRadius: 4px;
+      cursor: pointer;
+      display: none;
+      zIndex: 10;
+}
 /*fullscreen icon setting*/
 .fullscreen-icon:hover {
   background: rgba(0,0,0,0.7);
