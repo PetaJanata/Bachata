@@ -17,12 +17,20 @@ html { scroll-behavior: smooth; }
 .hero {
   height: 100vh;
   width: 100%;
-  background: url('images/background.jpg') center center no-repeat;
-  background-size: cover;
+  /*background: url('images/background.jpg') center center no-repeat; 
+  background-size: cover;    */
+  background-color: #ffffff; 
   display: flex;
   flex-direction: column; /* vertical layout */
   justify-content: center; /* centers headline */
   align-items: center;
+}
+
+/* Headline text */
+.hero h1 {
+  color: #000000; /* black headline */
+  text-align: center;
+  margin-bottom: 2rem;
 }
 
 /* ================================ */
@@ -37,6 +45,14 @@ html { scroll-behavior: smooth; }
   align-items: center;
   overflow: visible;
   margin-top: 20px;
+}
+
+.hero-carousel img {
+  border-radius: 8px; /* small border radius */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* subtle shadow */
+  cursor: pointer;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  object-fit: cover;
 }
 
 .hero-carousel img.carousel-img {
@@ -89,11 +105,6 @@ html { scroll-behavior: smooth; }
 .hero-carousel img.first-layer:hover {
   transform: translate(-50%, -50%) scale(1.05);
 }
-
-
-
-
-
 
 .hero-buttons {
   position: sticky;
