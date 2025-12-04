@@ -135,7 +135,7 @@ function loadGallery(videoList) {
 // --- PLAYBACK SPEED ICON ---
 const speedIcon = document.createElement("div");
 speedIcon.classList.add("speed-icon");
-
+speedIcon.textContent = "1×";
 card.appendChild(speedIcon);
 
 // Show speed icon only on hover over video card
