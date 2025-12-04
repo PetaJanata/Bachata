@@ -42,12 +42,17 @@ function applyFilter(filterValue, shouldScroll = false) {
   lazyLoadVideos();
 
   // 🔥 Only scroll when user clicks a filter
-  if (shouldScroll) {
-    document.getElementById("video-gallery")?.scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
-  }
+ if (shouldScroll) {
+  const target = document.getElementById("video-gallery");
+  const heroButtons = document.querySelector(".hero-buttons");
+  
+  const extraOffset = heroButtons ? heroButtons.offsetHeight : 0;
+
+  const y = target.getBoundingClientRect().top + window.pageYOffset - extraOffset;
+
+  window.scrollTo({ top: y, behavior: "smooth" });
+}
+
 }
 
 // ================================
