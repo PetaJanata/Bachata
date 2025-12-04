@@ -159,6 +159,7 @@ attachSpeedScroll(video, speedIcon, true);
     if (v.hd) {
       const fullscreenIcon = document.createElement("div");
       fullscreenIcon.classList.add("fullscreen-icon");
+      fullscreenIcon.innerHTML = "⤢";
      card.appendChild(fullscreenIcon);
 
       // Show icon on hover
