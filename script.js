@@ -135,18 +135,7 @@ function loadGallery(videoList) {
 // --- PLAYBACK SPEED ICON ---
 const speedIcon = document.createElement("div");
 speedIcon.classList.add("speed-icon");
-speedIcon.textContent = "1×"; // initial display
-speedIcon.style.position = "absolute";
-speedIcon.style.top = "6px";
-speedIcon.style.left = "6px";
-speedIcon.style.fontSize = "0.9rem";
-speedIcon.style.color = "white";
-speedIcon.style.background = "rgba(0,0,0,0.5)";
-speedIcon.style.padding = "2px 6px";
-speedIcon.style.borderRadius = "4px";
-speedIcon.style.cursor = "default";
-speedIcon.style.display = "none";
-speedIcon.style.zIndex = 10;
+
 card.appendChild(speedIcon);
 
 // Show speed icon only on hover over video card
@@ -170,20 +159,7 @@ attachSpeedScroll(video, speedIcon, true);
     if (v.hd) {
       const fullscreenIcon = document.createElement("div");
       fullscreenIcon.classList.add("fullscreen-icon");
-      fullscreenIcon.innerHTML = "⤢"; // can replace with SVG
-      fullscreenIcon.style.position = "absolute";
-      fullscreenIcon.style.top = "6px";
-      fullscreenIcon.style.right = "6px";
-      fullscreenIcon.style.fontSize = "1.5rem";
-      fullscreenIcon.style.color = "white";
-      fullscreenIcon.style.background = "rgba(0,0,0,0.5)";
-      fullscreenIcon.style.padding = "4px 6px";
-      fullscreenIcon.style.borderRadius = "4px";
-      fullscreenIcon.style.cursor = "pointer";
-      fullscreenIcon.style.display = "none";
-      fullscreenIcon.style.zIndex = 10;
-
-      card.appendChild(fullscreenIcon);
+     card.appendChild(fullscreenIcon);
 
       // Show icon on hover
       card.addEventListener("mouseenter", () => {
