@@ -103,6 +103,7 @@ html { scroll-behavior: smooth; }
 
 /*speed label*/
 .speed-icon {
+  textContent: 1×; /* initial display value*/
   position: absolute;
   top: 6px;
   left: 6px;
@@ -125,7 +126,7 @@ html { scroll-behavior: smooth; }
 }
 
  .fullscreen-icon{  
-      innerHTML: "⤢"; /* can replace with SVG*/
+      innerHTML: ⤢; /* can replace with SVG*/
       position: absolute;
       top: 6px;
       right: 6px;
