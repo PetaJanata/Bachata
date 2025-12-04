@@ -44,12 +44,11 @@ else if (filterValue === "Peťa a Peťa") {
   lazyLoadVideos();
 
   // Scroll to gallery when filter applied
-  if (filterValue) {
-    document.getElementById("video-gallery")?.scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
-  }
+  document.getElementById("video-gallery")?.scrollIntoView({
+  behavior: "smooth",
+  block: "start"
+});
+
 }
 
 // ================================
