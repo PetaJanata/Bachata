@@ -1,4 +1,4 @@
-// ================================
+// ================================ 
 // GLOBAL VARIABLES
 // ================================
 let videos = []; // holds all video metadata from CSV
@@ -17,38 +17,37 @@ function shuffleArray(array) {
 }
 
 // ================================
-// FILTER FUNCTION
+// FILTER FUNCTION (NOW WITH shouldScroll)
 // ================================
-function applyFilter(filterValue) {
+function applyFilter(filterValue, shouldScroll = false) {
   activeFilter = filterValue;
 
   // Update button active styles
-document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
+  document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
 
-if (filterValue === null) {
+  if (filterValue === null) {
     document.getElementById("btn-all")?.classList.add("active");
-}
-else if (filterValue === "Peťák a Renča") {
+  }
+  else if (filterValue === "Peťák a Renča") {
     document.getElementById("btn-renča")?.classList.add("active");
-}
-else if (filterValue === "Peťa a Peťa") {
+  }
+  else if (filterValue === "Peťa a Peťa") {
     document.getElementById("btn-peta")?.classList.add("active");
-}
+  }
 
-
-  // Filter videos
   const filteredVideos = !filterValue ? [...videos] : videos.filter(v => v.button === filterValue);
   const shuffledVideos = shuffleArray(filteredVideos);
 
   loadGallery(shuffledVideos);
   lazyLoadVideos();
 
-  // Scroll to gallery when filter applied
-  document.getElementById("video-gallery")?.scrollIntoView({
-  behavior: "smooth",
-  block: "start"
-});
-
+  // 🔥 Only scroll when user clicks a filter
+  if (shouldScroll) {
+    document.getElementById("video-gallery")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }
 }
 
 // ================================
@@ -123,7 +122,7 @@ function loadGallery(videoList) {
 
     const card = document.createElement("div");
     card.classList.add("video-card");
-    card.style.position = "relative"; // ← Needed for fullscreen icon positioning
+    card.style.position = "relative";
 
     const video = document.createElement("video");
     video.dataset.src = v.src480;
@@ -131,7 +130,6 @@ function loadGallery(videoList) {
     video.loop = true;
     video.playsInline = true;
 
-    // Apply border by knowledge level
     if (v.znam === "znám") {
       video.classList.add("know-green");
     } else if (v.znam === "potřebuju zlepšit") {
@@ -140,37 +138,29 @@ function loadGallery(videoList) {
       video.classList.add("know-red");
     }
 
-// --- PLAYBACK SPEED ICON ---
-const speedIcon = document.createElement("div");
-speedIcon.classList.add("speed-icon");
-speedIcon.textContent = "1×";
-card.appendChild(speedIcon);
+    const speedIcon = document.createElement("div");
+    speedIcon.classList.add("speed-icon");
+    speedIcon.textContent = "1×";
+    card.appendChild(speedIcon);
 
-// Show speed icon only on hover over video card
-card.addEventListener("mouseenter", () => {
-  speedIcon.style.display = "block";
-});
-card.addEventListener("mouseleave", () => {
-  speedIcon.style.display = "none";
-});
+    card.addEventListener("mouseenter", () => {
+      speedIcon.style.display = "block";
+    });
+    card.addEventListener("mouseleave", () => {
+      speedIcon.style.display = "none";
+    });
 
-// Attach scroll-to-adjust only on the speed icon
-attachSpeedScroll(video, speedIcon, true);
-  
+    attachSpeedScroll(video, speedIcon, true);
 
-        // --- HD click removed ---
-    video.style.cursor = "default"; // <- video itself is no longer clickable
-
+    video.style.cursor = "default";
     card.appendChild(video);
 
-    // --- FULLSCREEN ICON ---
     if (v.hd) {
       const fullscreenIcon = document.createElement("div");
       fullscreenIcon.classList.add("fullscreen-icon");
       fullscreenIcon.innerHTML = "⤢";
-     card.appendChild(fullscreenIcon);
+      card.appendChild(fullscreenIcon);
 
-      // Show icon on hover
       card.addEventListener("mouseenter", () => {
         fullscreenIcon.style.display = "block";
       });
@@ -178,15 +168,12 @@ attachSpeedScroll(video, speedIcon, true);
         fullscreenIcon.style.display = "none";
       });
 
-      // Open HD overlay when icon clicked
       fullscreenIcon.addEventListener("click", () => openOverlay(v));
     }
 
     gallery.appendChild(card);
   });
 }
-
-
 
 // ================================
 // OPEN OVERLAY
@@ -317,7 +304,6 @@ function openOverlay(videoObj) {
 // ================================
 window.addEventListener("DOMContentLoaded", () => {
 
-  // ---- Load CSV and init gallery ----
   fetch("videos.csv")
     .then(res => res.text())
     .then(csvText => {
@@ -333,40 +319,44 @@ window.addEventListener("DOMContentLoaded", () => {
 
       console.log("Videos loaded from CSV:", videos);
 
-      applyFilter(null);
+      // ⛔ NO SCROLL ON PAGE LOAD
+      applyFilter(null, false);
 
-      // Setup filter buttons
       const btnRenCa = document.getElementById("btn-renča");
       const btnPeta = document.getElementById("btn-peta");
       const btnAll = document.getElementById("btn-all");
-      
 
+      if (btnRenCa)
+        btnRenCa.addEventListener("click", () => {
+          const isTogglingOff = activeFilter === "Peťák a Renča";
+          applyFilter(isTogglingOff ? null : "Peťák a Renča", true);
+        });
 
+      if (btnPeta)
+        btnPeta.addEventListener("click", () => {
+          const isTogglingOff = activeFilter === "Peťa a Peťa";
+          applyFilter(isTogglingOff ? null : "Peťa a Peťa", true);
+        });
 
-      if (btnRenCa) btnRenCa.addEventListener("click", () => {
-        applyFilter(activeFilter === "Peťák a Renča" ? null : "Peťák a Renča");
-      });
+      if (btnAll)
+        btnAll.addEventListener("click", () => {
+          applyFilter(null, true);
+        });
 
-      if (btnPeta) btnPeta.addEventListener("click", () => {
-        applyFilter(activeFilter === "Peťa a Peťa" ? null : "Peťa a Peťa");
-      });
-
-      if (btnAll) btnAll.addEventListener("click", () => {
-        applyFilter(null);  // show all videos
-      });
-      
     })
     .catch(err => console.error("Error loading CSV:", err));
 });
 
-/* adjust video speed based on mouse hover and wheel scrolling */
+// ================================
+// SPEED SCROLL FUNCTION
+// ================================
 function attachSpeedScroll(video, label, iconOnly = false) {
   const speeds = [0.5, 0.75, 1, 1.25, 1.5];
   let index = speeds.indexOf(1);
 
   const showLabel = () => {
     if (speeds[index] === 1) {
-      label.style.display = iconOnly ? "block" : "none"; // icon always visible on hover
+      label.style.display = iconOnly ? "block" : "none";
       label.textContent = "1×";
     } else {
       label.textContent = speeds[index] + "×";
@@ -389,7 +379,6 @@ function attachSpeedScroll(video, label, iconOnly = false) {
     video.addEventListener("wheel", wheelHandler);
   }
 
-  // Optional: reset label when mouse leaves video (for normal video scroll)
   if (!iconOnly) {
     video.addEventListener("mouseleave", () => {
       if (speeds[index] === 1) label.style.display = "none";
@@ -397,30 +386,23 @@ function attachSpeedScroll(video, label, iconOnly = false) {
   }
 }
 
-
 // ================================
-// HERO BUTTON AUTO-HIDE (only after leaving hero)
+// HERO BUTTON AUTO-HIDE
 // ================================
-/* hero out of view check*/
 function isHeroOutOfView() {
   const hero = document.querySelector(".hero");
   const rect = hero.getBoundingClientRect();
-  return rect.bottom <= 0; 
+  return rect.bottom <= 0;
 }
-/*auto hide*/
 
 const heroBar = document.querySelector(".hero-buttons");
 let hideTimeout = null;
 
-// Check if scroll is on a video OR on the speed icon
 function isScrollOnVideo(e) {
   const el = e.target;
-  // Only check if el is an Element
   if (!(el instanceof Element)) return false;
-
   return el.closest("video") || el.closest(".speed-icon");
 }
-
 
 function showHeroBar() {
   heroBar.classList.remove("hidden-hero");
@@ -431,17 +413,14 @@ function hideHeroBar() {
 }
 
 function onPageScroll(e) {
-  // Ignore scroll used for video speed control
   if (isScrollOnVideo(e)) return;
 
-  // Always show hero bar as long as hero is visible
   if (!isHeroOutOfView()) {
     showHeroBar();
     if (hideTimeout) clearTimeout(hideTimeout);
     return;
   }
 
-  // When hero is OUT of view → enable auto-hide
   showHeroBar();
 
   if (hideTimeout) clearTimeout(hideTimeout);
@@ -451,8 +430,5 @@ function onPageScroll(e) {
   }, 2000);
 }
 
-// Listen to scroll and wheel events
 window.addEventListener("wheel", onPageScroll, { passive: true });
 window.addEventListener("scroll", onPageScroll, { passive: true });
-
-
