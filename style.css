@@ -112,7 +112,7 @@ html { scroll-behavior: smooth; }
   display: flex;
   gap: 10px;
  /* padding: 10px; */
-  background: rgba(0,0,0,0.6);
+  background: rgba(0,0,0,0);
  /* border-radius: 10px; */
   z-index: 10;       /* above the hero image */
   justify-content: center;
