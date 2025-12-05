@@ -22,17 +22,18 @@ html { scroll-behavior: smooth; }
   background-color: #ffffff; 
   display: flex;
   flex-direction: column; /* vertical layout */
-  justify-content: center; /* centers headline */
+ /* justify-content: center; */ /* centers headline */
   align-items: center;
-  padding-top: 3rem; /* push headline down a little */
-  padding-bottom: 3rem; /* space between carousel and hero buttons */
+ /* padding-top: 3rem; *//* push headline down a little */
+ /* padding-bottom: 3rem; *//* space between carousel and hero buttons */
 }
 
 /* Headline text */
 .hero h1 {
   color: #000000; /* black headline */
   text-align: center;
-  margin-bottom: 2rem;
+  padding-top: 5vh;
+  padding-bottom: 5vh;
 
   /* Responsive font size: min 2rem, preferred 5vw, max 5rem */
   font-size: clamp(2rem, 5vw, 5rem);
@@ -123,7 +124,7 @@ html { scroll-behavior: smooth; }
  /* border-radius: 10px; */
   z-index: 10;       /* above the hero image */
   justify-content: center;
-  margin-top: -70px; 
+  margin-top: -10vh; 
   transition: opacity 0.4s ease, transform 0.4s ease; /* to hide hero buttons seamlessly*/
 
   /* Responsive padding */
