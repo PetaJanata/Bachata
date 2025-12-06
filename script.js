@@ -4,92 +4,90 @@
 
 // Hard-coded images (replace with your actual image paths)
 let carouselImages = [
-  "images/photo1.jpg",
-  "images/photo2.jpg",
-  "images/photo3.jpg",
-  "images/photo4.jpg",
-  "images/photo5.jpg",
-  "images/photo6.jpg",
-  "images/photo7.jpg",
-  "images/photo8.jpg",
-  "images/photo9.jpg",
-  "images/photo10.jpg"
+    "images/photo1.jpg",
+    "images/photo2.jpg",
+    "images/photo3.jpg",
+    "images/photo4.jpg",
+    "images/photo5.jpg",
+    "images/photo6.jpg",
+    "images/photo7.jpg",
+    "images/photo8.jpg",
+    "images/photo9.jpg",
+    "images/photo10.jpg"
 ];
 
 // Shuffle function for carousel
 function shuffleImages(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
 }
 
-// Shuffle images initially
+// Shuffle images initially (Keep this outside DOMContentLoaded for initial array creation)
 carouselImages = shuffleImages(carouselImages);
 
-// Create carousel container
+// Create carousel container (Keep this outside DOMContentLoaded if elements exist immediately)
 const heroSection = document.querySelector(".hero");
 const carouselContainer = document.createElement("div");
 carouselContainer.classList.add("hero-carousel");
 
 // Check if heroSection is null before inserting
 if (heroSection) {
-  const heroButtons = heroSection.nextElementSibling; // Assuming hero-buttons is right after .hero
-  if (heroButtons) {
-    heroSection.insertBefore(carouselContainer, heroButtons);
-  } else {
-    heroSection.appendChild(carouselContainer);
-  }
+    const heroButtons = heroSection.nextElementSibling; // Assuming hero-buttons is right after .hero
+    if (heroButtons) {
+        heroSection.insertBefore(carouselContainer, heroButtons);
+    } else {
+        heroSection.appendChild(carouselContainer);
+    }
 }
 
 
 // Carousel state
 let currentIndex = 0;
-// const visibleCount = 5; // not strictly needed for logic
 
 function getVisibleIndexes(centerIndex) {
-  const total = carouselImages.length;
-  let indexes = [];
-  for (let i = -2; i <= 2; i++) {
-    let idx = (centerIndex + i + total) % total;
-    indexes.push(idx);
-  }
-  return indexes;
+    const total = carouselImages.length;
+    let indexes = [];
+    for (let i = -2; i <= 2; i++) {
+        let idx = (centerIndex + i + total) % total;
+        indexes.push(idx);
+    }
+    return indexes;
 }
 
 function renderCarousel() {
-  if (!carouselContainer) return;
+    if (!carouselContainer) return;
 
-  carouselContainer.innerHTML = "";
-  const indexes = getVisibleIndexes(currentIndex);
+    carouselContainer.innerHTML = "";
+    const indexes = getVisibleIndexes(currentIndex);
 
-  indexes.forEach((imgIdx, position) => {
-    const img = document.createElement("img");
-    img.src = carouselImages[imgIdx];
-    img.classList.add("carousel-img");
+    indexes.forEach((imgIdx, position) => {
+        const img = document.createElement("img");
+        img.src = carouselImages[imgIdx];
+        img.classList.add("carousel-img");
 
-    // Set classes for position (main, first, second)
-    if (position === 2) img.classList.add("main-img");
-    else if (position === 1 || position === 3) img.classList.add("first-layer");
-    else img.classList.add("second-layer");
+        // Set classes for position (main, first, second)
+        if (position === 2) img.classList.add("main-img");
+        else if (position === 1 || position === 3) img.classList.add("first-layer");
+        else img.classList.add("second-layer");
 
-    // Clickable side images
-    if (position === 1 || position === 3) {
-      img.addEventListener("click", () => {
-        currentIndex = position < 2
-          ? (currentIndex - 1 + carouselImages.length) % carouselImages.length
-          : (currentIndex + 1) % carouselImages.length;
-        renderCarousel();
-      });
-    }
+        // Clickable side images
+        if (position === 1 || position === 3) {
+            img.addEventListener("click", () => {
+                currentIndex = position < 2
+                    ? (currentIndex - 1 + carouselImages.length) % carouselImages.length
+                    : (currentIndex + 1) % carouselImages.length;
+                renderCarousel();
+            });
+        }
 
-    carouselContainer.appendChild(img);
-  });
+        carouselContainer.appendChild(img);
+    });
 }
 
-// Initial render
-renderCarousel();
+// Initial render is now moved into DOMContentLoaded
 
 // Make carousel responsive on resize
 window.addEventListener("resize", renderCarousel);
@@ -124,18 +122,22 @@ const MONTHS_CZ = ["Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "
 // SHUFFLE FUNCTION (Fisher–Yates)
 // ================================
 function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
 }
 
 // ================================
 // MULTI-SELECT AND FILTERING LOGIC (The Core)
 // ================================
 function applyFilters(shouldScroll = false) {
-    if (!videos.length) return;
+    if (!videos.length) {
+        // If videos haven't loaded, don't proceed with filtering
+        console.warn("Attempted to apply filters before video data was loaded.");
+        return;
+    }
     
     // Get all filter categories that have at least one active selection
     const filterKeys = Object.keys(activeFilters).filter(key => activeFilters[key].length > 0);
@@ -367,6 +369,7 @@ function generateFilterBar(videos) {
     
     // Add event listeners for top-level collapsible headers
     document.querySelectorAll('.filter-group.collapsible-group .collapsible-header').forEach(header => {
+        // The header's *parent* is the group, and the content is the *next sibling*
         if(header.parentNode.dataset.filterKey !== 'Datum') {
              header.addEventListener('click', () => toggleCollapsible(header.nextElementSibling, header.parentNode));
         }
@@ -375,7 +378,9 @@ function generateFilterBar(videos) {
     // Initialize all top-level collapsible content closed (except the nested ones)
     document.querySelectorAll('.filter-group.collapsible-group .collapsible-content').forEach(content => {
         if(content.parentNode.dataset.filterKey !== 'Datum') {
+             // For safety, force it closed initially
              content.style.maxHeight = null;
+             content.classList.remove('open');
         }
     });
 }
@@ -411,11 +416,14 @@ function createCheckboxOption(filterKey, value, label, indent = 0) {
 
 // Helper to toggle collapsible sections
 function toggleCollapsible(content, parent) {
-    if (content.style.maxHeight) {
+    if (content.style.maxHeight && content.style.maxHeight !== '0px') {
         content.style.maxHeight = null;
+        content.classList.remove('open');
         parent.classList.remove('active');
     } else {
+        // Set a calculated height for a smooth transition
         content.style.maxHeight = content.scrollHeight + "px";
+        content.classList.add('open');
         parent.classList.add('active');
     }
 }
@@ -453,6 +461,7 @@ function lazyLoadVideos() {
         }, { rootMargin: "400px 0px", threshold: 0.1 });
     }
 
+    // Re-observe all current videos
     videoElements.forEach(video => lazyObserver.observe(video));
 
     // Extra visibility check (Fallback/Initial Load)
@@ -467,7 +476,7 @@ function lazyLoadVideos() {
         };
         window.addEventListener("scroll", checkVisible, { passive: true });
         window.addEventListener("resize", checkVisible);
-        checkVisible(); // Run once on load
+        // Do not run checkVisible() here; let applyFilters handle initial load after CSV
         visibilityCheckAttached = true;
     }
 
@@ -683,13 +692,26 @@ function openOverlay(videoObj) {
 }
 
 // ================================
-// DOM CONTENT LOADED — INIT
+// DOM CONTENT LOADED — INIT (FIXED BLOCK)
 // ================================
 window.addEventListener("DOMContentLoaded", () => {
+    
+    // 1. Initial Render of Carousel (Fixes issue #1)
+    renderCarousel();
 
     fetch("videos.csv")
-        .then(res => res.text())
+        .then(res => {
+            // Robust check for successful file load
+            if (!res.ok) {
+                console.error("Failed to load CSV file. Check file path and existence. Status:", res.status);
+                // Return an empty string or throw error to prevent further execution
+                return ""; 
+            }
+            return res.text();
+        })
         .then(csvText => {
+            if (!csvText) return; // Stop if CSV text is empty/failed to load
+
             const results = Papa.parse(csvText, { header: true, skipEmptyLines: true });
 
             // Map and cleanup video data
@@ -705,32 +727,31 @@ window.addEventListener("DOMContentLoaded", () => {
 
             console.log("Videos loaded from CSV:", videos);
             
-            // --- NEW FILTER BAR INIT ---
+            // --- 2. NEW FILTER BAR INIT ---
             generateFilterBar(videos);
             
-            // Initial filter application (no filter, no scroll)
+            // 3. Initial filter application (Shows all videos)
             applyFilters(false);
             
-            // --- COLLAPSE TOGGLE INIT ---
+            // --- 4. COLLAPSE TOGGLE INIT ---
             const filterBar = document.getElementById('filter-bar');
             const toggleBtn = document.getElementById('toggle-filter-btn');
             
             if (toggleBtn && filterBar) {
                 toggleBtn.addEventListener('click', () => {
                     filterBar.classList.toggle('collapsed');
+                    // Rerender carousel on collapse/expand to fix potential layout issues
+                    renderCarousel(); 
                 });
             }
 
-            // --- OLD HERO BUTTONS LOGIC (kept for now) ---
-            // Note: This logic only applies the old 'activeFilter' and overwrites
-            // the new multi-select filter. You should replace this with a direct
-            // scroll to the video section later.
+            // --- 5. OLD HERO BUTTONS LOGIC ---
             const oldApplyFilter = (filterValue, shouldScroll = false) => {
                 activeFilter = filterValue;
 
                 document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
                 
-                // Clear all new filters before applying the old one
+                // Clear all new filters before applying the old single filter
                 activeFilters = { Figury_Buttons: [], Video: [], Datum: [], Figury_Moves: [] };
                 
                 if (filterValue === null) {
@@ -771,7 +792,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 });
 
         })
-        .catch(err => console.error("Error loading CSV:", err));
+        .catch(err => console.error("Error loading CSV or parsing data:", err));
 });
 
 // ================================
