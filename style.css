@@ -1,7 +1,11 @@
-:root { --bg-color: #ffffff;
-
+:root {
+  --bg-color: #ffffff;
+  --primary-color: #000000;
+  --secondary-bg: #f5f5f5; /* Light grey for filter bar */
+  --divider-color: #cccccc;
+  --filter-width: 20%;
+  --filter-width-collapsed: 5%;
 }
-
 
 body {
   font-family: 'Winky Sans', sans-serif;
@@ -11,53 +15,48 @@ body {
   overflow-x: hidden;
 }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+}
 
 /* HERO */
 .hero {
   height: 100vh;
   width: 100%;
-  /*background: url('images/background.jpg') center center no-repeat; 
-  background-size: cover;    */
-  background-color: #ffffff; 
+  background-color: var(--bg-color);
   display: flex;
-  flex-direction: column; /* vertical layout */
- /* justify-content: center; */ /* centers headline */
+  flex-direction: column;
   align-items: center;
- /* padding-top: 3rem; *//* push headline down a little */
- /* padding-bottom: 3rem; *//* space between carousel and hero buttons */
 }
 
-/* Headline text */
 .hero h1 {
-  color: #000000; /* black headline */
+  color: var(--primary-color);
   text-align: center;
   padding-top: 5vh;
   padding-bottom: 5vh;
-
-  /* Responsive font size: min 2rem, preferred 5vw, max 5rem */
   font-size: clamp(2rem, 5vw, 5rem);
   line-height: 1.2;
 }
 
 /* ================================ */
-/* HERO CAROUSEL */
+/* HERO CAROUSEL (Existing Styles) */
 /* ================================ */
+/* (Keeping your existing carousel styles here for brevity) */
 .hero-carousel {
   position: relative;
   width: 100%;
-  height: 60vh; /* main image height */
+  height: 60vh;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: visible;
   margin-top: 0;
-  margin-bottom: 3rem; /* gap to hero buttons */
+  margin-bottom: 3rem;
 }
 
 .hero-carousel img {
-  border-radius: 8px; /* small border radius */
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* subtle shadow */
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   cursor: pointer;
   transition: transform 0.4s ease, box-shadow 0.4s ease;
   object-fit: cover;
@@ -72,44 +71,40 @@ html { scroll-behavior: smooth; }
   z-index: 1;
 }
 
-/* Main image */
 .hero-carousel img.main-img {
   height: 60vh;
   left: 50%;
   z-index: 5;
 }
 
-/* First layer (next to main) */
 .hero-carousel img.first-layer {
-  height: 54vh; /* 10% smaller */
+  height: 54vh;
   z-index: 4;
 }
 
-.hero-carousel img.first-layer:nth-child(2) { /* left first layer */
+.hero-carousel img.first-layer:nth-child(2) {
   left: 30%;
   cursor: pointer;
 }
 
-.hero-carousel img.first-layer:nth-child(4) { /* right first layer */
+.hero-carousel img.first-layer:nth-child(4) {
   left: 70%;
   cursor: pointer;
 }
 
-/* Second layer (further side) */
 .hero-carousel img.second-layer {
-  height: 48vh; /* 20% smaller than main */
+  height: 48vh;
   z-index: 3;
 }
 
-.hero-carousel img.second-layer:nth-child(1) { /* left second layer */
+.hero-carousel img.second-layer:nth-child(1) {
   left: 10%;
 }
 
-.hero-carousel img.second-layer:nth-child(5) { /* right second layer */
+.hero-carousel img.second-layer:nth-child(5) {
   left: 90%;
 }
 
-/* Hover effect for clickable images */
 .hero-carousel img.first-layer:hover {
   transform: translate(-50%, -50%) scale(1.05);
 }
@@ -119,15 +114,11 @@ html { scroll-behavior: smooth; }
   top: 0;
   display: flex;
   gap: 10px;
- /* padding: 10px; */
   background: rgba(0,0,0,0);
- /* border-radius: 10px; */
-  z-index: 10;       /* above the hero image */
+  z-index: 10;
   justify-content: center;
-  margin-top: -10vh; 
-  transition: opacity 0.4s ease, transform 0.4s ease; /* to hide hero buttons seamlessly*/
-
-  /* Responsive padding */
+  margin-top: -10vh;
+  transition: opacity 0.4s ease, transform 0.4s ease;
   padding: clamp(5px, 1vw, 12px) clamp(10px, 2vw, 20px);
 }
 
@@ -145,8 +136,6 @@ html { scroll-behavior: smooth; }
   background: #ddd;
   cursor: pointer;
   transition: background 0.3s;
-
-  /* Responsive font size */
   font-size: clamp(0.8rem, 1.2vw, 1.2rem);
 }
 
@@ -155,15 +144,185 @@ html { scroll-behavior: smooth; }
   color: white;
 }
 
+/* ================================ */
+/* NEW LAYOUT: Filter Bar + Gallery */
+/* ================================ */
 
-/* VIDEO GALLERY */
-.video-block {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 20px;
-  padding: 2rem;
+.content-wrapper {
+  display: flex;
+  min-height: 100vh; /* Ensure the wrapper takes up space */
+  padding-top: 20px; /* Space above the sticky filter bar */
 }
 
+/* --- FILTER BAR --- */
+.filter-bar {
+  position: sticky;
+  top: 20px; /* Adjust based on desired sticky offset */
+  height: calc(100vh - 40px); /* Fill remaining viewport height */
+  overflow-y: auto; /* Scroll bar if content is too big */
+  background-color: var(--secondary-bg);
+  padding: 15px;
+  transition: width 0.3s ease, min-width 0.3s ease, padding 0.3s ease;
+  width: var(--filter-width); /* Initial width: 20% */
+  min-width: 250px; 
+  box-sizing: border-box;
+
+  /* Divider line: border-inline-end */
+  border-inline-end: 2px solid var(--divider-color); 
+}
+
+.filter-bar.collapsed {
+  width: var(--filter-width-collapsed); /* Collapsed width: 5% */
+  min-width: 50px;
+  padding: 15px 5px;
+  overflow: hidden;
+}
+
+.filter-bar h2 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.filter-bar.collapsed h2, 
+.filter-bar.collapsed .filter-content {
+  display: none; /* Hide content when collapsed */
+}
+
+.filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  margin-bottom: 20px;
+}
+
+/* Collapse Toggle Button (The Circle on the Divider) */
+.collapse-toggle {
+  position: absolute;
+  right: -25px; /* Half of the button width to sit on the divider */
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: var(--secondary-bg);
+  border: 2px solid var(--divider-color);
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  z-index: 20;
+}
+
+.filter-bar.collapsed .collapse-toggle {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+/* --- FILTER GROUPS (CHECKBOXES) --- */
+.filter-group {
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.filter-group h3 {
+  font-size: 1.1rem;
+  margin: 0 0 10px 0;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+}
+
+.filter-group .arrow {
+  transition: transform 0.2s;
+}
+
+.filter-group.active .arrow {
+  transform: rotate(180deg);
+}
+
+.collapsible-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+
+.collapsible-content.open {
+  max-height: 500px; /* Sufficiently large value for smooth transition */
+}
+
+/* Checkbox and Label Styling */
+.filter-option {
+  display: flex;
+  align-items: center;
+  margin: 5px 0;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.filter-option input[type="checkbox"] {
+  margin-right: 8px;
+  width: 15px;
+  height: 15px;
+}
+
+.filter-option label {
+  cursor: pointer;
+  flex-grow: 1;
+}
+
+/* --- BUTTON FILTER GROUP (#Figury) --- */
+.button-filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.move-button {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  /* Blended (Inactive) Style */
+  background: #e0e0e0;
+  color: #666;
+  border: 1px solid #ccc;
+}
+
+.move-button.active {
+  /* Bright (Active) Style - Specific colors set in JS */
+  color: white; 
+  border-color: transparent;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* --- VIDEO GALLERY --- */
+.video-block {
+  /* Video section takes up the remaining space */
+  flex-grow: 1; 
+  padding: 2rem;
+  
+  /* Initial videos per row: 5 (to accommodate filter bar) */
+  grid-template-columns: repeat(5, 1fr);
+  display: grid; 
+  gap: 20px;
+  transition: grid-template-columns 0.3s ease;
+}
+
+.filter-bar.collapsed + .video-block {
+  /* 6 videos per row when filter bar is collapsed */
+  grid-template-columns: repeat(6, 1fr);
+}
+
+/* Existing Video Card Styles */
 .video-card video {
   width: 100%;
   height: auto;
@@ -171,27 +330,20 @@ html { scroll-behavior: smooth; }
   cursor: pointer;
 }
 
-/* Responsive */
-@media (max-width: 1600px) { .video-block { grid-template-columns: repeat(5, 1fr); } }
-@media (max-width: 1300px) { .video-block { grid-template-columns: repeat(4, 1fr); } }
-@media (max-width: 1000px) { .video-block { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 700px)  { .video-block { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 500px)  { .video-block { grid-template-columns: 1fr; } }
-
-
+/* (Keeping all existing styles for know-green/yellow/red, speed-icon, fullscreen-icon, and overlay here for brevity) */
 /* Knowledge color borders */
 .know-green {
-  border: 4px solid #2ecc71;   /* green */
+  border: 4px solid #2ecc71;
   border-radius: 10px;
 }
 
 .know-yellow {
-  border: 4px solid #f1c40f;   /* yellow */
+  border: 4px solid #f1c40f;
   border-radius: 10px;
 }
 
 .know-red {
-  border: 4px solid #e74c3c;   /* red */
+  border: 4px solid #e74c3c;
   border-radius: 10px;
 }
 
@@ -208,7 +360,7 @@ html { scroll-behavior: smooth; }
   z-index: 5;
   cursor: default;
   display: none;
-  pointer-events: auto; /* IMPORTANT – allow wheel events */
+  pointer-events: auto;
 }
 
 .speed-icon:hover {
@@ -238,8 +390,6 @@ html { scroll-behavior: smooth; }
   transition: all 0.2s ease;
 }
 
-
-
 /* FULLSCREEN OVERLAY */
 .video-overlay {
   position: fixed;
@@ -261,44 +411,51 @@ html { scroll-behavior: smooth; }
 }
 
 .video-overlay button {
-  background-color: #ffffff;        /* white background */
-  color: #000000;                   /* black text */
-  border: none;                     /* remove default border */
-  border-radius: 8px;               /* soft corners */
-  padding: 0.5rem 1rem;             /* comfortable size */
-  cursor: pointer;                  /* pointer cursor on hover */
-  font-weight: 500;                 /* slightly bolder text */
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2); /* subtle shadow for depth */
-  transition: all 0.2s ease-in-out; /* smooth hover animation */
+  background-color: #ffffff;
+  color: #000000;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-weight: 500;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  transition: all 0.2s ease-in-out;
 }
 
 .video-overlay button:hover {
-  background-color: #f0f0f0;        /* light gray hover */
-  transform: translateY(-2px);      /* small lift on hover */
+  background-color: #f0f0f0;
+  transform: translateY(-2px);
 }
 
 .video-overlay button:active {
-  transform: translateY(0);         /* reset on click */
+  transform: translateY(0);
   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
-
 /* Mobile layout for overlay */
 @media (max-width: 768px) {
-  /* Stack videos vertically in dual view */
+  /* Hide Filter Bar entirely on small screens, switch to single column gallery */
+  .filter-bar {
+    display: none;
+  }
+  
+  .video-block {
+    grid-template-columns: repeat(2, 1fr) !important; /* !important to override collapsed state */
+    width: 100%;
+    flex-grow: 1;
+  }
+  
   .video-overlay.dual-view > div {
     flex-direction: column !important;
     align-items: center !important;
     gap: 10px !important;
   }
 
-  /* Dual view videos (smaller stacked) */
   .video-overlay.dual-view video {
     max-width: 90vw;
     max-height: 35vh;
   }
 
-  /* Single HD view (larger, near fullscreen) */
   .video-overlay:not(.dual-view) video {
     max-width: 90vw;
     max-height: 80vh;
@@ -309,4 +466,17 @@ html { scroll-behavior: smooth; }
   }
 }
 
-
+/* Responsive adjustments for Video Gallery */
+@media (max-width: 1600px) {
+.video-block { grid-template-columns: repeat(4, 1fr); }
+.filter-bar.collapsed + .video-block { grid-template-columns: repeat(5, 1fr); }
+}
+@media (max-width: 1300px) {
+.video-block { grid-template-columns: repeat(3, 1fr); }
+.filter-bar.collapsed + .video-block { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 1000px) {
+.video-block { grid-template-columns: repeat(2, 1fr); }
+.filter-bar.collapsed + .video-block { grid-template-columns: repeat(3, 1fr); }
+}
+/* 768px and below is handled above */
