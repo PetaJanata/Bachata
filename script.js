@@ -699,7 +699,7 @@ window.addEventListener("DOMContentLoaded", () => {
     // 1. Initial Render of Carousel (Fixes issue #1)
     renderCarousel();
 
-    fetch("videos.csv")
+    fetch('videos.csv')
         .then(res => {
             // Robust check for successful file load
             if (!res.ok) {
