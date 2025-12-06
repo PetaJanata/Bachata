@@ -25,19 +25,6 @@ function shuffleImages(array) {
 
 carouselImages = shuffleImages(carouselImages);
 
-const heroSection = document.querySelector(".hero");
-const carouselContainer = document.createElement("div");
-carouselContainer.classList.add("hero-carousel");
-
-if (heroSection) {
-    const heroButtons = heroSection.nextElementSibling;
-    if (heroButtons) {
-        heroSection.insertBefore(carouselContainer, heroButtons);
-    } else {
-        heroSection.appendChild(carouselContainer);
-    }
-}
-
 let currentIndex = 0;
 
 function getVisibleIndexes(centerIndex) {
@@ -51,7 +38,18 @@ function getVisibleIndexes(centerIndex) {
 }
 
 function renderCarousel() {
-    if (!carouselContainer) return;
+    const heroSection = document.querySelector(".hero");
+    if (!heroSection) return;
+
+    let carouselContainer = document.querySelector(".hero-carousel");
+    if (!carouselContainer) {
+        carouselContainer = document.createElement("div");
+        carouselContainer.classList.add("hero-carousel");
+        const heroButtons = heroSection.nextElementSibling;
+        if (heroButtons) heroSection.insertBefore(carouselContainer, heroButtons);
+        else heroSection.appendChild(carouselContainer);
+    }
+
     carouselContainer.innerHTML = "";
     const indexes = getVisibleIndexes(currentIndex);
 
@@ -77,17 +75,13 @@ function renderCarousel() {
     });
 }
 
-window.addEventListener("resize", renderCarousel);
-
 // ================================
-// GLOBAL VARIABLES & FILTER STATE
+// GLOBAL VARIABLES
 // ================================
 
 let videos = [];
 let activeFilter = null;
-const gallery = document.getElementById("video-gallery");
-
-let activeFilters = {
+const activeFilters = {
     Figury_Buttons: [],
     Video: [],
     Datum: [],
@@ -115,7 +109,8 @@ function shuffleArray(array) {
 // ================================
 
 function applyFilters(shouldScroll = false) {
-    if (!videos.length) return;
+    const gallery = document.getElementById("video-gallery");
+    if (!gallery || !videos.length) return;
 
     const filterKeys = Object.keys(activeFilters).filter(key => activeFilters[key].length > 0);
 
@@ -127,10 +122,8 @@ function applyFilters(shouldScroll = false) {
             if (filterKey === 'Figury_Buttons' || filterKey === 'Figury_Moves') {
                 const videoMoves = video.Figury ? video.Figury.split(',').map(m => m.trim()) : [];
                 return selectedValues.some(selectedMove => videoMoves.includes(selectedMove));
-
             } else if (filterKey === 'Video') {
                 return video.Button ? selectedValues.includes(video.Button) : false;
-
             } else if (filterKey === 'Datum') {
                 const videoDateKey = video.Rok && video.Měsíc_CZ ? `${video.Rok}-${video.Měsíc_CZ}` : null;
                 return videoDateKey ? selectedValues.includes(videoDateKey) : false;
@@ -144,7 +137,7 @@ function applyFilters(shouldScroll = false) {
     lazyLoadVideos();
 
     if (shouldScroll) {
-        document.getElementById("video-gallery")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        gallery.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 }
 
@@ -156,11 +149,7 @@ function generateFilterBar(videos) {
     const filterTreeContainer = document.getElementById('filter-options-tree');
     if (!filterTreeContainer) return;
 
-    const uniqueFilters = {
-        Video: new Set(),
-        Datum: new Map(),
-        Figury_Moves: new Set()
-    };
+    const uniqueFilters = { Video: new Set(), Datum: new Map(), Figury_Moves: new Set() };
     const uniqueFiguryButtons = new Set();
     const allFiguryMoves = ['Lamfáza', 'Yo Yo', 'Pinza', 'Cambré', 'Culito', 'úvod', 'sensual', 'diagonál', 'SP'];
 
@@ -188,7 +177,7 @@ function generateFilterBar(videos) {
         }
     });
 
-    // --- Figury Buttons ---
+    // Figury Buttons
     const figuryBtnContainer = document.getElementById('figury-buttons');
     if (figuryBtnContainer) {
         const h3 = figuryBtnContainer.querySelector('h3');
@@ -217,7 +206,7 @@ function generateFilterBar(videos) {
         });
     }
 
-    // --- Checkbox Filters ---
+    // Checkbox Filters
     const checkboxFilters = [
         { key: 'Video', title: 'Video', values: Array.from(uniqueFilters.Video).sort() },
         { key: 'Figury_Moves', title: 'Figury (Technika)', values: Array.from(uniqueFilters.Figury_Moves).sort() }
@@ -236,7 +225,7 @@ function generateFilterBar(videos) {
         });
     });
 
-    // --- Datum Filter ---
+    // Datum Filter
     const datumGroup = document.createElement('div');
     datumGroup.classList.add('filter-group', 'collapsible-group');
     datumGroup.dataset.filterKey = 'Datum';
@@ -307,6 +296,7 @@ function createCheckboxOption(filterKey, value, label, indent = 0) {
     lbl.textContent = label;
 
     input.addEventListener('change', (e) => {
+        if (!activeFilters[filterKey]) return;
         if (e.target.checked) activeFilters[filterKey].push(value);
         else activeFilters[filterKey] = activeFilters[filterKey].filter(v => v !== value);
 
@@ -319,6 +309,7 @@ function createCheckboxOption(filterKey, value, label, indent = 0) {
 }
 
 function toggleCollapsible(content, parent) {
+    if (!content || !parent) return;
     if (content.style.maxHeight && content.style.maxHeight !== '0px') {
         content.style.maxHeight = null;
         content.classList.remove('open');
@@ -340,13 +331,13 @@ let visibilityCheckAttached = false;
 
 function lazyLoadVideos() {
     const videoElements = document.querySelectorAll("video[data-src]");
-
     const loadVideo = video => {
         if (!video.dataset.src) return;
         video.src = video.dataset.src;
         video.removeAttribute("data-src");
-        if (video.getBoundingClientRect().top < window.innerHeight && video.getBoundingClientRect().bottom > 0) {
-             video.play().catch(() => {});
+        if (video.getBoundingClientRect().top < window.innerHeight &&
+            video.getBoundingClientRect().bottom > 0) {
+            video.play().catch(() => {});
         }
     };
 
@@ -386,7 +377,7 @@ function lazyLoadVideos() {
     }
 
     document.querySelectorAll("video").forEach(video => {
-        if(pauseObserver) pauseObserver.observe(video);
+        if (pauseObserver) pauseObserver.observe(video);
     });
 }
 
@@ -395,6 +386,7 @@ function lazyLoadVideos() {
 // ================================
 
 function loadGallery(videoList) {
+    const gallery = document.getElementById("video-gallery");
     if (!gallery) return;
     gallery.innerHTML = "";
 
@@ -423,13 +415,8 @@ function loadGallery(videoList) {
         speedIcon.textContent = "1×";
         card.appendChild(speedIcon);
 
-        card.addEventListener("mouseenter", () => speedIcon.style.display = "block");
-        card.addEventListener("mouseleave", () => speedIcon.style.display = "none");
-
-        attachSpeedScroll(video, speedIcon, true);
-
-        video.style.cursor = "default";
         card.appendChild(video);
+        attachSpeedScroll(video, speedIcon, true);
 
         if (v.hd) {
             const fullscreenIcon = document.createElement("div");
@@ -437,14 +424,12 @@ function loadGallery(videoList) {
             fullscreenIcon.innerHTML = "⤢";
             card.appendChild(fullscreenIcon);
 
-            card.addEventListener("mouseenter", () => fullscreenIcon.style.display = "block");
-            card.addEventListener("mouseleave", () => fullscreenIcon.style.display = "none");
-
             fullscreenIcon.addEventListener("click", () => openOverlay(v));
         }
 
         gallery.appendChild(card);
     });
+    lazyLoadVideos();
 }
 
 // ================================
@@ -461,7 +446,6 @@ function openOverlay(videoObj) {
     videoContainer.style.display = "flex";
     videoContainer.style.gap = "20px";
     overlay.appendChild(videoContainer);
-
     document.body.appendChild(overlay);
     document.body.style.overflow = "hidden";
 
@@ -503,13 +487,10 @@ function openOverlay(videoObj) {
             overlay.classList.add("dual-view");
             main.wrapper.style.display = "flex";
             altWrapper.wrapper.style.display = "flex";
-
             main.video.muted = true;
             altWrapper.video.muted = false;
-
             main.video.play().catch(() => {});
             altWrapper.video.play().catch(() => {});
-
             mainButton.textContent = "pohled 1";
             altButton?.remove();
 
@@ -526,14 +507,11 @@ function openOverlay(videoObj) {
             overlay.classList.remove("dual-view");
             main.wrapper.style.display = "flex";
             altWrapper.wrapper.style.display = "none";
-
             main.video.muted = false;
             altWrapper.video.muted = true;
-
             mainButton.textContent = "Ukaž video z jiného úhlu";
             altButton?.remove();
             altButton = null;
-
             mainButton.onclick = showDualView;
         };
 
@@ -541,22 +519,20 @@ function openOverlay(videoObj) {
             overlay.classList.remove("dual-view");
             main.wrapper.style.display = "none";
             altWrapper.wrapper.style.display = "flex";
-
-            main.video.muted = true;
+            main.video.muted = false;
             altWrapper.video.muted = false;
             altWrapper.video.play().catch(() => {});
 
-            altButton?.remove();
-
             backBtn = document.createElement("button");
-            backBtn.textContent = "Ukaž video z jiného úhlu";
+            backBtn.textContent = "Zpět na pohled 1";
             backBtn.style.marginTop = "10px";
+            altWrapper.wrapper.appendChild(backBtn);
+
             backBtn.addEventListener("click", () => {
                 backBtn.remove();
                 backBtn = null;
                 showDualView();
             });
-            altWrapper.wrapper.appendChild(backBtn);
         };
 
         mainButton.onclick = showDualView;
@@ -609,7 +585,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 });
             }
 
-            // Hero buttons old logic
+            // Hero buttons filter logic
             const oldApplyFilter = (filterValue, shouldScroll = false) => {
                 activeFilter = filterValue;
                 document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
@@ -628,17 +604,13 @@ window.addEventListener("DOMContentLoaded", () => {
                 applyFilters(shouldScroll);
             };
 
-            const btnRenCa = document.getElementById("btn-renča");
-            const btnPeta = document.getElementById("btn-peta");
-            const btnAll = document.getElementById("btn-all");
-
-            if (btnRenCa) btnRenCa.addEventListener("click", () => {
+            document.getElementById("btn-renča")?.addEventListener("click", () => {
                 oldApplyFilter(activeFilter === "Peťák a Renča" ? null : "Peťák a Renča", true);
             });
-            if (btnPeta) btnPeta.addEventListener("click", () => {
+            document.getElementById("btn-peta")?.addEventListener("click", () => {
                 oldApplyFilter(activeFilter === "Peťa a Peťa" ? null : "Peťa a Peťa", true);
             });
-            if (btnAll) btnAll.addEventListener("click", () => oldApplyFilter(null, true));
+            document.getElementById("btn-all")?.addEventListener("click", () => oldApplyFilter(null, true));
         })
         .catch(err => console.error("Error loading CSV or parsing data:", err));
 });
