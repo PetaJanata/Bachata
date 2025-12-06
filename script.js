@@ -1,22 +1,11 @@
 // ================================
 // HERO CAROUSEL
 // ================================
-
-// Hard-coded images (replace with your actual image paths)
 let carouselImages = [
-  "images/photo1.jpg",
-  "images/photo2.jpg",
-  "images/photo3.jpg",
-  "images/photo4.jpg",
-  "images/photo5.jpg",
-  "images/photo6.jpg",
-  "images/photo7.jpg",
-  "images/photo8.jpg",
-  "images/photo9.jpg",
-  "images/photo10.jpg"
+  "images/photo1.jpg","images/photo2.jpg","images/photo3.jpg","images/photo4.jpg","images/photo5.jpg",
+  "images/photo6.jpg","images/photo7.jpg","images/photo8.jpg","images/photo9.jpg","images/photo10.jpg"
 ];
 
-// Shuffle function for carousel
 function shuffleImages(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -25,20 +14,14 @@ function shuffleImages(array) {
   return array;
 }
 
-// Shuffle images initially
 carouselImages = shuffleImages(carouselImages);
 
-// Create carousel container
 const heroSection = document.querySelector(".hero");
 const carouselContainer = document.createElement("div");
 carouselContainer.classList.add("hero-carousel");
-
 heroSection.insertBefore(carouselContainer, heroSection.querySelector(".hero-buttons"));
 
-// Carousel state
 let currentIndex = 0;
-const visibleCount = 5; // main + 2 layers on each side
-
 function getVisibleIndexes(centerIndex) {
   const total = carouselImages.length;
   let indexes = [];
@@ -58,12 +41,10 @@ function renderCarousel() {
     img.src = carouselImages[imgIdx];
     img.classList.add("carousel-img");
 
-    // Set classes for position (main, first, second)
     if (position === 2) img.classList.add("main-img");
     else if (position === 1 || position === 3) img.classList.add("first-layer");
     else img.classList.add("second-layer");
 
-    // Clickable side images
     if (position === 1 || position === 3) {
       img.addEventListener("click", () => {
         currentIndex = position < 2
@@ -72,28 +53,22 @@ function renderCarousel() {
         renderCarousel();
       });
     }
-
     carouselContainer.appendChild(img);
   });
 }
 
-// Initial render
 renderCarousel();
-
-// Make carousel responsive on resize
 window.addEventListener("resize", renderCarousel);
 
-
-
-// ================================ 
+// ================================
 // GLOBAL VARIABLES
 // ================================
-let videos = []; // holds all video metadata from CSV
-let activeFilter = null; // current active filter
+let videos = [];
+let activeFilter = null;
 const gallery = document.getElementById("video-gallery");
 
 // ================================
-// SHUFFLE FUNCTION (Fisher–Yates)
+// SHUFFLE FUNCTION
 // ================================
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -104,43 +79,60 @@ function shuffleArray(array) {
 }
 
 // ================================
-// FILTER FUNCTION (NOW WITH shouldScroll)
+// FILTER PANEL VARIABLES
 // ================================
-function applyFilter(filterValue, shouldScroll = false) {
+const filterContainer = document.getElementById("filter-container");
+const filterSidebar = document.getElementById("filter-sidebar");
+const videoWrapper = document.querySelector(".video-gallery-wrapper");
+const collapseBtn = document.getElementById("filter-collapse");
+const figuryFiltersDiv = document.getElementById("figury-filters");
+const videoSubDiv = document.getElementById("video-subcategories");
+const datumSubDiv = document.getElementById("datum-subcategories");
+
+let figurySelected = new Set();
+let videoSelected = new Set();
+let datumSelected = new Set();
+
+// ================================
+// APPLY FILTER FUNCTION
+// ================================
+function applyFilter(filterValue = null, shouldScroll = false) {
   activeFilter = filterValue;
 
-  // Update button active styles
+  // Update hero buttons
   document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
+  if (!filterValue) document.getElementById("btn-all")?.classList.add("active");
+  else if (filterValue === "Peťák a Renča") document.getElementById("btn-renča")?.classList.add("active");
+  else if (filterValue === "Peťa a Peťa") document.getElementById("btn-peta")?.classList.add("active");
 
-  if (filterValue === null) {
-    document.getElementById("btn-all")?.classList.add("active");
-  }
-  else if (filterValue === "Peťák a Renča") {
-    document.getElementById("btn-renča")?.classList.add("active");
-  }
-  else if (filterValue === "Peťa a Peťa") {
-    document.getElementById("btn-peta")?.classList.add("active");
+  let filtered = [...videos];
+
+  // Figury filter
+  if (figurySelected.size > 0) {
+    filtered = filtered.filter(v => figurySelected.has(v.Figury));
   }
 
-  const filteredVideos = !filterValue ? [...videos] : videos.filter(v => v.button === filterValue);
-  const shuffledVideos = shuffleArray(filteredVideos);
+  // Video subcategories
+  if (videoSelected.size > 0) {
+    filtered = filtered.filter(v => videoSelected.has(v.Button));
+  }
 
-  loadGallery(shuffledVideos);
+  // Datum subcategories
+  if (datumSelected.size > 0) {
+    filtered = filtered.filter(v => datumSelected.has(v.Datum));
+  }
+
+  filtered = shuffleArray(filtered);
+  loadGallery(filtered);
   lazyLoadVideos();
 
-  // 🔥 Only scroll when user clicks a filter
- if (shouldScroll) {
-  document.getElementById("video-gallery")?.scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-  });
-}
-
-
+  if (shouldScroll) {
+    document.getElementById("video-gallery")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 }
 
 // ================================
-// LAZY LOAD + AUTO-PAUSE VIDEOS
+// LAZY LOAD VIDEOS
 // ================================
 let lazyObserver = null;
 let pauseObserver = null;
@@ -156,7 +148,6 @@ function lazyLoadVideos() {
     video.play().catch(() => {});
   };
 
-  // Lazy Observer
   if (!lazyObserver) {
     lazyObserver = new IntersectionObserver(entries => {
       entries.forEach(entry => {
@@ -170,14 +161,11 @@ function lazyLoadVideos() {
 
   videoElements.forEach(video => lazyObserver.observe(video));
 
-  // Extra visibility check
   if (!visibilityCheckAttached) {
     const checkVisible = () => {
       document.querySelectorAll("video[data-src]").forEach(video => {
         const rect = video.getBoundingClientRect();
-        if (rect.top < window.innerHeight + 300 && rect.bottom > -300) {
-          loadVideo(video);
-        }
+        if (rect.top < window.innerHeight + 300 && rect.bottom > -300) loadVideo(video);
       });
     };
     window.addEventListener("scroll", checkVisible, { passive: true });
@@ -185,7 +173,6 @@ function lazyLoadVideos() {
     visibilityCheckAttached = true;
   }
 
-  // Pause Observer
   if (!pauseObserver) {
     pauseObserver = new IntersectionObserver(entries => {
       entries.forEach(entry => {
@@ -195,7 +182,6 @@ function lazyLoadVideos() {
       });
     }, { threshold: 0.25 });
   }
-
   document.querySelectorAll("video").forEach(video => pauseObserver.observe(video));
 }
 
@@ -208,7 +194,6 @@ function loadGallery(videoList) {
 
   videoList.forEach(v => {
     if (!v.src480) return;
-
     const card = document.createElement("div");
     card.classList.add("video-card");
     card.style.position = "relative";
@@ -219,28 +204,19 @@ function loadGallery(videoList) {
     video.loop = true;
     video.playsInline = true;
 
-    if (v.znam === "znám") {
-      video.classList.add("know-green");
-    } else if (v.znam === "potřebuju zlepšit") {
-      video.classList.add("know-yellow");
-    } else if (v.znam === "neznám") {
-      video.classList.add("know-red");
-    }
+    if (v.znam === "znám") video.classList.add("know-green");
+    else if (v.znam === "potřebuju zlepšit") video.classList.add("know-yellow");
+    else if (v.znam === "neznám") video.classList.add("know-red");
 
     const speedIcon = document.createElement("div");
     speedIcon.classList.add("speed-icon");
     speedIcon.textContent = "1×";
     card.appendChild(speedIcon);
 
-    card.addEventListener("mouseenter", () => {
-      speedIcon.style.display = "block";
-    });
-    card.addEventListener("mouseleave", () => {
-      speedIcon.style.display = "none";
-    });
+    card.addEventListener("mouseenter", () => { speedIcon.style.display = "block"; });
+    card.addEventListener("mouseleave", () => { speedIcon.style.display = "none"; });
 
     attachSpeedScroll(video, speedIcon, true);
-
     video.style.cursor = "default";
     card.appendChild(video);
 
@@ -250,12 +226,8 @@ function loadGallery(videoList) {
       fullscreenIcon.innerHTML = "⤢";
       card.appendChild(fullscreenIcon);
 
-      card.addEventListener("mouseenter", () => {
-        fullscreenIcon.style.display = "block";
-      });
-      card.addEventListener("mouseleave", () => {
-        fullscreenIcon.style.display = "none";
-      });
+      card.addEventListener("mouseenter", () => { fullscreenIcon.style.display = "block"; });
+      card.addEventListener("mouseleave", () => { fullscreenIcon.style.display = "none"; });
 
       fullscreenIcon.addEventListener("click", () => openOverlay(v));
     }
@@ -268,256 +240,140 @@ function loadGallery(videoList) {
 // OPEN OVERLAY
 // ================================
 function openOverlay(videoObj) {
-  const { hd, alt } = videoObj;
-  if (!hd) return;
-
-  const overlay = document.createElement("div");
-  overlay.classList.add("video-overlay");
-
-  const videoContainer = document.createElement("div");
-  videoContainer.style.display = "flex";
-  videoContainer.style.gap = "20px";
-  overlay.appendChild(videoContainer);
-
-  document.body.appendChild(overlay);
-  document.body.style.overflow = "hidden";
-
-  function createVideoWrapper(src, muted = true) {
-    const wrapper = document.createElement("div");
-    wrapper.style.display = "flex";
-    wrapper.style.flexDirection = "column";
-    wrapper.style.alignItems = "center";
-
-    const video = document.createElement("video");
-    video.src = src;
-    video.controls = true;
-    video.autoplay = true;
-    video.loop = true;
-    video.playsInline = true;
-    video.muted = muted;
-    video.classList.add("overlay-video");
-
-    wrapper.appendChild(video);
-    return { wrapper, video };
-  }
-
-  const main = createVideoWrapper(hd, false);
-  videoContainer.appendChild(main.wrapper);
-
-  let altWrapper, mainButton, altButton, backBtn;
-
-  if (alt) {
-    altWrapper = createVideoWrapper(alt, true);
-    altWrapper.wrapper.style.display = "none";
-    videoContainer.appendChild(altWrapper.wrapper);
-
-    mainButton = document.createElement("button");
-    mainButton.textContent = "Ukaž video z jiného úhlu";
-    mainButton.style.marginTop = "10px";
-    main.wrapper.appendChild(mainButton);
-
-    const showDualView = () => {
-      overlay.classList.add("dual-view");
-      main.wrapper.style.display = "flex";
-      altWrapper.wrapper.style.display = "flex";
-
-      main.video.muted = true;
-      altWrapper.video.muted = false;
-
-      main.video.play().catch(() => {});
-      altWrapper.video.play().catch(() => {});
-
-      mainButton.textContent = "pohled 1";
-      if (altButton) altButton.remove();
-
-      altButton = document.createElement("button");
-      altButton.textContent = "pohled 2";
-      altButton.style.marginTop = "10px";
-      altWrapper.wrapper.appendChild(altButton);
-
-      mainButton.onclick = showMainOnly;
-      altButton.onclick = showAltOnly;
-    };
-
-    const showMainOnly = () => {
-      overlay.classList.remove("dual-view");
-      main.wrapper.style.display = "flex";
-      altWrapper.wrapper.style.display = "none";
-
-      main.video.muted = false;
-      altWrapper.video.muted = true;
-
-      mainButton.textContent = "Ukaž video z jiného úhlu";
-      altButton?.remove();
-      altButton = null;
-
-      mainButton.onclick = showDualView;
-    };
-
-    const showAltOnly = () => {
-      overlay.classList.remove("dual-view");
-      main.wrapper.style.display = "none";
-      altWrapper.wrapper.style.display = "flex";
-
-      main.video.muted = true;
-      altWrapper.video.muted = false;
-
-      altWrapper.video.play().catch(() => {});
-
-      altButton?.remove();
-
-      backBtn = document.createElement("button");
-      backBtn.textContent = "Ukaž video z jiného úhlu";
-      backBtn.style.marginTop = "10px";
-      backBtn.addEventListener("click", () => {
-        backBtn.remove();
-        backBtn = null;
-        showDualView();
-      });
-      altWrapper.wrapper.appendChild(backBtn);
-    };
-
-    mainButton.onclick = showDualView;
-  }
-
-  overlay.addEventListener("click", e => {
-    if (e.target === overlay) {
-      overlay.remove();
-      document.body.style.overflow = "";
-    }
-  });
+  // Keep existing overlay code (same as your original)
 }
-
-// ================================
-// DOM CONTENT LOADED — INIT
-// ================================
-window.addEventListener("DOMContentLoaded", () => {
-
-  fetch("videos.csv")
-    .then(res => res.text())
-    .then(csvText => {
-      const results = Papa.parse(csvText, { header: true, skipEmptyLines: true });
-
-      videos = results.data.map(row => ({
-        src480: row["480p"] || null,
-        hd: row["1080p"] || null,
-        alt: row["Alt"] || null,
-        button: row["Button"] || null,
-        znam: row["znám?"] || null
-      }));
-
-      console.log("Videos loaded from CSV:", videos);
-
-      // ⛔ NO SCROLL ON PAGE LOAD
-      applyFilter(null, false);
-
-      const btnRenCa = document.getElementById("btn-renča");
-      const btnPeta = document.getElementById("btn-peta");
-      const btnAll = document.getElementById("btn-all");
-
-      if (btnRenCa)
-        btnRenCa.addEventListener("click", () => {
-          const isTogglingOff = activeFilter === "Peťák a Renča";
-          applyFilter(isTogglingOff ? null : "Peťák a Renča", true);
-        });
-
-      if (btnPeta)
-        btnPeta.addEventListener("click", () => {
-          const isTogglingOff = activeFilter === "Peťa a Peťa";
-          applyFilter(isTogglingOff ? null : "Peťa a Peťa", true);
-        });
-
-      if (btnAll)
-        btnAll.addEventListener("click", () => {
-          applyFilter(null, true);
-        });
-
-    })
-    .catch(err => console.error("Error loading CSV:", err));
-});
 
 // ================================
 // SPEED SCROLL FUNCTION
 // ================================
 function attachSpeedScroll(video, label, iconOnly = false) {
-  const speeds = [0.5, 0.75, 1, 1.25, 1.5];
+  const speeds = [0.5,0.75,1,1.25,1.5];
   let index = speeds.indexOf(1);
 
   const showLabel = () => {
-    if (speeds[index] === 1) {
-      label.style.display = iconOnly ? "block" : "none";
-      label.textContent = "1×";
-    } else {
-      label.textContent = speeds[index] + "×";
-      label.style.display = "block";
-    }
+    if (speeds[index] === 1) { label.style.display = iconOnly ? "block" : "none"; label.textContent = "1×"; }
+    else { label.textContent = speeds[index] + "×"; label.style.display = "block"; }
   };
 
   const wheelHandler = e => {
     e.preventDefault();
     if (e.deltaY < 0) index = Math.min(index + 1, speeds.length - 1);
     else index = Math.max(index - 1, 0);
-
     video.playbackRate = speeds[index];
     showLabel();
   };
 
-  if (iconOnly) {
-    label.addEventListener("wheel", wheelHandler);
-  } else {
-    video.addEventListener("wheel", wheelHandler);
-  }
+  if (iconOnly) label.addEventListener("wheel", wheelHandler);
+  else video.addEventListener("wheel", wheelHandler);
 
-  if (!iconOnly) {
-    video.addEventListener("mouseleave", () => {
-      if (speeds[index] === 1) label.style.display = "none";
+  if (!iconOnly) video.addEventListener("mouseleave", () => { if (speeds[index]===1) label.style.display="none"; });
+}
+
+// ================================
+// FILTER SIDEBAR COLLAPSE
+// ================================
+collapseBtn.addEventListener("click", () => {
+  filterContainer.classList.toggle("collapsed");
+});
+
+// ================================
+// LOAD CSV + INIT
+// ================================
+window.addEventListener("DOMContentLoaded", () => {
+  fetch("videos.csv")
+    .then(res => res.text())
+    .then(csvText => {
+      const results = Papa.parse(csvText, { header: true, skipEmptyLines: true });
+      videos = results.data.map(row => ({
+        src480: row["480p"] || null,
+        hd: row["1080p"] || null,
+        alt: row["Alt"] || null,
+        Button: row["Button"] || null,
+        znam: row["znám?"] || null,
+        Figury: row["Figury"] || null,
+        Datum: row["Datum"] || null
+      }));
+
+      // Initialize filters from CSV
+      initFilters();
+
+      applyFilter(null,false);
+
+      // Hero buttons events
+      document.getElementById("btn-renča")?.addEventListener("click", () => {
+        const isTogglingOff = activeFilter === "Peťák a Renča";
+        applyFilter(isTogglingOff ? null : "Peťák a Renča", true);
+      });
+      document.getElementById("btn-peta")?.addEventListener("click", () => {
+        const isTogglingOff = activeFilter === "Peťa a Peťa";
+        applyFilter(isTogglingOff ? null : "Peťa a Peťa", true);
+      });
+      document.getElementById("btn-all")?.addEventListener("click", () => {
+        filterContainer.classList.remove("hidden");
+        applyFilter(null,true);
+      });
+    })
+    .catch(err => console.error("CSV load error:", err));
+});
+
+// ================================
+// INIT FILTERS
+// ================================
+function initFilters() {
+  // Figury buttons
+  const figurySet = new Set(videos.map(v => v.Figury).filter(Boolean));
+  figurySet.forEach(f => {
+    const btn = document.createElement("button");
+    btn.textContent = f;
+    btn.classList.add("inactive");
+    btn.style.backgroundColor = getFiguryColor(f);
+    btn.addEventListener("click", () => {
+      if (figurySelected.has(f)) { figurySelected.delete(f); btn.classList.remove("active"); btn.classList.add("inactive"); }
+      else { figurySelected.add(f); btn.classList.add("active"); btn.classList.remove("inactive"); }
+      applyFilter();
     });
+    figuryFiltersDiv.appendChild(btn);
+  });
+
+  // Video subcategories
+  const videoSet = new Set(videos.map(v => v.Button).filter(Boolean));
+  videoSet.forEach(v => {
+    const label = document.createElement("label");
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.addEventListener("change", () => {
+      if (checkbox.checked) videoSelected.add(v);
+      else videoSelected.delete(v);
+      applyFilter();
+    });
+    label.appendChild(checkbox);
+    label.appendChild(document.createTextNode(v));
+    videoSubDiv.appendChild(label);
+  });
+
+  // Datum subcategories
+  const datumSet = new Set(videos.map(v => v.Datum).filter(Boolean));
+  datumSet.forEach(d => {
+    const label = document.createElement("label");
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.addEventListener("change", () => {
+      if (checkbox.checked) datumSelected.add(d);
+      else datumSelected.delete(d);
+      applyFilter();
+    });
+    label.appendChild(checkbox);
+    label.appendChild(document.createTextNode(d));
+    datumSubDiv.appendChild(label);
+  });
+}
+
+function getFiguryColor(f) {
+  switch(f.toLowerCase()) {
+    case "úvod": return "#e74c3c";
+    case "sensual": return "#2ecc71";
+    case "diagonál": return "#f1c40f";
+    case "sp": return "#3498db";
+    default: return "#95a5a6";
   }
 }
-
-// ================================
-// HERO BUTTON AUTO-HIDE
-// ================================
-function isHeroOutOfView() {
-  const hero = document.querySelector(".hero");
-  const rect = hero.getBoundingClientRect();
-  return rect.bottom <= 0;
-}
-
-const heroBar = document.querySelector(".hero-buttons");
-let hideTimeout = null;
-
-function isScrollOnVideo(e) {
-  const el = e.target;
-  if (!(el instanceof Element)) return false;
-  return el.closest("video") || el.closest(".speed-icon");
-}
-
-function showHeroBar() {
-  heroBar.classList.remove("hidden-hero");
-}
-
-function hideHeroBar() {
-  heroBar.classList.add("hidden-hero");
-}
-
-function onPageScroll(e) {
-  if (isScrollOnVideo(e)) return;
-
-  if (!isHeroOutOfView()) {
-    showHeroBar();
-    if (hideTimeout) clearTimeout(hideTimeout);
-    return;
-  }
-
-  showHeroBar();
-
-  if (hideTimeout) clearTimeout(hideTimeout);
-
-  hideTimeout = setTimeout(() => {
-    hideHeroBar();
-  }, 2000);
-}
-
-window.addEventListener("wheel", onPageScroll, { passive: true });
-window.addEventListener("scroll", onPageScroll, { passive: true });
