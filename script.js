@@ -40,6 +40,7 @@ function renderCarousel() {
     if (position === 2) img.classList.add("main-img");
     else if (position === 1 || position === 3) img.classList.add("first-layer");
     else img.classList.add("second-layer");
+
     if (position === 1 || position === 3) {
       img.addEventListener("click", () => {
         currentIndex = position < 2
@@ -48,6 +49,7 @@ function renderCarousel() {
         renderCarousel();
       });
     }
+
     carouselContainer.appendChild(img);
   });
 }
@@ -73,6 +75,17 @@ const datumSubDiv = document.getElementById("datum-subcategories");
 let figurySelected = new Set();
 let videoSelected = new Set();
 let datumSelected = new Set();
+
+// ================================
+// SHUFFLE FUNCTION
+// ================================
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
 
 // ================================
 // APPLY FILTER FUNCTION
@@ -101,7 +114,7 @@ function applyFilter(filterValue = null, shouldScroll = false) {
 }
 
 // ================================
-// RESPONSIVE COLUMNS
+// RESPONSIVE GALLERY COLUMNS
 // ================================
 function updateGalleryColumns() {
   const galleryDiv = document.querySelector(".video-block");
@@ -118,7 +131,6 @@ function updateGalleryColumns() {
 
   galleryDiv.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
 }
-
 window.addEventListener("resize", updateGalleryColumns);
 
 // ================================
@@ -130,7 +142,7 @@ collapseBtn.addEventListener("click", () => {
 });
 
 // ================================
-// CSV LOAD + INIT
+// LOAD VIDEO CSV + INIT
 // ================================
 window.addEventListener("DOMContentLoaded", () => {
   fetch("videos.csv")
@@ -225,9 +237,8 @@ function getFiguryColor(f) {
   }
 }
 
-
 // ================================
-// LAZY LOAD VIDEOS
+// LAZY LOAD + AUTO PAUSE VIDEOS
 // ================================
 let lazyObserver = null;
 let pauseObserver = null;
@@ -235,7 +246,6 @@ let visibilityCheckAttached = false;
 
 function lazyLoadVideos() {
   const videoElements = document.querySelectorAll("video[data-src]");
-
   const loadVideo = video => {
     if (!video.dataset.src) return;
     video.src = video.dataset.src;
@@ -246,10 +256,7 @@ function lazyLoadVideos() {
   if (!lazyObserver) {
     lazyObserver = new IntersectionObserver(entries => {
       entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          loadVideo(entry.target);
-          lazyObserver.unobserve(entry.target);
-        }
+        if (entry.isIntersecting) { loadVideo(entry.target); lazyObserver.unobserve(entry.target); }
       });
     }, { rootMargin: "400px 0px", threshold: 0.1 });
   }
@@ -277,6 +284,7 @@ function lazyLoadVideos() {
       });
     }, { threshold: 0.25 });
   }
+
   document.querySelectorAll("video").forEach(video => pauseObserver.observe(video));
 }
 
@@ -312,6 +320,7 @@ function loadGallery(videoList) {
     card.addEventListener("mouseleave", () => { speedIcon.style.display = "none"; });
 
     attachSpeedScroll(video, speedIcon, true);
+
     video.style.cursor = "default";
     card.appendChild(video);
 
@@ -335,18 +344,135 @@ function loadGallery(videoList) {
 // OPEN OVERLAY
 // ================================
 function openOverlay(videoObj) {
-  // Keep existing overlay code (same as your original)
+  const { hd, alt } = videoObj;
+  if (!hd) return;
+
+  const overlay = document.createElement("div");
+  overlay.classList.add("video-overlay");
+
+  const videoContainer = document.createElement("div");
+  videoContainer.style.display = "flex";
+  videoContainer.style.gap = "20px";
+  overlay.appendChild(videoContainer);
+
+  document.body.appendChild(overlay);
+  document.body.style.overflow = "hidden";
+
+  function createVideoWrapper(src, muted = true) {
+    const wrapper = document.createElement("div");
+    wrapper.style.display = "flex";
+    wrapper.style.flexDirection = "column";
+    wrapper.style.alignItems = "center";
+
+    const video = document.createElement("video");
+    video.src = src;
+    video.controls = true;
+    video.autoplay = true;
+    video.loop = true;
+    video.playsInline = true;
+    video.muted = muted;
+    video.classList.add("overlay-video");
+
+    wrapper.appendChild(video);
+    return { wrapper, video };
+  }
+
+  const main = createVideoWrapper(hd, false);
+  videoContainer.appendChild(main.wrapper);
+
+  let altWrapper, mainButton, altButton, backBtn;
+
+  if (alt) {
+    altWrapper = createVideoWrapper(alt, true);
+    altWrapper.wrapper.style.display = "none";
+    videoContainer.appendChild(altWrapper.wrapper);
+
+    mainButton = document.createElement("button");
+    mainButton.textContent = "Ukaž video z jiného úhlu";
+    mainButton.style.marginTop = "10px";
+    main.wrapper.appendChild(mainButton);
+
+    const showDualView = () => {
+      overlay.classList.add("dual-view");
+      main.wrapper.style.display = "flex";
+      altWrapper.wrapper.style.display = "flex";
+
+      main.video.muted = true;
+      altWrapper.video.muted = false;
+
+      main.video.play().catch(() => {});
+      altWrapper.video.play().catch(() => {});
+
+      mainButton.textContent = "pohled 1";
+      if (altButton) altButton.remove();
+
+      altButton = document.createElement("button");
+      altButton.textContent = "pohled 2";
+      altButton.style.marginTop = "10px";
+      altWrapper.wrapper.appendChild(altButton);
+
+      mainButton.onclick = showMainOnly;
+      altButton.onclick = showAltOnly;
+    };
+
+    const showMainOnly = () => {
+      overlay.classList.remove("dual-view");
+      main.wrapper.style.display = "flex";
+      altWrapper.wrapper.style.display = "none";
+
+      main.video.muted = false;
+      altWrapper.video.muted = true;
+
+      mainButton.textContent = "Ukaž video z jiného úhlu";
+      altButton?.remove();
+      altButton = null;
+
+      mainButton.onclick = showDualView;
+    };
+
+    const showAltOnly = () => {
+      overlay.classList.remove("dual-view");
+      main.wrapper.style.display = "none";
+      altWrapper.wrapper.style.display = "flex";
+
+      main.video.muted = true;
+      altWrapper.video.muted = false;
+
+      altWrapper.video.play().catch(() => {});
+
+      altButton?.remove();
+
+      backBtn = document.createElement("button");
+      backBtn.textContent = "Ukaž video z jiného úhlu";
+      backBtn.style.marginTop = "10px";
+      backBtn.addEventListener("click", () => {
+        backBtn.remove();
+        backBtn = null;
+        showDualView();
+      });
+      altWrapper.wrapper.appendChild(backBtn);
+    };
+
+    mainButton.onclick = showDualView;
+  }
+
+  overlay.addEventListener("click", e => {
+    if (e.target === overlay) {
+      overlay.remove();
+      document.body.style.overflow = "";
+    }
+  });
 }
 
 // ================================
 // SPEED SCROLL FUNCTION
 // ================================
 function attachSpeedScroll(video, label, iconOnly = false) {
-  const speeds = [0.5,0.75,1,1.25,1.5];
+  const speeds = [0.5, 0.75, 1, 1.25, 1.5];
   let index = speeds.indexOf(1);
 
   const showLabel = () => {
-    if (speeds[index] === 1) { label.style.display = iconOnly ? "block" : "none"; label.textContent = "1×"; }
+    if (speeds[index] === 1) label.style.display = iconOnly ? "block" : "none";
     else { label.textContent = speeds[index] + "×"; label.style.display = "block"; }
   };
 
@@ -354,6 +480,7 @@ function attachSpeedScroll(video, label, iconOnly = false) {
     e.preventDefault();
     if (e.deltaY < 0) index = Math.min(index + 1, speeds.length - 1);
     else index = Math.max(index - 1, 0);
+
     video.playbackRate = speeds[index];
     showLabel();
   };
@@ -361,114 +488,35 @@ function attachSpeedScroll(video, label, iconOnly = false) {
   if (iconOnly) label.addEventListener("wheel", wheelHandler);
   else video.addEventListener("wheel", wheelHandler);
 
-  if (!iconOnly) video.addEventListener("mouseleave", () => { if (speeds[index]===1) label.style.display="none"; });
-}
-
-// ================================
-// FILTER SIDEBAR COLLAPSE
-// ================================
-collapseBtn.addEventListener("click", () => {
-  filterContainer.classList.toggle("collapsed");
-});
-
-// ================================
-// LOAD CSV + INIT
-// ================================
-window.addEventListener("DOMContentLoaded", () => {
-  fetch("videos.csv")
-    .then(res => res.text())
-    .then(csvText => {
-      const results = Papa.parse(csvText, { header: true, skipEmptyLines: true });
-      videos = results.data.map(row => ({
-        src480: row["480p"] || null,
-        hd: row["1080p"] || null,
-        alt: row["Alt"] || null,
-        Button: row["Button"] || null,
-        znam: row["znám?"] || null,
-        Figury: row["Figury"] || null,
-        Datum: row["Datum"] || null
-      }));
-
-      // Initialize filters from CSV
-      initFilters();
-
-      applyFilter(null,false);
-
-      // Hero buttons events
-      document.getElementById("btn-renča")?.addEventListener("click", () => {
-        const isTogglingOff = activeFilter === "Peťák a Renča";
-        applyFilter(isTogglingOff ? null : "Peťák a Renča", true);
-      });
-      document.getElementById("btn-peta")?.addEventListener("click", () => {
-        const isTogglingOff = activeFilter === "Peťa a Peťa";
-        applyFilter(isTogglingOff ? null : "Peťa a Peťa", true);
-      });
-      document.getElementById("btn-all")?.addEventListener("click", () => {
-        filterContainer.classList.remove("hidden");
-        applyFilter(null,true);
-      });
-    })
-    .catch(err => console.error("CSV load error:", err));
-});
-
-// ================================
-// INIT FILTERS
-// ================================
-function initFilters() {
-  // Figury buttons
-  const figurySet = new Set(videos.map(v => v.Figury).filter(Boolean));
-  figurySet.forEach(f => {
-    const btn = document.createElement("button");
-    btn.textContent = f;
-    btn.classList.add("inactive");
-    btn.style.backgroundColor = getFiguryColor(f);
-    btn.addEventListener("click", () => {
-      if (figurySelected.has(f)) { figurySelected.delete(f); btn.classList.remove("active"); btn.classList.add("inactive"); }
-      else { figurySelected.add(f); btn.classList.add("active"); btn.classList.remove("inactive"); }
-      applyFilter();
-    });
-    figuryFiltersDiv.appendChild(btn);
-  });
-
-  // Video subcategories
-  const videoSet = new Set(videos.map(v => v.Button).filter(Boolean));
-  videoSet.forEach(v => {
-    const label = document.createElement("label");
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.addEventListener("change", () => {
-      if (checkbox.checked) videoSelected.add(v);
-      else videoSelected.delete(v);
-      applyFilter();
-    });
-    label.appendChild(checkbox);
-    label.appendChild(document.createTextNode(v));
-    videoSubDiv.appendChild(label);
-  });
-
-  // Datum subcategories
-  const datumSet = new Set(videos.map(v => v.Datum).filter(Boolean));
-  datumSet.forEach(d => {
-    const label = document.createElement("label");
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.addEventListener("change", () => {
-      if (checkbox.checked) datumSelected.add(d);
-      else datumSelected.delete(d);
-      applyFilter();
-    });
-    label.appendChild(checkbox);
-    label.appendChild(document.createTextNode(d));
-    datumSubDiv.appendChild(label);
-  });
-}
-
-function getFiguryColor(f) {
-  switch(f.toLowerCase()) {
-    case "úvod": return "#e74c3c";
-    case "sensual": return "#2ecc71";
-    case "diagonál": return "#f1c40f";
-    case "sp": return "#3498db";
-    default: return "#95a5a6";
+  if (!iconOnly) {
+    video.addEventListener("mouseleave", () => { if (speeds[index] === 1) label.style.display = "none"; });
   }
 }
+
+// ================================
+// HERO BUTTON AUTO-HIDE
+// ================================
+function isHeroOutOfView() {
+  const hero = document.querySelector(".hero");
+  const rect = hero.getBoundingClientRect();
+  return rect.bottom <= 0;
+}
+
+const heroBar = document.querySelector(".hero-buttons");
+let hideTimeout = null;
+
+function isScrollOnVideo(e) {
+  const el = e.target;
+  if (!(el instanceof Element)) return false;
+  return el.closest("video") || el.closest(".speed-icon");
+}
+
+function showHeroBar() { heroBar.classList.remove("hidden-hero"); }
+function hideHeroBar() { heroBar.classList.add("hidden-hero"); }
+
+function onPageScroll(e) {
+  if (isScrollOnVideo(e)) return;
+  if (isHeroOutOfView()) hideHeroBar();
+  else showHeroBar();
+}
+window.addEventListener("scroll", onPageScroll, { passive: true });
