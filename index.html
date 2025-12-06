@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Favicon (optional) -->
-  <link rel="icon" href="favicon.ico" />
+    <!-- Favicon (optional) -->
+    <link rel="icon" href="favicon.ico" />
   
   <!-- Google Font: Winky Sans -->
   <link href="https://fonts.googleapis.com/css2?family=Playwrite+US+Modern+Guides&family=Playwrite+US+Modern:wght@100..400&family=Winky+Sans:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet" />
@@ -14,13 +14,16 @@
   <script src="https://cdn.tailwindcss.com"></script>
   
   <title>Bachata</title>
+
+  
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <!-- Landing Section -->
   <section class="hero">
     <h1 class="text-6xl md:text-8xl font-light tracking-wider text-white drop-shadow-lg">My Bachata journey</h1>
-  </section>
+   </section>
+
 
   <div class="hero-buttons">
     <button id="btn-renča" class="filter-btn">Peťák a Renča</button>
@@ -28,40 +31,16 @@
     <button id="btn-all" class="filter-btn">Video galerie</button>
   </div>
 
-  <!-- ===================== Video + Filter Section ===================== -->
-  <section class="video-filter-container hidden" id="filter-container">
-    <!-- Sidebar -->
-    <div class="filter-sidebar" id="filter-sidebar">
-      <div class="filter-collapse" id="filter-collapse">
-        <span class="collapse-circle"></span>
-      </div>
-      <!-- Figury buttons -->
-      <div class="figury-filters" id="figury-filters"></div>
-      <!-- Main filters -->
-      <div class="main-filters">
-        <!-- Video Filter -->
-        <div class="filter-category" data-category="Video">
-          <h3>Video</h3>
-          <div class="filter-subcategories" id="video-subcategories"></div>
-        </div>
-        <!-- Datum Filter -->
-        <div class="filter-category" data-category="Datum">
-          <h3>Datum</h3>
-          <div class="filter-subcategories" id="datum-subcategories"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Video gallery -->
-    <div class="video-gallery-wrapper">
-      <section class="video-block" id="video-gallery">
-        <!-- Videos loaded dynamically -->
-      </section>
-    </div>
+   
+  <!-- Video Section Block -->
+  <section class="video-block" id="video-gallery">
+    <!-- Videos will be inserted dynamically by JS -->
+ 
   </section>
+  <!-- PapaParse CSV parser (must load before your script.js) -->
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
-  <!-- PapaParse CSV parser -->
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  
   <script src="script.js"></script>
 </body>
 </html>

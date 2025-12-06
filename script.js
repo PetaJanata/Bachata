@@ -1,11 +1,22 @@
 // ================================
 // HERO CAROUSEL
 // ================================
+
+// Hard-coded images (replace with your actual image paths)
 let carouselImages = [
-  "images/photo1.jpg","images/photo2.jpg","images/photo3.jpg","images/photo4.jpg","images/photo5.jpg",
-  "images/photo6.jpg","images/photo7.jpg","images/photo8.jpg","images/photo9.jpg","images/photo10.jpg"
+  "images/photo1.jpg",
+  "images/photo2.jpg",
+  "images/photo3.jpg",
+  "images/photo4.jpg",
+  "images/photo5.jpg",
+  "images/photo6.jpg",
+  "images/photo7.jpg",
+  "images/photo8.jpg",
+  "images/photo9.jpg",
+  "images/photo10.jpg"
 ];
 
+// Shuffle function for carousel
 function shuffleImages(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -13,19 +24,27 @@ function shuffleImages(array) {
   }
   return array;
 }
+
+// Shuffle images initially
 carouselImages = shuffleImages(carouselImages);
 
+// Create carousel container
 const heroSection = document.querySelector(".hero");
 const carouselContainer = document.createElement("div");
 carouselContainer.classList.add("hero-carousel");
+
 heroSection.insertBefore(carouselContainer, heroSection.querySelector(".hero-buttons"));
 
+// Carousel state
 let currentIndex = 0;
+const visibleCount = 5; // main + 2 layers on each side
+
 function getVisibleIndexes(centerIndex) {
   const total = carouselImages.length;
   let indexes = [];
   for (let i = -2; i <= 2; i++) {
-    indexes.push((centerIndex + i + total) % total);
+    let idx = (centerIndex + i + total) % total;
+    indexes.push(idx);
   }
   return indexes;
 }
@@ -33,14 +52,18 @@ function getVisibleIndexes(centerIndex) {
 function renderCarousel() {
   carouselContainer.innerHTML = "";
   const indexes = getVisibleIndexes(currentIndex);
+
   indexes.forEach((imgIdx, position) => {
     const img = document.createElement("img");
     img.src = carouselImages[imgIdx];
     img.classList.add("carousel-img");
+
+    // Set classes for position (main, first, second)
     if (position === 2) img.classList.add("main-img");
     else if (position === 1 || position === 3) img.classList.add("first-layer");
     else img.classList.add("second-layer");
 
+    // Clickable side images
     if (position === 1 || position === 3) {
       img.addEventListener("click", () => {
         currentIndex = position < 2
@@ -53,31 +76,24 @@ function renderCarousel() {
     carouselContainer.appendChild(img);
   });
 }
+
+// Initial render
 renderCarousel();
+
+// Make carousel responsive on resize
 window.addEventListener("resize", renderCarousel);
 
-// ================================
+
+
+// ================================ 
 // GLOBAL VARIABLES
 // ================================
-let videos = [];
-let activeFilter = null;
+let videos = []; // holds all video metadata from CSV
+let activeFilter = null; // current active filter
 const gallery = document.getElementById("video-gallery");
 
 // ================================
-// FILTER PANEL VARIABLES
-// ================================
-const filterContainer = document.getElementById("filter-container");
-const collapseBtn = document.getElementById("filter-collapse");
-const figuryFiltersDiv = document.getElementById("figury-filters");
-const videoSubDiv = document.getElementById("video-subcategories");
-const datumSubDiv = document.getElementById("datum-subcategories");
-
-let figurySelected = new Set();
-let videoSelected = new Set();
-let datumSelected = new Set();
-
-// ================================
-// SHUFFLE FUNCTION
+// SHUFFLE FUNCTION (Fisher–Yates)
 // ================================
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -88,157 +104,43 @@ function shuffleArray(array) {
 }
 
 // ================================
-// APPLY FILTER FUNCTION
+// FILTER FUNCTION (NOW WITH shouldScroll)
 // ================================
-function applyFilter(filterValue = null, shouldScroll = false) {
+function applyFilter(filterValue, shouldScroll = false) {
   activeFilter = filterValue;
+
+  // Update button active styles
   document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
-  if (!filterValue) document.getElementById("btn-all")?.classList.add("active");
-  else if (filterValue === "Peťák a Renča") document.getElementById("btn-renča")?.classList.add("active");
-  else if (filterValue === "Peťa a Peťa") document.getElementById("btn-peta")?.classList.add("active");
 
-  let filtered = [...videos];
+  if (filterValue === null) {
+    document.getElementById("btn-all")?.classList.add("active");
+  }
+  else if (filterValue === "Peťák a Renča") {
+    document.getElementById("btn-renča")?.classList.add("active");
+  }
+  else if (filterValue === "Peťa a Peťa") {
+    document.getElementById("btn-peta")?.classList.add("active");
+  }
 
-  if (figurySelected.size) filtered = filtered.filter(v => figurySelected.has(v.Figury));
-  if (videoSelected.size) filtered = filtered.filter(v => videoSelected.has(v.Button));
-  if (datumSelected.size) filtered = filtered.filter(v => datumSelected.has(v.Datum));
+  const filteredVideos = !filterValue ? [...videos] : videos.filter(v => v.button === filterValue);
+  const shuffledVideos = shuffleArray(filteredVideos);
 
-  filtered = shuffleArray(filtered);
-  loadGallery(filtered);
+  loadGallery(shuffledVideos);
   lazyLoadVideos();
-  updateGalleryColumns();
 
-  if (shouldScroll) {
-    document.getElementById("video-gallery")?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-}
-
-// ================================
-// RESPONSIVE GALLERY COLUMNS
-// ================================
-function updateGalleryColumns() {
-  const galleryDiv = document.querySelector(".video-block");
-  if (!galleryDiv) return;
-  let columns = 6;
-  const screenWidth = window.innerWidth;
-  const sidebarVisible = !filterContainer.classList.contains("collapsed");
-
-  if (sidebarVisible) columns = 5;
-  if (screenWidth <= 1600) columns = sidebarVisible ? 4 : 5;
-  if (screenWidth <= 1300) columns = sidebarVisible ? 3 : 4;
-  if (screenWidth <= 1000) columns = sidebarVisible ? 2 : 3;
-  if (screenWidth <= 700)  columns = 1;
-
-  galleryDiv.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
-}
-window.addEventListener("resize", updateGalleryColumns);
-
-// ================================
-// COLLAPSE SIDEBAR
-// ================================
-collapseBtn.addEventListener("click", () => {
-  filterContainer.classList.toggle("collapsed");
-  updateGalleryColumns();
-});
-
-// ================================
-// LOAD VIDEO CSV + INIT
-// ================================
-window.addEventListener("DOMContentLoaded", () => {
-  fetch("videos.csv")
-    .then(res => res.text())
-    .then(csvText => {
-      const results = Papa.parse(csvText, { header: true, skipEmptyLines: true });
-      videos = results.data.map(row => ({
-        src480: row["480p"] || null,
-        hd: row["1080p"] || null,
-        alt: row["Alt"] || null,
-        Button: row["Button"] || null,
-        znam: row["znám?"] || null,
-        Figury: row["Figury"] || null,
-        Datum: row["Datum"] || null
-      }));
-
-      initFilters();
-      applyFilter(null,false);
-
-      document.getElementById("btn-renča")?.addEventListener("click", () => {
-        const isTogglingOff = activeFilter === "Peťák a Renča";
-        applyFilter(isTogglingOff ? null : "Peťák a Renča", true);
-      });
-      document.getElementById("btn-peta")?.addEventListener("click", () => {
-        const isTogglingOff = activeFilter === "Peťa a Peťa";
-        applyFilter(isTogglingOff ? null : "Peťa a Peťa", true);
-      });
-      document.getElementById("btn-all")?.addEventListener("click", () => {
-        filterContainer.classList.remove("collapsed");
-        applyFilter(null,true);
-      });
-    })
-    .catch(err => console.error("CSV load error:", err));
-});
-
-// ================================
-// INIT FILTERS
-// ================================
-function initFilters() {
-  const figurySet = new Set(videos.map(v => v.Figury).filter(Boolean));
-  figurySet.forEach(f => {
-    const btn = document.createElement("button");
-    btn.textContent = f;
-    btn.classList.add("inactive");
-    btn.style.backgroundColor = getFiguryColor(f);
-    btn.addEventListener("click", () => {
-      if (figurySelected.has(f)) { figurySelected.delete(f); btn.classList.remove("active"); btn.classList.add("inactive"); }
-      else { figurySelected.add(f); btn.classList.add("active"); btn.classList.remove("inactive"); }
-      applyFilter();
-    });
-    figuryFiltersDiv.appendChild(btn);
-  });
-
-  const videoSet = new Set(videos.map(v => v.Button).filter(Boolean));
-  videoSet.forEach(v => {
-    const label = document.createElement("label");
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.addEventListener("change", () => {
-      if (checkbox.checked) videoSelected.add(v);
-      else videoSelected.delete(v);
-      applyFilter();
-    });
-    label.appendChild(checkbox);
-    label.appendChild(document.createTextNode(v));
-    videoSubDiv.appendChild(label);
-  });
-
-  const datumSet = new Set(videos.map(v => v.Datum).filter(Boolean));
-  datumSet.forEach(d => {
-    const label = document.createElement("label");
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.addEventListener("change", () => {
-      if (checkbox.checked) datumSelected.add(d);
-      else datumSelected.delete(d);
-      applyFilter();
-    });
-    label.appendChild(checkbox);
-    label.appendChild(document.createTextNode(d));
-    datumSubDiv.appendChild(label);
+  // 🔥 Only scroll when user clicks a filter
+ if (shouldScroll) {
+  document.getElementById("video-gallery")?.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
   });
 }
 
-function getFiguryColor(f) {
-  switch(f.toLowerCase()) {
-    case "úvod": return "#e74c3c";
-    case "sensual": return "#2ecc71";
-    case "diagonál": return "#f1c40f";
-    case "sp": return "#3498db";
-    default: return "#95a5a6";
-  }
+
 }
 
 // ================================
-// LAZY LOAD + AUTO PAUSE VIDEOS
+// LAZY LOAD + AUTO-PAUSE VIDEOS
 // ================================
 let lazyObserver = null;
 let pauseObserver = null;
@@ -246,6 +148,7 @@ let visibilityCheckAttached = false;
 
 function lazyLoadVideos() {
   const videoElements = document.querySelectorAll("video[data-src]");
+
   const loadVideo = video => {
     if (!video.dataset.src) return;
     video.src = video.dataset.src;
@@ -253,21 +156,28 @@ function lazyLoadVideos() {
     video.play().catch(() => {});
   };
 
+  // Lazy Observer
   if (!lazyObserver) {
     lazyObserver = new IntersectionObserver(entries => {
       entries.forEach(entry => {
-        if (entry.isIntersecting) { loadVideo(entry.target); lazyObserver.unobserve(entry.target); }
+        if (entry.isIntersecting) {
+          loadVideo(entry.target);
+          lazyObserver.unobserve(entry.target);
+        }
       });
     }, { rootMargin: "400px 0px", threshold: 0.1 });
   }
 
   videoElements.forEach(video => lazyObserver.observe(video));
 
+  // Extra visibility check
   if (!visibilityCheckAttached) {
     const checkVisible = () => {
       document.querySelectorAll("video[data-src]").forEach(video => {
         const rect = video.getBoundingClientRect();
-        if (rect.top < window.innerHeight + 300 && rect.bottom > -300) loadVideo(video);
+        if (rect.top < window.innerHeight + 300 && rect.bottom > -300) {
+          loadVideo(video);
+        }
       });
     };
     window.addEventListener("scroll", checkVisible, { passive: true });
@@ -275,6 +185,7 @@ function lazyLoadVideos() {
     visibilityCheckAttached = true;
   }
 
+  // Pause Observer
   if (!pauseObserver) {
     pauseObserver = new IntersectionObserver(entries => {
       entries.forEach(entry => {
@@ -297,6 +208,7 @@ function loadGallery(videoList) {
 
   videoList.forEach(v => {
     if (!v.src480) return;
+
     const card = document.createElement("div");
     card.classList.add("video-card");
     card.style.position = "relative";
@@ -307,17 +219,25 @@ function loadGallery(videoList) {
     video.loop = true;
     video.playsInline = true;
 
-    if (v.znam === "znám") video.classList.add("know-green");
-    else if (v.znam === "potřebuju zlepšit") video.classList.add("know-yellow");
-    else if (v.znam === "neznám") video.classList.add("know-red");
+    if (v.znam === "znám") {
+      video.classList.add("know-green");
+    } else if (v.znam === "potřebuju zlepšit") {
+      video.classList.add("know-yellow");
+    } else if (v.znam === "neznám") {
+      video.classList.add("know-red");
+    }
 
     const speedIcon = document.createElement("div");
     speedIcon.classList.add("speed-icon");
     speedIcon.textContent = "1×";
     card.appendChild(speedIcon);
 
-    card.addEventListener("mouseenter", () => { speedIcon.style.display = "block"; });
-    card.addEventListener("mouseleave", () => { speedIcon.style.display = "none"; });
+    card.addEventListener("mouseenter", () => {
+      speedIcon.style.display = "block";
+    });
+    card.addEventListener("mouseleave", () => {
+      speedIcon.style.display = "none";
+    });
 
     attachSpeedScroll(video, speedIcon, true);
 
@@ -330,8 +250,12 @@ function loadGallery(videoList) {
       fullscreenIcon.innerHTML = "⤢";
       card.appendChild(fullscreenIcon);
 
-      card.addEventListener("mouseenter", () => { fullscreenIcon.style.display = "block"; });
-      card.addEventListener("mouseleave", () => { fullscreenIcon.style.display = "none"; });
+      card.addEventListener("mouseenter", () => {
+        fullscreenIcon.style.display = "block";
+      });
+      card.addEventListener("mouseleave", () => {
+        fullscreenIcon.style.display = "none";
+      });
 
       fullscreenIcon.addEventListener("click", () => openOverlay(v));
     }
@@ -465,6 +389,54 @@ function openOverlay(videoObj) {
 }
 
 // ================================
+// DOM CONTENT LOADED — INIT
+// ================================
+window.addEventListener("DOMContentLoaded", () => {
+
+  fetch("videos.csv")
+    .then(res => res.text())
+    .then(csvText => {
+      const results = Papa.parse(csvText, { header: true, skipEmptyLines: true });
+
+      videos = results.data.map(row => ({
+        src480: row["480p"] || null,
+        hd: row["1080p"] || null,
+        alt: row["Alt"] || null,
+        button: row["Button"] || null,
+        znam: row["znám?"] || null
+      }));
+
+      console.log("Videos loaded from CSV:", videos);
+
+      // ⛔ NO SCROLL ON PAGE LOAD
+      applyFilter(null, false);
+
+      const btnRenCa = document.getElementById("btn-renča");
+      const btnPeta = document.getElementById("btn-peta");
+      const btnAll = document.getElementById("btn-all");
+
+      if (btnRenCa)
+        btnRenCa.addEventListener("click", () => {
+          const isTogglingOff = activeFilter === "Peťák a Renča";
+          applyFilter(isTogglingOff ? null : "Peťák a Renča", true);
+        });
+
+      if (btnPeta)
+        btnPeta.addEventListener("click", () => {
+          const isTogglingOff = activeFilter === "Peťa a Peťa";
+          applyFilter(isTogglingOff ? null : "Peťa a Peťa", true);
+        });
+
+      if (btnAll)
+        btnAll.addEventListener("click", () => {
+          applyFilter(null, true);
+        });
+
+    })
+    .catch(err => console.error("Error loading CSV:", err));
+});
+
+// ================================
 // SPEED SCROLL FUNCTION
 // ================================
 function attachSpeedScroll(video, label, iconOnly = false) {
@@ -472,8 +444,13 @@ function attachSpeedScroll(video, label, iconOnly = false) {
   let index = speeds.indexOf(1);
 
   const showLabel = () => {
-    if (speeds[index] === 1) label.style.display = iconOnly ? "block" : "none";
-    else { label.textContent = speeds[index] + "×"; label.style.display = "block"; }
+    if (speeds[index] === 1) {
+      label.style.display = iconOnly ? "block" : "none";
+      label.textContent = "1×";
+    } else {
+      label.textContent = speeds[index] + "×";
+      label.style.display = "block";
+    }
   };
 
   const wheelHandler = e => {
@@ -485,11 +462,16 @@ function attachSpeedScroll(video, label, iconOnly = false) {
     showLabel();
   };
 
-  if (iconOnly) label.addEventListener("wheel", wheelHandler);
-  else video.addEventListener("wheel", wheelHandler);
+  if (iconOnly) {
+    label.addEventListener("wheel", wheelHandler);
+  } else {
+    video.addEventListener("wheel", wheelHandler);
+  }
 
   if (!iconOnly) {
-    video.addEventListener("mouseleave", () => { if (speeds[index] === 1) label.style.display = "none"; });
+    video.addEventListener("mouseleave", () => {
+      if (speeds[index] === 1) label.style.display = "none";
+    });
   }
 }
 
@@ -511,12 +493,31 @@ function isScrollOnVideo(e) {
   return el.closest("video") || el.closest(".speed-icon");
 }
 
-function showHeroBar() { heroBar.classList.remove("hidden-hero"); }
-function hideHeroBar() { heroBar.classList.add("hidden-hero"); }
+function showHeroBar() {
+  heroBar.classList.remove("hidden-hero");
+}
+
+function hideHeroBar() {
+  heroBar.classList.add("hidden-hero");
+}
 
 function onPageScroll(e) {
   if (isScrollOnVideo(e)) return;
-  if (isHeroOutOfView()) hideHeroBar();
-  else showHeroBar();
+
+  if (!isHeroOutOfView()) {
+    showHeroBar();
+    if (hideTimeout) clearTimeout(hideTimeout);
+    return;
+  }
+
+  showHeroBar();
+
+  if (hideTimeout) clearTimeout(hideTimeout);
+
+  hideTimeout = setTimeout(() => {
+    hideHeroBar();
+  }, 2000);
 }
+
+window.addEventListener("wheel", onPageScroll, { passive: true });
 window.addEventListener("scroll", onPageScroll, { passive: true });
