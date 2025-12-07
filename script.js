@@ -124,12 +124,14 @@ function applyFilter(filterValue, shouldScroll = false) {
 
   let filteredVideos;
 
-  if (filterValue === "red") filteredVideos = videos.filter(v => v.znam === "neznám");
-  else if (filterValue === "yellow") filteredVideos = videos.filter(v => v.znam === "potřebuju zlepšit");
-  else if (filterValue === "green") filteredVideos = videos.filter(v => v.znam === "znám");
+if (filterValue === "red") filteredVideos = videos.filter(v => v.znam?.trim() === "neznám");
+else if (filterValue === "yellow") filteredVideos = videos.filter(v => v.znam?.trim() === "potřebuju zlepšit");
+else if (filterValue === "green") filteredVideos = videos.filter(v => v.znam?.trim() === "znám");
   else if (!filterValue) filteredVideos = [...videos];
   else filteredVideos = videos.filter(v => v.button === filterValue);
 
+//debug
+  console.log("Filter:", filterValue, "matching videos:", filteredVideos.length);
   // Shuffle
   const shuffledVideos = shuffleArray(filteredVideos);
 
