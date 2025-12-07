@@ -112,32 +112,38 @@ function applyFilter(filterValue, shouldScroll = false) {
   // Update button active styles
   document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
 
-  if (filterValue === null) {
-    document.getElementById("btn-all")?.classList.add("active");
-  }
-  else if (filterValue === "Peťák a Renča") {
-    document.getElementById("btn-renča")?.classList.add("active");
-  }
-  else if (filterValue === "Peťa a Peťa") {
-    document.getElementById("btn-peta")?.classList.add("active");
+  // Highlight the correct button
+  switch(filterValue) {
+    case "Peťák a Renča": document.getElementById("btn-renča")?.classList.add("active"); break;
+    case "Peťa a Peťa": document.getElementById("btn-peta")?.classList.add("active"); break;
+    case "red": document.getElementById("btn-red")?.classList.add("active"); break;
+    case "yellow": document.getElementById("btn-yellow")?.classList.add("active"); break;
+    case "green": document.getElementById("btn-green")?.classList.add("active"); break;
+    default: document.getElementById("btn-all")?.classList.add("active");
   }
 
-  const filteredVideos = !filterValue ? [...videos] : videos.filter(v => v.button === filterValue);
+  let filteredVideos;
+
+  if (filterValue === "red") filteredVideos = videos.filter(v => v.znam === "neznám");
+  else if (filterValue === "yellow") filteredVideos = videos.filter(v => v.znam === "potřebuju zlepšit");
+  else if (filterValue === "green") filteredVideos = videos.filter(v => v.znam === "znám");
+  else if (!filterValue) filteredVideos = [...videos];
+  else filteredVideos = videos.filter(v => v.button === filterValue);
+
+  // Shuffle
   const shuffledVideos = shuffleArray(filteredVideos);
 
   loadGallery(shuffledVideos);
   lazyLoadVideos();
 
-  // 🔥 Only scroll when user clicks a filter
- if (shouldScroll) {
-  document.getElementById("video-gallery")?.scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-  });
+  if (shouldScroll) {
+    document.getElementById("video-gallery")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }
 }
 
-
-}
 
 // ================================
 // LAZY LOAD + AUTO-PAUSE VIDEOS
@@ -431,6 +437,29 @@ window.addEventListener("DOMContentLoaded", () => {
         btnAll.addEventListener("click", () => {
           applyFilter(null, true);
         });
+
+      const btnRed = document.getElementById("btn-red");
+      const btnYellow = document.getElementById("btn-yellow");
+      const btnGreen = document.getElementById("btn-green");
+
+      if (btnRed)
+        btnRed.addEventListener("click", () => {
+          const isTogglingOff = activeFilter === "red";
+          applyFilter(isTogglingOff ? null : "red", true);
+        });
+
+      if (btnYellow)
+        btnYellow.addEventListener("click", () => {
+          const isTogglingOff = activeFilter === "yellow";
+          applyFilter(isTogglingOff ? null : "yellow", true);
+        });
+
+      if (btnGreen)
+        btnGreen.addEventListener("click", () => {
+          const isTogglingOff = activeFilter === "green";
+          applyFilter(isTogglingOff ? null : "green", true);
+        });
+
 
     })
     .catch(err => console.error("Error loading CSV:", err));
