@@ -283,6 +283,16 @@ html { scroll-behavior: smooth; }
 }
 
 
+/*youtube*/
+.video-thumb {
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  display: block;
+  object-fit: cover;
+}
+
+
 /* Mobile layout for overlay */
 @media (max-width: 768px) {
   /* Stack videos vertically in dual view */
