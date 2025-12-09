@@ -119,6 +119,8 @@ function applyFilter(filterValue, shouldScroll = false) {
     case "red": document.getElementById("btn-red")?.classList.add("active"); break;
     case "yellow": document.getElementById("btn-yellow")?.classList.add("active"); break;
     case "green": document.getElementById("btn-green")?.classList.add("active"); break;
+    case "YouTube": document.getElementById("btn-youtube")?.classList.add("active"); break;
+
     default: document.getElementById("btn-all")?.classList.add("active");
   }
 
@@ -127,6 +129,7 @@ function applyFilter(filterValue, shouldScroll = false) {
 if (filterValue === "red") filteredVideos = videos.filter(v => v.znam?.trim() === "neznám");
 else if (filterValue === "yellow") filteredVideos = videos.filter(v => v.znam?.trim() === "potřebuju zlepšit");
 else if (filterValue === "green") filteredVideos = videos.filter(v => v.znam?.trim() === "znám");
+  else if (filterValue === "YouTube")  filteredVideos = videos.filter(v => v.youtube);
   else if (!filterValue) filteredVideos = [...videos];
   else filteredVideos = videos.filter(v => v.button === filterValue);
 
@@ -207,6 +210,17 @@ function lazyLoadVideos() {
   document.querySelectorAll("video").forEach(video => pauseObserver.observe(video));
 }
 
+ // Extract YT video ID
+  function extractYouTubeID(url) {
+  try {
+    const u = new URL(url);
+    if (u.hostname === "youtu.be") return u.pathname.slice(1);
+    if (u.searchParams.get("v")) return u.searchParams.get("v");
+    if (u.pathname.includes("/embed/")) return u.pathname.split("/embed/")[1];
+  } catch (e) {}
+  return null;
+}
+
 // ================================
 // LOAD GALLERY
 // ================================
@@ -215,7 +229,43 @@ function loadGallery(videoList) {
   gallery.innerHTML = "";
 
   videoList.forEach(v => {
-    if (!v.src480) return;
+
+    // ─────────────────────────────
+// YOUTUBE ITEM
+// ─────────────────────────────
+if (v.youtube) {
+  const card = document.createElement("div");
+  card.classList.add("video-card");
+  card.style.position = "relative";
+ 
+  const ytID = extractYouTubeID(v.youtube);
+
+
+  // Thumbnail
+  const thumb = document.createElement("img");
+  thumb.src = `https://img.youtube.com/vi/${ytID}/hqdefault.jpg`;
+  thumb.classList.add("video-thumb");
+  thumb.style.width = "100%";
+  thumb.style.display = "block";
+  thumb.style.cursor = "pointer";
+
+  // YouTube Badge
+  const badge = document.createElement("div");
+  badge.classList.add("speed-icon");
+  badge.textContent = "YT";
+  badge.style.display = "block";
+  card.appendChild(badge);
+
+  // On click → open YouTube modal
+  thumb.addEventListener("click", () => openYouTubeOverlay(v.youtube));
+
+  card.appendChild(thumb);
+  gallery.appendChild(card);
+  return; // STOP → do not render as local mp4
+}
+
+   // do not drop YouTube videos!
+if (!v.src480 && !v.youtube) return;
 
     const card = document.createElement("div");
     card.classList.add("video-card");
@@ -396,6 +446,29 @@ function openOverlay(videoObj) {
   });
 }
 
+function openYouTubeOverlay(url) {
+  const overlay = document.createElement("div");
+  overlay.classList.add("video-overlay");
+
+  const iframe = document.createElement("iframe");
+  iframe.src = url.replace("watch?v=", "embed/") + "?autoplay=1";
+  iframe.allow = "autoplay; encrypted-media";
+  iframe.allowFullscreen = true;
+  iframe.classList.add("overlay-video");
+
+  overlay.appendChild(iframe);
+  document.body.appendChild(overlay);
+  document.body.style.overflow = "hidden";
+
+  overlay.addEventListener("click", e => {
+    if (e.target === overlay) {
+      overlay.remove();
+      document.body.style.overflow = "";
+    }
+  });
+}
+
+
 // ================================
 // DOM CONTENT LOADED — INIT
 // ================================
@@ -411,7 +484,8 @@ window.addEventListener("DOMContentLoaded", () => {
         hd: row["1080p"] || null,
         alt: row["Alt"] || null,
         button: row["Button"] || null,
-        znam: row["znám?"] || null
+        znam: row["znám?"] || null,
+        youtube: row["YouTubeURL"]?.trim() || null
       }));
 
       console.log("Videos loaded from CSV:", videos);
@@ -461,11 +535,20 @@ window.addEventListener("DOMContentLoaded", () => {
           const isTogglingOff = activeFilter === "green";
           applyFilter(isTogglingOff ? null : "green", true);
         });
+      
+     const btnYouTube = document.getElementById("btn-youtube");
 
+if (btnYouTube) {
+  btnYouTube.addEventListener("click", () => {
+    const isTogglingOff = activeFilter === "YouTube";
+    applyFilter(isTogglingOff ? null : "YouTube", true);
+  });
+}
 
-    })
+    }) // closes fetch().then(...)
     .catch(err => console.error("Error loading CSV:", err));
-});
+}); // closes DOMContentLoaded
+
 
 // ================================
 // SPEED SCROLL FUNCTION
