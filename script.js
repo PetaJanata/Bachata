@@ -211,15 +211,35 @@ function lazyLoadVideos() {
 }
 
  // Extract YT video ID
-  function extractYouTubeID(url) {
+function extractYouTubeID(url) {
   try {
     const u = new URL(url);
-    if (u.hostname === "youtu.be") return u.pathname.slice(1);
-    if (u.searchParams.get("v")) return u.searchParams.get("v");
-    if (u.pathname.includes("/embed/")) return u.pathname.split("/embed/")[1];
+
+    // 1. youtu.be/<id>
+    if (u.hostname === "youtu.be") {
+      return u.pathname.slice(1);
+    }
+
+    // 2. /watch?v=<id>
+    if (u.searchParams.get("v")) {
+      return u.searchParams.get("v");
+    }
+
+    // 3. /embed/<id>
+    if (u.pathname.includes("/embed/")) {
+      return u.pathname.split("/embed/")[1];
+    }
+
+    // 4. /shorts/<id>
+    if (u.pathname.includes("/shorts/")) {
+      return u.pathname.split("/shorts/")[1];
+    }
+
   } catch (e) {}
+
   return null;
 }
+
 
 // ================================
 // LOAD GALLERY
@@ -243,7 +263,7 @@ if (v.youtube) {
 
   // Thumbnail
   const thumb = document.createElement("img");
-  thumb.src = `https://img.youtube.com/vi/${ytID}/hqdefault.jpg`;
+ thumb.src = `https://i.ytimg.com/vi/${ytID}/hqdefault.jpg`;
   thumb.classList.add("video-thumb");
   thumb.style.width = "100%";
   thumb.style.display = "block";
@@ -451,7 +471,8 @@ function openYouTubeOverlay(url) {
   overlay.classList.add("video-overlay");
 
   const iframe = document.createElement("iframe");
-  iframe.src = url.replace("watch?v=", "embed/") + "?autoplay=1";
+  const ytID = extractYouTubeID(url);
+  iframe.src = `https://www.youtube.com/embed/${ytID}?autoplay=1`;
   iframe.allow = "autoplay; encrypted-media";
   iframe.allowFullscreen = true;
   iframe.classList.add("overlay-video");
