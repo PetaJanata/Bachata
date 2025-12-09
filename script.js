@@ -470,17 +470,26 @@ function openYouTubeOverlay(url) {
   const overlay = document.createElement("div");
   overlay.classList.add("video-overlay");
 
-  const iframe = document.createElement("iframe");
   const ytID = extractYouTubeID(url);
-  iframe.src = `https://www.youtube.com/embed/${ytID}?autoplay=1`;
+
+  // Video container similar to HD player for local videos
+  const videoContainer = document.createElement("div");
+  videoContainer.classList.add("video-container");
+  overlay.appendChild(videoContainer);
+
+  // YouTube iframe
+  const iframe = document.createElement("iframe");
+  iframe.src = `https://www.youtube.com/embed/${ytID}?autoplay=1&mute=1&loop=1&playlist=${ytID}&controls=1&modestbranding=1&playsinline=1&rel=0`;
   iframe.allow = "autoplay; encrypted-media";
   iframe.allowFullscreen = true;
-  iframe.classList.add("overlay-video");
+  iframe.classList.add("yt-hd-iframe");
 
-  overlay.appendChild(iframe);
+  videoContainer.appendChild(iframe);
+
   document.body.appendChild(overlay);
   document.body.style.overflow = "hidden";
 
+  // Close overlay on click outside video
   overlay.addEventListener("click", e => {
     if (e.target === overlay) {
       overlay.remove();
