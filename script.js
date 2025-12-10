@@ -573,7 +573,7 @@ if (btnTrenink) {
     const isTogglingOff = activeFilter === "Trénink s Peťou";
     applyFilter(isTogglingOff ? null : "Trénink s Peťou", true);
   });
-
+}
   const btnYouTube = document.getElementById("btn-youtube");
 
 if (btnYouTube) {
