@@ -120,7 +120,7 @@ function applyFilter(filterValue, shouldScroll = false) {
     case "yellow": document.getElementById("btn-yellow")?.classList.add("active"); break;
     case "green": document.getElementById("btn-green")?.classList.add("active"); break;
     case "YouTube": document.getElementById("btn-youtube")?.classList.add("active"); break;
-
+    case "Trénink s Peťou": document.getElementById("btn-trenink")?.classList.add("active"); break;
     default: document.getElementById("btn-all")?.classList.add("active");
   }
 
@@ -565,8 +565,16 @@ window.addEventListener("DOMContentLoaded", () => {
           const isTogglingOff = activeFilter === "green";
           applyFilter(isTogglingOff ? null : "green", true);
         });
-      
-     const btnYouTube = document.getElementById("btn-youtube");
+
+       const btnTrenink = document.getElementById("btn-trenink");
+
+if (btnTrenink) {
+  btnTrenink.addEventListener("click", () => {
+    const isTogglingOff = activeFilter === "Trénink s Peťou";
+    applyFilter(isTogglingOff ? null : "Trénink s Peťou", true);
+  });
+
+  const btnYouTube = document.getElementById("btn-youtube");
 
 if (btnYouTube) {
   btnYouTube.addEventListener("click", () => {
