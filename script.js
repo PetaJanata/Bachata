@@ -249,7 +249,34 @@ function loadGallery(videoList) {
   gallery.innerHTML = "";
 
   videoList.forEach(v => {
+    
+// ─────────────────────────────
+// INSTAGRAM ITEM
+// ─────────────────────────────
+if (v.instagram) {
+  const card = document.createElement("div");
+  card.classList.add("video-card");
+  card.style.position = "relative";
 
+  const thumb = document.createElement("img");
+  thumb.src = "images/instagram-placeholder.jpg"; // static fallback
+  thumb.classList.add("video-thumb");
+  thumb.style.cursor = "pointer";
+
+  const badge = document.createElement("div");
+  badge.classList.add("speed-icon");
+  badge.textContent = "IG";
+  card.appendChild(badge);
+
+  thumb.addEventListener("click", () => openInstagramOverlay(v.instagram));
+
+  card.appendChild(thumb);
+  gallery.appendChild(card);
+  return;
+}
+
+
+    
     // ─────────────────────────────
 // YOUTUBE ITEM
 // ─────────────────────────────
@@ -498,6 +525,37 @@ function openYouTubeOverlay(url) {
   });
 }
 
+function openInstagramOverlay(url) {
+  const overlay = document.createElement("div");
+  overlay.classList.add("video-overlay");
+
+  const container = document.createElement("div");
+  container.classList.add("video-container");
+
+  const iframe = document.createElement("iframe");
+  iframe.src = url.replace(/\/?$/, "/") + "embed/";
+  iframe.allow = "autoplay; encrypted-media";
+  iframe.allowFullscreen = true;
+  iframe.style.width = "100%";
+  iframe.style.height = "100%";
+  iframe.style.border = "0";
+
+  container.appendChild(iframe);
+  overlay.appendChild(container);
+
+  document.body.appendChild(overlay);
+  document.body.style.overflow = "hidden";
+
+  overlay.addEventListener("click", e => {
+    if (e.target === overlay) {
+      overlay.remove();
+      document.body.style.overflow = "";
+    }
+  });
+}
+
+
+
 
 // ================================
 // DOM CONTENT LOADED — INIT
@@ -515,7 +573,8 @@ window.addEventListener("DOMContentLoaded", () => {
         alt: row["Alt"] || null,
         button: row["Button"] || null,
         znam: row["znám?"] || null,
-        youtube: row["YouTubeURL"]?.trim() || null
+        youtube: row["YouTubeURL"]?.trim() || null,
+        instagram: row["InstagramURL"]?.trim() || null
       }));
 
       console.log("Videos loaded from CSV:", videos);
