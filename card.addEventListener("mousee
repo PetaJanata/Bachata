@@ -241,143 +241,107 @@ function extractYouTubeID(url) {
 }
 
 
-// ================================
-// LOAD GALLERY
-// ================================
 function loadGallery(videoList) {
   if (!gallery) return;
   gallery.innerHTML = "";
 
   videoList.forEach(v => {
-    
-// ─────────────────────────────
-// INSTAGRAM ITEM
-// ─────────────────────────────
-if (v.instagram) {
-  const card = document.createElement("div");
-  card.classList.add("video-card");
-  card.style.position = "relative";
-
-  const thumb = document.createElement("img");
-  thumb.src = "images/instagram-placeholder.jpg"; // static fallback
-  thumb.classList.add("video-thumb");
-  thumb.style.cursor = "pointer";
-
-  const badge = document.createElement("div");
-  badge.classList.add("speed-icon");
-  badge.textContent = "IG";
-  card.appendChild(badge);
-
-  thumb.addEventListener("click", () => openInstagramOverlay(v.instagram));
-
-  card.appendChild(thumb);
-  gallery.appendChild(card);
-  return;
-}
-
-
-    
-    // ─────────────────────────────
-// YOUTUBE ITEM
-// ─────────────────────────────
-if (v.youtube) {
-  const card = document.createElement("div");
-  card.classList.add("video-card");
-  card.style.position = "relative";
- 
-  const ytID = extractYouTubeID(v.youtube);
-
-
-  // Thumbnail
-  const thumb = document.createElement("img");
- thumb.src = `https://i.ytimg.com/vi/${ytID}/hqdefault.jpg`;
-  thumb.classList.add("video-thumb");
-  thumb.style.width = "100%";
-  thumb.style.display = "block";
-  thumb.style.cursor = "pointer";
-
-  // YouTube Badge
-  const badge = document.createElement("div");
-  badge.classList.add("speed-icon");
-  badge.textContent = "YT";
-  badge.style.display = "block";
-  card.appendChild(badge);
-
-  // On click → open YouTube modal
-  thumb.addEventListener("click", () => openYouTubeOverlay(v.youtube));
-
-  card.appendChild(thumb);
-  gallery.appendChild(card);
-  return; // STOP → do not render as local mp4
-}
-
-   // do not drop YouTube videos!
-if (!v.src480 && !v.youtube) return;
-
     const card = document.createElement("div");
     card.classList.add("video-card");
     card.style.position = "relative";
+
+    let speedIcon = null;
+    let fullscreenIcon = null;
+
+    // ──────────────── Instagram ────────────────
+    if (v.instagram) {
+      const thumb = document.createElement("img");
+      thumb.src = "images/instagram-placeholder.jpg";
+      thumb.classList.add("video-thumb");
+      thumb.style.cursor = "pointer";
+
+      speedIcon = document.createElement("div");
+      speedIcon.classList.add("speed-icon");
+      speedIcon.textContent = "IG";
+      card.appendChild(speedIcon);
+
+      thumb.addEventListener("click", () => openInstagramOverlay(v.instagram));
+
+      card.appendChild(thumb);
+      gallery.appendChild(card);
+      return;
+    }
+
+    // ──────────────── YouTube ────────────────
+    if (v.youtube) {
+      const ytID = extractYouTubeID(v.youtube);
+
+      const thumb = document.createElement("img");
+      thumb.src = `https://i.ytimg.com/vi/${ytID}/hqdefault.jpg`;
+      thumb.classList.add("video-thumb");
+      thumb.style.cursor = "pointer";
+
+      speedIcon = document.createElement("div");
+      speedIcon.classList.add("speed-icon");
+      speedIcon.textContent = "YT";
+      card.appendChild(speedIcon);
+
+      thumb.addEventListener("click", () => openYouTubeOverlay(v.youtube));
+
+      card.appendChild(thumb);
+      gallery.appendChild(card);
+      return;
+    }
+
+    // ──────────────── Local Video ────────────────
+    if (!v.src480) return;
 
     const video = document.createElement("video");
     video.dataset.src = v.src480;
     video.muted = true;
     video.loop = true;
     video.playsInline = true;
+    video.style.cursor = "default";
 
-    if (v.znam === "znám") {
-      video.classList.add("know-green");
-    } else if (v.znam === "potřebuju zlepšit") {
-      video.classList.add("know-yellow");
-    } else if (v.znam === "neznám") {
-      video.classList.add("know-red");
-    }
+    if (v.znam === "znám") video.classList.add("know-green");
+    else if (v.znam === "potřebuju zlepšit") video.classList.add("know-yellow");
+    else if (v.znam === "neznám") video.classList.add("know-red");
 
-    const speedIcon = document.createElement("div");
+    card.appendChild(video);
+
+    // Speed icon
+    speedIcon = document.createElement("div");
     speedIcon.classList.add("speed-icon");
     speedIcon.textContent = "1×";
     card.appendChild(speedIcon);
 
-   card.addEventListener("mouseenter", () => {
-  if (card.dataset.hidden) return;   // ⛔ do nothing if hidden
-  speedIcon.style.display = "block";
-  fullscreenIcon?.style.display = "block";
-});
+    // Fullscreen icon for HD
+    if (v.hd) {
+      fullscreenIcon = document.createElement("div");
+      fullscreenIcon.classList.add("fullscreen-icon");
+      fullscreenIcon.innerHTML = "⤢";
+      card.appendChild(fullscreenIcon);
 
+      fullscreenIcon.addEventListener("click", () => openOverlay(v));
+    }
+
+    // Hover logic
+card.addEventListener("mouseenter", () => {
+  if (card.dataset.hidden || video.style.display === "none") return;
+  if (speedIcon) speedIcon.style.display = "block";
+  if (fullscreenIcon) fullscreenIcon.style.display = "block";
+});
 card.addEventListener("mouseleave", () => {
-  speedIcon.style.display = "none";
-  fullscreenIcon?.style.display = "none";
+  if (speedIcon) speedIcon.style.display = "none";
+  if (fullscreenIcon) fullscreenIcon.style.display = "none";
 });
 
 
     attachSpeedScroll(video, speedIcon, true);
 
-    video.style.cursor = "default";
-    card.appendChild(video);
-
-    // ONLY for Peťák a Renča local videos
-if (v.button === "Peťák a Renča") {
-  createHideToggle(card, video, v.znam);
-}
-
-
-    if (v.hd) {
-      const fullscreenIcon = document.createElement("div");
-      fullscreenIcon.classList.add("fullscreen-icon");
-      fullscreenIcon.innerHTML = "⤢";
-      card.appendChild(fullscreenIcon);
-
-     card.addEventListener("mouseenter", () => {
-  if (card.dataset.hidden) return;   // ⛔ do nothing if hidden
-  speedIcon.style.display = "block";
-  fullscreenIcon?.style.display = "block";
-});
-
-card.addEventListener("mouseleave", () => {
-  speedIcon.style.display = "none";
-  fullscreenIcon?.style.display = "none";
-});
-
-      fullscreenIcon.addEventListener("click", () => openOverlay(v));
+    // Hide toggle for Peťák a Renča
+    if (v.button === "Peťák a Renča") {
+      createHideToggle(card, video, v.znam);
     }
 
     gallery.appendChild(card);
