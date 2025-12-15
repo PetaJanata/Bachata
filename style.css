@@ -239,6 +239,22 @@ html { scroll-behavior: smooth; }
 }
 
 
+/*TOGGLE BUTTON*/
+/* Hide-toggle button */
+.hide-toggle {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  margin-top: 6px;
+  cursor: pointer;
+  align-self: center;
+}
+
+/* Colors match video border */
+.hide-toggle.green { background-color: #16a34a; }
+.hide-toggle.yellow { background-color: #eab308; }
+.hide-toggle.red { background-color: #dc2626; }
+
 
 /* FULLSCREEN OVERLAY */
 .video-overlay {
