@@ -697,27 +697,34 @@ function createHideToggle(card, video, znamValue) {
   const toggle = document.createElement("div");
   toggle.classList.add("hide-toggle");
 
-  // Color based on znam
   if (znamValue === "znám") toggle.classList.add("green");
   else if (znamValue === "potřebuju zlepšit") toggle.classList.add("yellow");
   else if (znamValue === "neznám") toggle.classList.add("red");
 
-  // White placeholder
   const placeholder = document.createElement("div");
   placeholder.classList.add("video-placeholder");
   placeholder.style.display = "none";
 
-  // Click → hide video
+  const speedIcon = card.querySelector(".speed-icon");
+  const fullscreenIcon = card.querySelector(".fullscreen-icon");
+
+  // Hide video
   toggle.addEventListener("click", e => {
     e.stopPropagation();
     video.style.display = "none";
-    placeholder.style.display = "block";
+    placeholder.style.display = "flex";
+
+    if (speedIcon) speedIcon.style.display = "none";
+    if (fullscreenIcon) fullscreenIcon.style.display = "none";
+    toggle.style.display = "none";
   });
 
-  // Click placeholder → show video again
+  // Restore video
   placeholder.addEventListener("click", () => {
     video.style.display = "block";
     placeholder.style.display = "none";
+
+    toggle.style.display = "block";
   });
 
   card.appendChild(toggle);
