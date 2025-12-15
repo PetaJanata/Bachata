@@ -337,12 +337,17 @@ if (!v.src480 && !v.youtube) return;
     speedIcon.textContent = "1×";
     card.appendChild(speedIcon);
 
-    card.addEventListener("mouseenter", () => {
-      speedIcon.style.display = "block";
-    });
-    card.addEventListener("mouseleave", () => {
-      speedIcon.style.display = "none";
-    });
+   card.addEventListener("mouseenter", () => {
+  if (card.dataset.hidden) return;   // ⛔ do nothing if hidden
+  speedIcon.style.display = "block";
+  fullscreenIcon?.style.display = "block";
+});
+
+card.addEventListener("mouseleave", () => {
+  speedIcon.style.display = "none";
+  fullscreenIcon?.style.display = "none";
+});
+
 
     attachSpeedScroll(video, speedIcon, true);
 
@@ -361,12 +366,16 @@ if (v.button === "Peťák a Renča") {
       fullscreenIcon.innerHTML = "⤢";
       card.appendChild(fullscreenIcon);
 
-      card.addEventListener("mouseenter", () => {
-        fullscreenIcon.style.display = "block";
-      });
-      card.addEventListener("mouseleave", () => {
-        fullscreenIcon.style.display = "none";
-      });
+     card.addEventListener("mouseenter", () => {
+  if (card.dataset.hidden) return;   // ⛔ do nothing if hidden
+  speedIcon.style.display = "block";
+  fullscreenIcon?.style.display = "block";
+});
+
+card.addEventListener("mouseleave", () => {
+  speedIcon.style.display = "none";
+  fullscreenIcon?.style.display = "none";
+});
 
       fullscreenIcon.addEventListener("click", () => openOverlay(v));
     }
@@ -709,23 +718,28 @@ function createHideToggle(card, video, znamValue) {
   const fullscreenIcon = card.querySelector(".fullscreen-icon");
 
   // Hide video
-  toggle.addEventListener("click", e => {
-    e.stopPropagation();
-    video.style.display = "none";
-    placeholder.style.display = "flex";
+toggle.addEventListener("click", e => {
+  e.stopPropagation();
 
-    if (speedIcon) speedIcon.style.display = "none";
-    if (fullscreenIcon) fullscreenIcon.style.display = "none";
-    toggle.style.display = "none";
-  });
+  card.dataset.hidden = "true";   // 🔴 mark as hidden
 
-  // Restore video
-  placeholder.addEventListener("click", () => {
-    video.style.display = "block";
-    placeholder.style.display = "none";
+  video.style.display = "none";
+  placeholder.style.display = "flex";
 
-    toggle.style.display = "block";
-  });
+  if (speedIcon) speedIcon.style.display = "none";
+  if (fullscreenIcon) fullscreenIcon.style.display = "none";
+  toggle.style.display = "none";
+});
+
+// Restore video
+placeholder.addEventListener("click", () => {
+  delete card.dataset.hidden;     // 🟢 unmark hidden
+
+  video.style.display = "block";
+  placeholder.style.display = "none";
+  toggle.style.display = "block";
+});
+
 
   card.appendChild(toggle);
   card.appendChild(placeholder);
