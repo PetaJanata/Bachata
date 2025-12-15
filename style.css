@@ -238,23 +238,49 @@ html { scroll-behavior: smooth; }
   transition: all 0.2s ease;
 }
 
-
-/*TOGGLE BUTTON*/
-/* Hide-toggle button */
+/* HIDE TOGGLE BUTTON */
 .hide-toggle {
-  width: 18px;
-  height: 18px;
+  position: absolute;
+  top: 36px;                 /* slightly below speed icon (speed is at 6px) */
+  left: 6px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  margin-top: 6px;
   cursor: pointer;
-  align-self: center;
+  z-index: 6;                /* above video, same layer as icons */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
 }
 
-/* Colors match video border */
-.hide-toggle.green { background-color: #16a34a; }
-.hide-toggle.yellow { background-color: #eab308; }
-.hide-toggle.red { background-color: #dc2626; }
+/* Color states */
+.hide-toggle.green { background: #2ecc71; }
+.hide-toggle.yellow { background: #f1c40f; }
+.hide-toggle.red { background: #e74c3c; }
 
+/* Hover feedback */
+.hide-toggle:hover {
+  transform: scale(1.1);
+}
+
+.video-placeholder {
+  position: absolute;
+  inset: 0;                         /* cover entire card */
+  background: #ffffff;
+  border-radius: 8px;
+  cursor: pointer;
+  z-index: 4;                       /* below icons, above video */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Optional text hint */
+.video-placeholder::after {
+  content: "Klikni pro zobrazení videa";
+  color: #555;
+  font-size: 0.9rem;
+}
+
+/* end of toggle button*/
 
 /* FULLSCREEN OVERLAY */
 .video-overlay {
