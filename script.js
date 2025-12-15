@@ -349,6 +349,12 @@ if (!v.src480 && !v.youtube) return;
     video.style.cursor = "default";
     card.appendChild(video);
 
+    // ONLY for Peťák a Renča local videos
+if (v.button === "Peťák a Renča") {
+  createHideToggle(card, video, v.znam);
+}
+
+
     if (v.hd) {
       const fullscreenIcon = document.createElement("div");
       fullscreenIcon.classList.add("fullscreen-icon");
@@ -685,6 +691,40 @@ function attachSpeedScroll(video, label, iconOnly = false) {
     });
   }
 }
+
+/* HIDDING VIDEOS FOR REVISION*/
+function createHideToggle(card, video, znamValue) {
+  const toggle = document.createElement("div");
+  toggle.classList.add("hide-toggle");
+
+  // Color based on znam
+  if (znamValue === "znám") toggle.classList.add("green");
+  else if (znamValue === "potřebuju zlepšit") toggle.classList.add("yellow");
+  else if (znamValue === "neznám") toggle.classList.add("red");
+
+  // White placeholder
+  const placeholder = document.createElement("div");
+  placeholder.classList.add("video-placeholder");
+  placeholder.style.display = "none";
+
+  // Click → hide video
+  toggle.addEventListener("click", e => {
+    e.stopPropagation();
+    video.style.display = "none";
+    placeholder.style.display = "block";
+  });
+
+  // Click placeholder → show video again
+  placeholder.addEventListener("click", () => {
+    video.style.display = "block";
+    placeholder.style.display = "none";
+  });
+
+  card.appendChild(toggle);
+  card.appendChild(placeholder);
+}
+
+
 
 // ================================
 // HERO BUTTON AUTO-HIDE
