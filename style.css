@@ -280,6 +280,11 @@ html { scroll-behavior: smooth; }
   font-size: 0.9rem;
 }
 
+.video-card[data-hidden="true"] .speed-icon,
+.video-card[data-hidden="true"] .fullscreen-icon {
+  pointer-events: none;
+}
+
 /* end of toggle button*/
 
 /* FULLSCREEN OVERLAY */
