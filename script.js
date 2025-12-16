@@ -490,7 +490,7 @@ function openYouTubeOverlay(url) {
 
   // YouTube iframe
   const iframe = document.createElement("iframe");
-  iframe.src = `https://www.youtube.com/embed/${ytID}?autoplay=1&mute=1&loop=1&playlist=${ytID}&controls=1&modestbranding=1&playsinline=1&rel=0`;
+  iframe.src = `https://www.youtube.com/embed/${ytID}?autoplay=1&loop=1&playlist=${ytID}&controls=1&modestbranding=1&playsinline=1&rel=0`;
   iframe.allow = "autoplay; encrypted-media";
   iframe.allowFullscreen = true;
   iframe.classList.add("yt-hd-iframe");
