@@ -129,9 +129,14 @@ function applyFilter(filterValue, shouldScroll = false) {
 if (filterValue === "red") filteredVideos = videos.filter(v => v.znam?.trim() === "neznám");
 else if (filterValue === "yellow") filteredVideos = videos.filter(v => v.znam?.trim() === "potřebuju zlepšit");
 else if (filterValue === "green") filteredVideos = videos.filter(v => v.znam?.trim() === "znám");
-  else if (filterValue === "YouTube")  filteredVideos = videos.filter(v => v.youtube);
-  else if (!filterValue) filteredVideos = [...videos];
-  else filteredVideos = videos.filter(v => v.button === filterValue);
+  else if (!filterValue) {
+  filteredVideos = [...videos];
+}
+else {
+  // default: filter strictly by Button column
+  filteredVideos = videos.filter(v => v.button === filterValue);
+}
+
 
 //debug
   console.log("Filter:", filterValue, "matching videos:", filteredVideos.length);
