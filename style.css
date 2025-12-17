@@ -46,11 +46,12 @@ html { scroll-behavior: smooth; }
 
 .hero-carousel {
   width: 90%;
+  max-width: 1400px;
   height: 60vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: clamp(0px, 2vw, 20px);
+  overflow: hidden; /* prevents mobile horizontal scroll */
   margin-bottom: 3rem;
 }
 
@@ -63,9 +64,10 @@ html { scroll-behavior: smooth; }
 
 /* Base image */
 .hero-carousel img.carousel-img {
+  flex: 0 0 22%;          /* 5 images fit predictably */
   max-height: 60vh;
-  width: auto;
-  cursor: pointer;
+  object-fit: contain;
+  transition: transform 0.45s ease, opacity 0.45s ease;
 }
 
 /* Main image */
@@ -78,16 +80,20 @@ html { scroll-behavior: smooth; }
 
 /* First layer */
 .hero-carousel img.first-layer {
-  transform: scale(0.8);
+  transform: scale(0.85);
   opacity: 0.85;
+  margin-left: -5%;
+ margin-right: -5%;
   z-index: 2;
 }
 
 /* Second layer */
 .hero-carousel img.second-layer {
-  transform: scale(0.65);
+  transform: scale(0.7);
   opacity: 0.6;
   z-index: 1;
+  margin-left: -7%;
+  margin-right: -7%;
   pointer-events: none;
 }
 
@@ -110,8 +116,29 @@ html { scroll-behavior: smooth; }
 
 /* Mobile */
 @media (max-width: 768px) {
+  .hero-carousel {
+    width: 100%;
+    padding: 0 10px;
+  }
+
+  .hero-carousel img.carousel-img {
+    flex: 0 0 33.33%;     /* exactly 3 images */
+    max-height: 45vh;
+    margin: 0;
+  }
+
   .hero-carousel img.second-layer {
-    display: none;
+    display: none;       /* hide outer images */
+  }
+
+  .hero-carousel img.first-layer {
+    transform: scale(0.85);
+    opacity: 0.85;
+  }
+
+  .hero-carousel img.main-img {
+    transform: scale(1);
+    opacity: 1;
   }
 }
 
