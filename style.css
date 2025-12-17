@@ -41,78 +41,69 @@ html { scroll-behavior: smooth; }
 }
 
 /* ================================ */
-/* HERO CAROUSEL */
+/* FLEX HERO CAROUSEL */
 /* ================================ */
+
 .hero-carousel {
-  position: relative;
-  width: 100%;
-  height: 60vh; /* main image height */
+  width: 90%;
+  height: 60vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: visible;
-  margin-top: 0;
-  margin-bottom: 3rem; /* gap to hero buttons */
+  gap: clamp(10px, 3vw, 40px);
+  margin-bottom: 3rem;
 }
 
 .hero-carousel img {
-  border-radius: 8px; /* small border radius */
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* subtle shadow */
-  cursor: pointer;
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
-  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: transform 0.45s ease, opacity 0.45s ease;
+  object-fit: contain;
 }
 
+/* Base image */
 .hero-carousel img.carousel-img {
-  position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  transition: all 0.5s ease;
-  cursor: default;
-  z-index: 1;
+  max-height: 60vh;
+  width: auto;
+  cursor: pointer;
 }
 
 /* Main image */
 .hero-carousel img.main-img {
-  height: 60vh;
-  left: 50%;
-  z-index: 5;
-}
-
-/* First layer (next to main) */
-.hero-carousel img.first-layer {
-  height: 54vh; /* 10% smaller */
-  z-index: 4;
-}
-
-.hero-carousel img.first-layer:nth-child(2) { /* left first layer */
-  left: 30%;
-  cursor: pointer;
-}
-
-.hero-carousel img.first-layer:nth-child(4) { /* right first layer */
-  left: 70%;
-  cursor: pointer;
-}
-
-/* Second layer (further side) */
-.hero-carousel img.second-layer {
-  height: 48vh; /* 20% smaller than main */
+  transform: scale(1);
+  opacity: 1;
   z-index: 3;
+  cursor: default;
 }
 
-.hero-carousel img.second-layer:nth-child(1) { /* left second layer */
-  left: 10%;
+/* First layer */
+.hero-carousel img.first-layer {
+  transform: scale(0.8);
+  opacity: 0.85;
+  z-index: 2;
 }
 
-.hero-carousel img.second-layer:nth-child(5) { /* right second layer */
-  left: 90%;
+/* Second layer */
+.hero-carousel img.second-layer {
+  transform: scale(0.65);
+  opacity: 0.6;
+  z-index: 1;
+  pointer-events: none;
 }
 
-/* Hover effect for clickable images */
+/* Hover hint */
 .hero-carousel img.first-layer:hover {
-  transform: translate(-50%, -50%) scale(1.05);
+  transform: scale(0.85);
 }
+
+/* Mobile */
+@media (max-width: 768px) {
+  .hero-carousel img.second-layer {
+    display: none;
+  }
+}
+
+
 
 .hero-buttons {
   position: sticky;
