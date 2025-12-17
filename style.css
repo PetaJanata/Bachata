@@ -50,7 +50,7 @@ html { scroll-behavior: smooth; }
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: clamp(10px, 3vw, 40px);
+  gap: clamp(0px, 2vw, 20px);
   margin-bottom: 3rem;
 }
 
@@ -90,6 +90,18 @@ html { scroll-behavior: smooth; }
   z-index: 1;
   pointer-events: none;
 }
+
+/* Overlap side images slightly */
+.hero-carousel img.first-layer {
+  margin-left: -5%;
+  margin-right: -5%;
+}
+
+.hero-carousel img.second-layer {
+  margin-left: -7%;
+  margin-right: -7%;
+}
+
 
 /* Hover hint */
 .hero-carousel img.first-layer:hover {
