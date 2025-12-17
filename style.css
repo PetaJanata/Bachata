@@ -41,80 +41,68 @@ html { scroll-behavior: smooth; }
 }
 
 /* ================================ */
-/* FLEX HERO CAROUSEL */
+/* OVERLAPPING FLEX HERO CAROUSEL */
 /* ================================ */
 
 .hero-carousel {
-  position: relative;
   width: 90%;
   max-width: 1400px;
   height: 60vh;
-  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;              /* prevents mobile scroll */
   margin-bottom: 3rem;
 }
 
 .hero-carousel img {
-  position: absolute;
-  top: 50%;
-  left: 50%;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   object-fit: contain;
   max-height: 60vh;
   width: auto;
-  transition: transform 0.45s ease, opacity 0.45s ease;
+  transition: transform 0.4s ease, opacity 0.4s ease;
 }
 
-/* Base transform */
+/* Base image size */
 .hero-carousel img.carousel-img {
-  transform: translate(-50%, -50%);
+  flex: 0 0 auto;
 }
 
-/* Main image */
+/* MAIN */
 .hero-carousel img.main-img {
-  z-index: 5;
-  transform: translate(-50%, -50%) scale(1);
-  cursor: default;
+  transform: scale(1);
+  z-index: 3;
 }
 
-/* First layer */
+/* FIRST LAYER */
 .hero-carousel img.first-layer {
-  z-index: 4;
+  transform: scale(0.9);
   opacity: 0.85;
-  transform: translate(-50%, -50%) scale(0.85);
+  z-index: 2;
+  margin-left: -5%;
+  margin-right: -5%;
   cursor: pointer;
 }
 
-.hero-carousel img.first-layer.left {
-  left: 35%;
-}
-
-.hero-carousel img.first-layer.right {
-  left: 65%;
-}
-
 .hero-carousel img.first-layer:hover {
-  transform: translate(-50%, -50%) scale(0.92);
+  transform: scale(0.95);
 }
 
-/* Second layer */
+/* SECOND LAYER */
 .hero-carousel img.second-layer {
-  z-index: 3;
+  transform: scale(0.8);
   opacity: 0.6;
-  transform: translate(-50%, -50%) scale(0.7);
+  z-index: 1;
+  margin-left: -5%;
+  margin-right: -5%;
+  pointer-events: none;
 }
 
-.hero-carousel img.second-layer.left {
-  left: 15%;
-}
-
-.hero-carousel img.second-layer.right {
-  left: 85%;
-}
-
-/* Mobile */
+/* MOBILE */
 @media (max-width: 768px) {
   .hero-carousel {
+    width: 100%;
     height: 50vh;
   }
 
@@ -122,12 +110,9 @@ html { scroll-behavior: smooth; }
     display: none;
   }
 
-  .hero-carousel img.first-layer.left {
-    left: 30%;
-  }
-
-  .hero-carousel img.first-layer.right {
-    left: 70%;
+  .hero-carousel img.first-layer {
+    margin-left: -6%;
+    margin-right: -6%;
   }
 }
 
