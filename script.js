@@ -121,6 +121,9 @@ function applyFilter(filterValue, shouldScroll = false) {
     case "green": document.getElementById("btn-green")?.classList.add("active"); break;
     case "YouTube": document.getElementById("btn-youtube")?.classList.add("active"); break;
     case "Trénink s Peťou": document.getElementById("btn-trenink")?.classList.add("active"); break;
+    case "Stolárna": document.getElementById("btn-stolarna")?.classList.add("active");
+  break;
+
     default: document.getElementById("btn-all")?.classList.add("active");
   }
 
@@ -364,10 +367,10 @@ card.addEventListener("mouseleave", () => {
 
     attachSpeedScroll(video, speedIcon, true);
 
-    // Hide toggle for Peťák a Renča
-    if (v.button === "Peťák a Renča") {
-      createHideToggle(card, video, v.znam);
-    }
+    // Hide toggle for Peťák a Renča & Stolárna
+   if (v.button === "Peťák a Renča" || v.button === "Stolárna") {
+  createHideToggle(card, video, v.znam);
+}
 
     gallery.appendChild(card);
   });
@@ -670,7 +673,17 @@ if (btnTrenink) {
     applyFilter(isTogglingOff ? null : "Trénink s Peťou", true);
   });
 }
-  const btnYouTube = document.getElementById("btn-youtube");
+  
+   const btnStolarna = document.getElementById("btn-stolarna");
+
+if (btnStolarna) {
+  btnStolarna.addEventListener("click", () => {
+    const isTogglingOff = activeFilter === "Stolárna";
+    applyFilter(isTogglingOff ? null : "Stolárna", true);
+  });
+}       
+      
+      const btnYouTube = document.getElementById("btn-youtube");
 
 if (btnYouTube) {
   btnYouTube.addEventListener("click", () => {
