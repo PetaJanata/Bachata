@@ -41,32 +41,66 @@ const visibleCount = 3; // main + 2 layers on each side
 
 function getVisibleIndexes(centerIndex) {
   const total = carouselImages.length;
+  const isMobile = window.innerWidth <= 768;
   let indexes = [];
-  for (let i = -1; i <= 1; i++) {
-    let idx = (centerIndex + i + total) % total;
-    indexes.push(idx);
+
+  if (isMobile) {
+    indexes.push(centerIndex); // only main image on mobile
+  } else {
+    for (let i = -1; i <= 1; i++) {
+      let idx = (centerIndex + i + total) % total;
+      indexes.push(idx);
+    }
   }
+
   return indexes;
 }
 
 function renderCarousel() {
   carouselContainer.innerHTML = "";
+
   const indexes = getVisibleIndexes(currentIndex);
+  const isMobile = window.innerWidth <= 768;
+
+  // create mobile arrows (always visible on mobile)
+  if (isMobile) {
+    const leftArrow = document.createElement("div");
+    leftArrow.classList.add("mobile-arrow", "left-arrow");
+    leftArrow.innerHTML = "&#8592;";
+
+    const rightArrow = document.createElement("div");
+    rightArrow.classList.add("mobile-arrow", "right-arrow");
+    rightArrow.innerHTML = "&#8594;";
+
+    carouselContainer.appendChild(leftArrow);
+    carouselContainer.appendChild(rightArrow);
+
+    leftArrow.addEventListener("click", () => {
+      currentIndex = (currentIndex - 1 + carouselImages.length) % carouselImages.length;
+      renderCarousel();
+    });
+
+    rightArrow.addEventListener("click", () => {
+      currentIndex = (currentIndex + 1) % carouselImages.length;
+      renderCarousel();
+    });
+  }
 
   indexes.forEach((imgIdx, position) => {
     const img = document.createElement("img");
     img.src = carouselImages[imgIdx];
     img.classList.add("carousel-img");
 
-    // Set classes for position (main, first, second)
-   if (position === 1) img.classList.add("main-img");
-else if (position === 0) img.classList.add("first-layer", "left");
-else if (position === 2) img.classList.add("first-layer", "right");
+    if (position === 1 && !isMobile) img.classList.add("main-img");
+    else if (!isMobile && position === 0) img.classList.add("first-layer", "left");
+    else if (!isMobile && position === 2) img.classList.add("first-layer", "right");
 
+    if (position === 0 && isMobile || position === 1 && isMobile) {
+      img.classList.add("main-img"); // main image on mobile
+    }
 
-
-    // Clickable side images
-    if (position === 0 || position === 2) {
+    // Clickable side images only for desktop
+    if (!isMobile && (position === 0 || position === 2)) {
       img.addEventListener("click", () => {
         currentIndex = position < 1
           ? (currentIndex - 1 + carouselImages.length) % carouselImages.length
@@ -81,65 +115,7 @@ else if (position === 2) img.classList.add("first-layer", "right");
 
 // Initial render
 renderCarousel();
-
-// Make carousel responsive on resize
 window.addEventListener("resize", renderCarousel);
-//only main image on mobile
-function getVisibleIndexes(centerIndex) {
-  const total = carouselImages.length;
-  const isMobile = window.innerWidth <= 768;
-  let indexes = [];
-
-  if (isMobile) {
-    indexes.push(centerIndex); // only main image
-  } else {
-    for (let i = -1; i <= 1; i++) {
-      let idx = (centerIndex + i + total) % total;
-      indexes.push(idx);
-    }
-  }
-
-  return indexes;
-}
-
-
-// Add arrows for mobile
-function addMobileArrows() {
-  // Remove existing arrows first
-  document.querySelectorAll(".mobile-arrow").forEach(a => a.remove());
-
-  if (window.innerWidth > 768) return; // only for mobile
-
-  const carousel = document.querySelector(".hero-carousel");
-
-  const leftArrow = document.createElement("div");
-  leftArrow.classList.add("mobile-arrow", "left-arrow");
-  leftArrow.innerHTML = "&#10094;"; // ❮ left arrow
-  leftArrow.addEventListener("click", () => {
-    currentIndex = (currentIndex - 1 + carouselImages.length) % carouselImages.length;
-    renderCarousel();
-  });
-
-  const rightArrow = document.createElement("div");
-  rightArrow.classList.add("mobile-arrow", "right-arrow");
-  rightArrow.innerHTML = "&#10095;"; // ❯ right arrow
-  rightArrow.addEventListener("click", () => {
-    currentIndex = (currentIndex + 1) % carouselImages.length;
-    renderCarousel();
-  });
-
-  carousel.appendChild(leftArrow);
-  carousel.appendChild(rightArrow);
-}
-
-// Call after initial render and on resize
-renderCarousel();
-addMobileArrows();
-window.addEventListener("resize", () => {
-  renderCarousel();
-  addMobileArrows();
-});
-
 
 // ================================ 
 // GLOBAL VARIABLES
