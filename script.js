@@ -84,7 +84,23 @@ renderCarousel();
 
 // Make carousel responsive on resize
 window.addEventListener("resize", renderCarousel);
+//only main image on mobile
+function getVisibleIndexes(centerIndex) {
+  const total = carouselImages.length;
+  const isMobile = window.innerWidth <= 768;
+  let indexes = [];
 
+  if (isMobile) {
+    indexes.push(centerIndex); // only main image
+  } else {
+    for (let i = -1; i <= 1; i++) {
+      let idx = (centerIndex + i + total) % total;
+      indexes.push(idx);
+    }
+  }
+
+  return indexes;
+}
 
 
 // Add arrows for mobile
