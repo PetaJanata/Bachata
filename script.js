@@ -298,6 +298,26 @@ function loadGallery(videoList) {
       return;
     }
 
+    // ──────────────── Facebook ────────────────
+if (v.facebook) {
+  const thumb = document.createElement("img");
+  thumb.src = "images/facebook-placeholder.jpg"; // static placeholder
+  thumb.classList.add("video-thumb");
+  thumb.style.cursor = "pointer";
+
+  const icon = document.createElement("div");
+  icon.classList.add("speed-icon");
+  icon.textContent = "FB";
+  card.appendChild(icon);
+
+  thumb.addEventListener("click", () => openFacebookOverlay(v.facebook));
+
+  card.appendChild(thumb);
+  gallery.appendChild(card);
+  return;
+}
+
+
     // ──────────────── Local Video ────────────────
     if (!v.src480) return;
 
@@ -538,6 +558,38 @@ function openInstagramOverlay(url) {
   });
 }
 
+function openFacebookOverlay(url) {
+  const overlay = document.createElement("div");
+  overlay.classList.add("video-overlay");
+
+  const container = document.createElement("div");
+  container.classList.add("video-container");
+
+  const iframe = document.createElement("iframe");
+
+  iframe.src =
+    "https://www.facebook.com/plugins/video.php?href=" +
+    encodeURIComponent(url) +
+    "&show_text=false&autoplay=true";
+
+  iframe.allow = "autoplay; encrypted-media";
+  iframe.allowFullscreen = true;
+  iframe.style.border = "0";
+  iframe.style.width = "100%";
+  iframe.style.height = "100%";
+
+  container.appendChild(iframe);
+  overlay.appendChild(container);
+  document.body.appendChild(overlay);
+  document.body.style.overflow = "hidden";
+
+  overlay.addEventListener("click", e => {
+    if (e.target === overlay) {
+      overlay.remove();
+      document.body.style.overflow = "";
+    }
+  });
+}
 
 
 
@@ -558,6 +610,7 @@ window.addEventListener("DOMContentLoaded", () => {
         button: row["Button"] || null,
         znam: row["znám?"] || null,
         youtube: row["YouTubeURL"]?.trim() || null,
+        facebook: row["FacebookURL"]?.trim() || null,
         instagram: row["InstagramURL"]?.trim() || null
       }));
 
