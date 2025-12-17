@@ -87,12 +87,12 @@ html { scroll-behavior: smooth; }
   z-index: 4;
 }
 
-.hero-carousel img.first-layer:nth-child(2) {
+.hero-carousel img.left {
   left: 30%;
   cursor: pointer;
 }
 
-.hero-carousel img.first-layer:nth-child(4) {
+.hero-carousel img.right {
   left: 70%;
   cursor: pointer;
 }
