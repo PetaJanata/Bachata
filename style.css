@@ -97,20 +97,6 @@ html { scroll-behavior: smooth; }
   cursor: pointer;
 }
 
-/* Second layer */
-.hero-carousel img.second-layer {
-  height: 48vh;
-  z-index: 3;
-}
-
-.hero-carousel img.second-layer:nth-child(1) {
-  left: 10%;
-}
-
-.hero-carousel img.second-layer:nth-child(5) {
-  left: 90%;
-}
-
 /* Hover effect */
 .hero-carousel img.first-layer:hover {
   transform: translate(-50%, -50%) scale(1.05);
