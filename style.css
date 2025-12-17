@@ -48,7 +48,7 @@ html { scroll-behavior: smooth; }
   width: 90%;
   max-width: 1400px;
   height: 60vh;
-  display: flex;
+  position: relative;
   justify-content: center;
   align-items: center;
   overflow: hidden; /* prevents mobile horizontal scroll */
@@ -63,84 +63,81 @@ html { scroll-behavior: smooth; }
 }
 
 /* Base image */
+
 .hero-carousel img.carousel-img {
-  flex: 0 0 22%;          /* 5 images fit predictably */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   max-height: 60vh;
+  width: auto;
   object-fit: contain;
   transition: transform 0.45s ease, opacity 0.45s ease;
 }
 
 /* Main image */
 .hero-carousel img.main-img {
-  transform: scale(1);
-  opacity: 1;
-  z-index: 3;
+  z-index: 5;
+  transform: translate(-50%, -50%) scale(1);
   cursor: default;
 }
 
+
 /* First layer */
 .hero-carousel img.first-layer {
-  transform: scale(0.85);
+  z-index: 4;
   opacity: 0.85;
-  margin-left: -5%;
- margin-right: -5%;
-  z-index: 2;
+  transform: translate(-50%, -50%) scale(0.85);
+  cursor: pointer;
 }
+
+.hero-carousel img.first-layer.left {
+  left: 35%;
+}
+
+.hero-carousel img.first-layer.right {
+  left: 65%;
+}
+
+.hero-carousel img.first-layer:hover {
+  transform: translate(-50%, -50%) scale(0.92);
+}
+
 
 /* Second layer */
 .hero-carousel img.second-layer {
-  transform: scale(0.7);
+  z-index: 3;
   opacity: 0.6;
-  z-index: 1;
-  margin-left: -7%;
-  margin-right: -7%;
-  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0.7);
 }
 
-/* Overlap side images slightly */
-.hero-carousel img.first-layer {
-  margin-left: -5%;
-  margin-right: -5%;
+.hero-carousel img.second-layer.left {
+  left: 15%;
 }
 
-.hero-carousel img.second-layer {
-  margin-left: -7%;
-  margin-right: -7%;
-}
-
-
-/* Hover hint */
-.hero-carousel img.first-layer:hover {
-  transform: scale(0.85);
+.hero-carousel img.second-layer.right {
+  left: 85%;
 }
 
 /* Mobile */
 @media (max-width: 768px) {
   .hero-carousel {
-    width: 100%;
-    padding: 0 10px;
-  }
-
-  .hero-carousel img.carousel-img {
-    flex: 0 0 33.33%;     /* exactly 3 images */
-    max-height: 45vh;
-    margin: 0;
+    height: 50vh;
   }
 
   .hero-carousel img.second-layer {
-    display: none;       /* hide outer images */
+    display: none;
   }
 
-  .hero-carousel img.first-layer {
-    transform: scale(0.85);
-    opacity: 0.85;
+  .hero-carousel img.first-layer.left {
+    left: 30%;
   }
 
-  .hero-carousel img.main-img {
-    transform: scale(1);
-    opacity: 1;
+  .hero-carousel img.first-layer.right {
+    left: 70%;
   }
 }
+
 
 
 
