@@ -83,7 +83,7 @@ html { scroll-behavior: smooth; }
 
 /* First layer */
 .hero-carousel img.first-layer {
-  height: 54vh;
+  height: 50vh;
   z-index: 4;
 }
 
