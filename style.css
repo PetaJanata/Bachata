@@ -41,63 +41,81 @@ html { scroll-behavior: smooth; }
 }
 
 /* ================================ */
-/* OVERLAPPING FLEX HERO CAROUSEL */
+/* HERO CAROUSEL */
 /* ================================ */
 
 .hero-carousel {
+  position: relative;
   width: 90%;
-  max-width: 1400px;
-  height: 60vh;
+  height: 60vh; /* main image height */
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;              /* prevents mobile scroll */
+  overflow: visible;
+  margin-top: 0;
   margin-bottom: 3rem;
 }
 
 .hero-carousel img {
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  object-fit: contain;
-  max-height: 60vh;
-  width: auto;
-  transition: transform 0.4s ease, opacity 0.4s ease;
+  cursor: pointer;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  object-fit: cover;
 }
 
-/* Base image size */
+/* Base image */
 .hero-carousel img.carousel-img {
-  flex: 0 0 auto;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.5s ease;
+  cursor: default;
+  z-index: 1;
 }
 
-/* MAIN */
+/* Main image */
 .hero-carousel img.main-img {
-  transform: scale(1);
-  z-index: 3;
+  height: 60vh;
+  left: 50%;
+  z-index: 5;
 }
 
-/* FIRST LAYER */
+/* First layer */
 .hero-carousel img.first-layer {
-  transform: scale(0.9);
-  opacity: 0.85;
-  z-index: 2;
-  margin-left: -5%;
-  margin-right: -5%;
+  height: 54vh;
+  z-index: 4;
+}
+
+.hero-carousel img.first-layer:nth-child(2) {
+  left: 30%;
   cursor: pointer;
 }
 
-.hero-carousel img.first-layer:hover {
-  transform: scale(0.95);
+.hero-carousel img.first-layer:nth-child(4) {
+  left: 70%;
+  cursor: pointer;
 }
 
-/* SECOND LAYER */
+/* Second layer */
 .hero-carousel img.second-layer {
-  transform: scale(0.8);
-  opacity: 0.6;
-  z-index: 1;
-  margin-left: -5%;
-  margin-right: -5%;
-  pointer-events: none;
+  height: 48vh;
+  z-index: 3;
 }
+
+.hero-carousel img.second-layer:nth-child(1) {
+  left: 10%;
+}
+
+.hero-carousel img.second-layer:nth-child(5) {
+  left: 90%;
+}
+
+/* Hover effect */
+.hero-carousel img.first-layer:hover {
+  transform: translate(-50%, -50%) scale(1.05);
+}
+
 
 /* MOBILE */
 @media (max-width: 768px) {
