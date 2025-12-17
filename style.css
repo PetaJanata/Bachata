@@ -103,20 +103,40 @@ html { scroll-behavior: smooth; }
 }
 
 
-/* MOBILE */
-@media (max-width: 768px) {
-  .hero-carousel {
-    width: 100%;
-    height: 50vh;
-  }
+/* Mobile arrows */
+.mobile-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2.5rem;
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.2rem 0.5rem;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s ease;
+  user-select: none;
+}
 
-  .hero-carousel img.second-layer {
+.mobile-arrow:hover {
+  color: #fff;
+  background: rgba(0, 0, 0, 0.6);
+  transform: translateY(-50%) scale(1.2);
+}
+
+.left-arrow {
+  left: 5%;
+}
+
+.right-arrow {
+  right: 5%;
+}
+
+/* Only show arrows on mobile */
+@media (min-width: 769px) {
+  .mobile-arrow {
     display: none;
-  }
-
-  .hero-carousel img.first-layer {
-    margin-left: -6%;
-    margin-right: -6%;
   }
 }
 
