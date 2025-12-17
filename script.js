@@ -59,14 +59,16 @@ function renderCarousel() {
     img.classList.add("carousel-img");
 
     // Set classes for position (main, first, second)
-    if (position === 2) img.classList.add("main-img");
-    else if (position === 1 || position === 3) img.classList.add("first-layer");
+   if (position === 1) img.classList.add("main-img");
+else if (position === 0) img.classList.add("first-layer", "left");
+else if (position === 2) img.classList.add("first-layer", "right");
+
 
 
     // Clickable side images
-    if (position === 1 || position === 3) {
+    if (position === 0 || position === 2) {
       img.addEventListener("click", () => {
-        currentIndex = position < 2
+        currentIndex = position < 1
           ? (currentIndex - 1 + carouselImages.length) % carouselImages.length
           : (currentIndex + 1) % carouselImages.length;
         renderCarousel();
