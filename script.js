@@ -87,6 +87,44 @@ window.addEventListener("resize", renderCarousel);
 
 
 
+// Add arrows for mobile
+function addMobileArrows() {
+  // Remove existing arrows first
+  document.querySelectorAll(".mobile-arrow").forEach(a => a.remove());
+
+  if (window.innerWidth > 768) return; // only for mobile
+
+  const carousel = document.querySelector(".hero-carousel");
+
+  const leftArrow = document.createElement("div");
+  leftArrow.classList.add("mobile-arrow", "left-arrow");
+  leftArrow.innerHTML = "&#10094;"; // ❮ left arrow
+  leftArrow.addEventListener("click", () => {
+    currentIndex = (currentIndex - 1 + carouselImages.length) % carouselImages.length;
+    renderCarousel();
+  });
+
+  const rightArrow = document.createElement("div");
+  rightArrow.classList.add("mobile-arrow", "right-arrow");
+  rightArrow.innerHTML = "&#10095;"; // ❯ right arrow
+  rightArrow.addEventListener("click", () => {
+    currentIndex = (currentIndex + 1) % carouselImages.length;
+    renderCarousel();
+  });
+
+  carousel.appendChild(leftArrow);
+  carousel.appendChild(rightArrow);
+}
+
+// Call after initial render and on resize
+renderCarousel();
+addMobileArrows();
+window.addEventListener("resize", () => {
+  renderCarousel();
+  addMobileArrows();
+});
+
+
 // ================================ 
 // GLOBAL VARIABLES
 // ================================
