@@ -45,34 +45,29 @@ html { scroll-behavior: smooth; }
 /* ================================ */
 
 .hero-carousel {
+  position: relative;
   width: 90%;
   max-width: 1400px;
   height: 60vh;
-  position: relative;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden; /* prevents mobile horizontal scroll */
+  overflow: hidden;
   margin-bottom: 3rem;
 }
 
 .hero-carousel img {
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  transition: transform 0.45s ease, opacity 0.45s ease;
-  object-fit: contain;
-}
-
-/* Base image */
-
-.hero-carousel img.carousel-img {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  object-fit: contain;
   max-height: 60vh;
   width: auto;
-  object-fit: contain;
   transition: transform 0.45s ease, opacity 0.45s ease;
+}
+
+/* Base transform */
+.hero-carousel img.carousel-img {
+  transform: translate(-50%, -50%);
 }
 
 /* Main image */
@@ -81,7 +76,6 @@ html { scroll-behavior: smooth; }
   transform: translate(-50%, -50%) scale(1);
   cursor: default;
 }
-
 
 /* First layer */
 .hero-carousel img.first-layer {
@@ -102,7 +96,6 @@ html { scroll-behavior: smooth; }
 .hero-carousel img.first-layer:hover {
   transform: translate(-50%, -50%) scale(0.92);
 }
-
 
 /* Second layer */
 .hero-carousel img.second-layer {
@@ -137,8 +130,6 @@ html { scroll-behavior: smooth; }
     left: 70%;
   }
 }
-
-
 
 
 .hero-buttons {
