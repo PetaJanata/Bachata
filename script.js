@@ -37,12 +37,12 @@ heroSection.insertBefore(carouselContainer, heroSection.querySelector(".hero-but
 
 // Carousel state
 let currentIndex = 0;
-const visibleCount = 5; // main + 2 layers on each side
+const visibleCount = 3; // main + 2 layers on each side
 
 function getVisibleIndexes(centerIndex) {
   const total = carouselImages.length;
   let indexes = [];
-  for (let i = -2; i <= 2; i++) {
+  for (let i = -1; i <= 1; i++) {
     let idx = (centerIndex + i + total) % total;
     indexes.push(idx);
   }
@@ -61,7 +61,7 @@ function renderCarousel() {
     // Set classes for position (main, first, second)
     if (position === 2) img.classList.add("main-img");
     else if (position === 1 || position === 3) img.classList.add("first-layer");
-    else img.classList.add("second-layer");
+
 
     // Clickable side images
     if (position === 1 || position === 3) {
