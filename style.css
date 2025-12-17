@@ -145,7 +145,7 @@ html { scroll-behavior: smooth; }
   position: sticky;
   top: 0;
   display: flex;
-  flex-wrap: flex; /* allow buttons to move to next row */
+  flex-wrap: wrap; /* allow buttons to move to next row */
   gap: 10px;
  /* padding: 10px; */
   background: rgba(0,0,0,0);
