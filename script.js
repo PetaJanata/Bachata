@@ -597,11 +597,15 @@ function openFacebookOverlay(url) {
   const overlay = document.createElement("div");
   overlay.classList.add("video-overlay");
 
+  // ✅ backdrop (full screen, clickable)
+  const backdrop = document.createElement("div");
+  backdrop.classList.add("video-backdrop");
+
+  // ✅ video wrapper (centered, blocks close)
   const wrapper = document.createElement("div");
   wrapper.classList.add("fb-video-wrapper");
 
   const iframe = document.createElement("iframe");
-
   iframe.src =
     "https://www.facebook.com/plugins/video.php?href=" +
     encodeURIComponent(url) +
@@ -611,19 +615,18 @@ function openFacebookOverlay(url) {
   iframe.allowFullscreen = true;
   iframe.classList.add("fb-iframe");
 
-  // ⛔ prevent clicks inside video from closing overlay
-  wrapper.addEventListener("click", e => {
-    e.stopPropagation();
-  });
+  // ⛔ prevent closing when clicking video area
+  wrapper.addEventListener("click", e => e.stopPropagation());
 
   wrapper.appendChild(iframe);
+  overlay.appendChild(backdrop);
   overlay.appendChild(wrapper);
   document.body.appendChild(overlay);
 
   document.body.style.overflow = "hidden";
 
-  // ✅ click outside closes overlay
-  overlay.addEventListener("click", () => {
+  // ✅ clicking backdrop closes overlay
+  backdrop.addEventListener("click", () => {
     overlay.remove();
     document.body.style.overflow = "";
   });
