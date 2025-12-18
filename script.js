@@ -611,19 +611,24 @@ function openFacebookOverlay(url) {
   iframe.allowFullscreen = true;
   iframe.classList.add("fb-iframe");
 
+  // ⛔ prevent clicks inside video from closing overlay
+  wrapper.addEventListener("click", e => {
+    e.stopPropagation();
+  });
+
   wrapper.appendChild(iframe);
   overlay.appendChild(wrapper);
-
   document.body.appendChild(overlay);
+
   document.body.style.overflow = "hidden";
 
-  overlay.addEventListener("click", e => {
-    if (e.target === overlay) {
-      overlay.remove();
-      document.body.style.overflow = "";
-    }
+  // ✅ click outside closes overlay
+  overlay.addEventListener("click", () => {
+    overlay.remove();
+    document.body.style.overflow = "";
   });
 }
+
 
 
 
