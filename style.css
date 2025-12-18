@@ -409,8 +409,8 @@ html { scroll-behavior: smooth; }
 
 .fb-iframe {
   width: 30%;
-  min-width: 280px;
-  max-width: 420px;
+  min-width: 480px;
+  max-width: 480px;
   aspect-ratio: 9 / 16;
   border: none;
 }
@@ -419,7 +419,7 @@ html { scroll-behavior: smooth; }
 @media (max-width: 768px) {
   .fb-iframe {
     width: 30%;
-    max-width: 360px;
+    max-width: 450px;
   }
 }
 
