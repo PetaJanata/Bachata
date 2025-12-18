@@ -597,8 +597,8 @@ function openFacebookOverlay(url) {
   const overlay = document.createElement("div");
   overlay.classList.add("video-overlay");
 
-  const container = document.createElement("div");
-  container.classList.add("video-container");
+  const wrapper = document.createElement("div");
+  wrapper.classList.add("fb-video-wrapper");
 
   const iframe = document.createElement("iframe");
 
@@ -609,12 +609,11 @@ function openFacebookOverlay(url) {
 
   iframe.allow = "autoplay; encrypted-media";
   iframe.allowFullscreen = true;
-  iframe.style.border = "0";
-  iframe.style.width = "100%";
-  iframe.style.height = "100%";
+  iframe.classList.add("fb-iframe");
 
-  container.appendChild(iframe);
-  overlay.appendChild(container);
+  wrapper.appendChild(iframe);
+  overlay.appendChild(wrapper);
+
   document.body.appendChild(overlay);
   document.body.style.overflow = "hidden";
 
@@ -625,6 +624,7 @@ function openFacebookOverlay(url) {
     }
   });
 }
+
 
 
 
