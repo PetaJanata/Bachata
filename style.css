@@ -410,7 +410,7 @@ html { scroll-behavior: smooth; }
 /* Mobile override */
 @media (max-width: 768px) {
   .fb-iframe {
-    width: 90%;
+    width: 30%;
     max-width: 360px;
   }
 }
