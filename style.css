@@ -391,6 +391,14 @@ html { scroll-behavior: smooth; }
 /* FACEBOOK OVERLAY FIX */
 /* ================================ */
 
+
+/* to make sure outside video is clickable*/
+.video-backdrop {
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
+}
+
 .fb-video-wrapper {
   display: flex;
   justify-content: center;
