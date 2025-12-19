@@ -326,7 +326,8 @@ function loadGallery(videoList) {
       speedIcon.textContent = "YT";
       card.appendChild(speedIcon);
 
-      thumb.addEventListener("click", () => openYouTubeOverlay(v.youtube));
+     thumb.addEventListener("click", () => openYouTubeOverlay(v));
+
 
       card.appendChild(thumb);
       gallery.appendChild(card);
@@ -407,6 +408,65 @@ card.addEventListener("mouseleave", () => {
     gallery.appendChild(card);
   });
 }
+
+function buildYouTubeEmbed(url, start, end) {
+  const videoId = extractYouTubeID(url);
+  if (!videoId) return "";
+
+  let params = [
+    "autoplay=1",
+    "controls=1",
+    "enablejsapi=1",
+    "playsinline=1",
+    "rel=0"
+  ];
+
+  if (Number.isFinite(start)) params.push(`start=${start}`);
+  if (Number.isFinite(end)) params.push(`end=${end}`);
+
+  return `https://www.youtube.com/embed/${videoId}?${params.join("&")}`;
+}
+
+
+let ytPlayer;
+
+function onYouTubeIframeAPIReady() {
+  // API ready (required global function)
+}
+
+function initSegmentLoop(iframe, start, end) {
+  ytPlayer = new YT.Player(iframe, {
+    events: {
+      onReady: (e) => {
+        if (start !== "") {
+          e.target.seekTo(start, true);
+        }
+      },
+      onStateChange: (e) => {
+        if (e.data === YT.PlayerState.PLAYING && end !== "") {
+          monitorLoop(start, end);
+        }
+      }
+    }
+  });
+}
+
+let ytLoopInterval = null;
+
+function monitorLoop(start, end) {
+  clearInterval(ytLoopInterval);
+
+  ytLoopInterval = setInterval(() => {
+    if (!ytPlayer || typeof ytPlayer.getCurrentTime !== "function") return;
+
+    const t = ytPlayer.getCurrentTime();
+    if (t >= end) {
+      ytPlayer.seekTo(start, true);
+    }
+  }, 200);
+}
+
+
 
 // ================================
 // OPEN OVERLAY
@@ -532,20 +592,18 @@ function openOverlay(videoObj) {
   });
 }
 
-function openYouTubeOverlay(url) {
+function openYouTubeOverlay(videoObj) {
+  const { youtube, startSec, endSec } = videoObj;
+
   const overlay = document.createElement("div");
   overlay.classList.add("video-overlay");
 
-  const ytID = extractYouTubeID(url);
-
-  // Video container similar to HD player for local videos
   const videoContainer = document.createElement("div");
   videoContainer.classList.add("video-container");
   overlay.appendChild(videoContainer);
 
-  // YouTube iframe
   const iframe = document.createElement("iframe");
-  iframe.src = `https://www.youtube.com/embed/${ytID}?autoplay=1&loop=1&playlist=${ytID}&controls=1&modestbranding=1&playsinline=1&rel=0`;
+  iframe.src = buildYouTubeEmbed(youtube, startSec, endSec);
   iframe.allow = "autoplay; encrypted-media";
   iframe.allowFullscreen = true;
   iframe.classList.add("yt-hd-iframe");
@@ -555,7 +613,11 @@ function openYouTubeOverlay(url) {
   document.body.appendChild(overlay);
   document.body.style.overflow = "hidden";
 
-  // Close overlay on click outside video
+  // init segment looping ONLY if needed
+  if (startSec !== null && endSec !== null) {
+    initSegmentLoop(iframe, startSec, endSec);
+  }
+
   overlay.addEventListener("click", e => {
     if (e.target === overlay) {
       overlay.remove();
@@ -563,6 +625,7 @@ function openYouTubeOverlay(url) {
     }
   });
 }
+
 
 function openInstagramOverlay(url) {
   const overlay = document.createElement("div");
@@ -653,6 +716,8 @@ window.addEventListener("DOMContentLoaded", () => {
         button: row["Button"] || null,
         znam: row["znám?"] || null,
         youtube: row["YouTubeURL"]?.trim() || null,
+        startSec: row["StartSec"] ? Number(row["StartSec"]) : null,
+        endSec: row["EndSec"] ? Number(row["EndSec"]) : null,
         facebook: row["FacebookURL"]?.trim() || null,
         instagram: row["InstagramURL"]?.trim() || null
       }));
