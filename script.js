@@ -112,6 +112,26 @@ function renderCarousel() {
     carouselContainer.appendChild(img);
   });
 }
+/*button to take me to gallery*/
+function scrollToGallery() {
+  const hero = document.querySelector(".hero");
+  const topPanel = document.querySelector(".top-panel");
+
+  const heroBottom =
+    hero.getBoundingClientRect().bottom + window.scrollY;
+
+  const topPanelHeight = topPanel
+    ? topPanel.offsetHeight
+    : 0;
+
+  window.scrollTo({
+    top: heroBottom - topPanelHeight,
+    behavior: "smooth"
+  });
+}
+
+
+
 
 // Initial render
 renderCarousel();
@@ -180,14 +200,7 @@ else {
 
   loadGallery(shuffledVideos);
   lazyLoadVideos();
-
-  if (shouldScroll) {
-    document.getElementById("video-gallery")?.scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
   }
-}
 
 
 // ================================
@@ -756,10 +769,12 @@ window.addEventListener("DOMContentLoaded", () => {
           applyFilter(isTogglingOff ? null : "Peťa a Peťa", true);
         });
 
-      if (btnAll)
-        btnAll.addEventListener("click", () => {
-          applyFilter(null, true);
-        });
+     if (btnAll)
+  btnAll.addEventListener("click", () => {
+    applyFilter(null, false); // filter only, no scroll
+    scrollToGallery();       // precise scroll
+  });
+
 
       const btnRed = document.getElementById("btn-red");
       const btnYellow = document.getElementById("btn-yellow");
