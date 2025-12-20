@@ -1,5 +1,5 @@
 :root { --bg-color: #ffffff;
-
+        --top-panel-height: 64px;
 }
 
 
@@ -103,7 +103,7 @@ html { scroll-behavior: smooth; }
 }
 
 
-/* Mobile arrows */
+/*  arrows */
 .mobile-arrow {
   position: absolute;
   top: 50%;
@@ -184,6 +184,7 @@ html { scroll-behavior: smooth; }
   background: #ffffff;
   border-bottom: 1px solid #000;
   z-index: 3000;
+  height: 64px;
 }
 
 /* ---------- MAIN LAYOUT ---------- */
@@ -332,10 +333,10 @@ html { scroll-behavior: smooth; }
   /* make menu overlay occupy full height, 75% width */
   .side-menu {
     position: fixed;
-    top: 64px;
-    left: -75%;
+    top: var(--top-panel-height);
+    left: 0%;
     width: 75%;
-    height: calc(100% - 64px);  /* <-- full height minus top panel */
+    height: calc(100vh - var(--top-panel-height));  /* <-- full height minus top panel */
     background: white;
     z-index: 2000;
     flex-direction: column;
@@ -626,7 +627,7 @@ html { scroll-behavior: smooth; }
   border: none;
 }
 
-/* Mobile override */
+/*  override */
 @media (max-width: 768px) {
   .fb-iframe {
     width: 30%;
@@ -635,7 +636,7 @@ html { scroll-behavior: smooth; }
 }
 
 
-/* Mobile layout for overlay */
+/*  layout for overlay */
 @media (max-width: 768px) {
   /* Stack videos vertically in dual view */
   .video-overlay.dual-view > div {
