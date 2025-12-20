@@ -22,36 +22,65 @@
   <!-- Landing Section -->
   <section class="hero">
     <h1 class="text-6xl md:text-8xl font-light tracking-wider text-white drop-shadow-lg">My Bachata journey</h1>
-   </section>
 
-
-  <div class="hero-buttons">
-    <button id="btn-renča" class="filter-btn">Peťák a Renča</button>
-    <button id="btn-peta" class="filter-btn">Peťa a Peťa</button>
-    <button id="btn-all" class="filter-btn">Video galerie</button>
+     <div class="hero-buttons">
+         <button id="btn-all" class="filter-btn">Video galerie</button> 
+     </div>
     
-    <button id="btn-red" class="filter-btn">Red</button>
-    <button id="btn-yellow" class="filter-btn">Yellow</button>
-    <button id="btn-green" class="filter-btn">Green</button>
+  </section>
 
-    <button id="btn-youtube" class="filter-btn">YouTube</button>
-    <button id="btn-trenink" class="filter-btn">Trénink s Peťou</button>
-    <button id="btn-stolarna" class="filter-btn">Stolárna</button>
+ 
+   
+ <!-- ================================ -->
+<!-- VIDEO GALLERY APP -->
+<!-- ================================ -->
+<section id="gallery-app">
 
-    
+  <!-- TOP PANEL (sticky later) -->
+  <div class="top-panel">
+    top panel
   </div>
 
-   
-  <!-- Video Section Block -->
-  <section class="video-block" id="video-gallery">
-    <!-- Videos will be inserted dynamically by JS -->
- 
-  </section>
-  <!-- PapaParse CSV parser (must load before your script.js) -->
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <!-- MAIN LAYOUT -->
+  <div class="gallery-layout">
+
+    <!-- LEFT MENU (sticky later) -->
+    <aside class="side-menu">
+      <nav class="menu">
+        <div class="menu-section">
+          <div class="menu-title">Lekce</div>
+          <div class="menu-items">
+            <!-- items later -->
+          </div>
+        </div>
+
+        <div class="menu-section">
+          <div class="menu-title">Trénink</div>
+          <div class="menu-items"></div>
+        </div>
+
+        <div class="menu-section">
+          <div class="menu-title">Znalost</div>
+          <div class="menu-items"></div>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- VIDEO GALLERY -->
+    <main class="gallery-content">
+      <div id="video-gallery">
+        <!-- your existing video cards already render here -->
+      </div>
+    </main>
+
+  </div>
+</section>
+
+  
+   <!-- PapaParse CSV parser (must load before your script.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <!-- for youtube specific video section (example:6s to 10s) -->
   <script src="https://www.youtube.com/iframe_api"></script>
-  
   <script src="script.js"></script>
 </body>
 </html>
