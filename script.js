@@ -831,6 +831,25 @@ if (btnYouTube) {
 
 
 // ================================
+// TOP PANEL HEIGHT SYNC (MOBILE MENU)
+// ================================
+function updateTopPanelHeight() {
+  const topPanel = document.querySelector(".top-panel");
+  if (!topPanel) return;
+
+  document.documentElement.style.setProperty(
+    "--top-panel-height",
+    `${topPanel.offsetHeight}px`
+  );
+}
+
+// keep value correct at all times
+window.addEventListener("load", updateTopPanelHeight);
+window.addEventListener("resize", updateTopPanelHeight);
+
+
+
+// ================================
 // SPEED SCROLL FUNCTION
 // ================================
 function attachSpeedScroll(video, label, iconOnly = false) {
