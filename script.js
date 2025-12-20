@@ -961,3 +961,19 @@ function onPageScroll(e) {
 
 window.addEventListener("wheel", onPageScroll, { passive: true });
 window.addEventListener("scroll", onPageScroll, { passive: true });
+
+/*new layout */
+document.querySelectorAll(".menu-main").forEach(mainBtn => {
+  mainBtn.addEventListener("click", () => {
+    const group = mainBtn.closest(".menu-group");
+    group.classList.toggle("open");
+  });
+});
+
+document.querySelectorAll(".menu-sub button").forEach(subBtn => {
+  subBtn.addEventListener("click", () => {
+    const filterValue = subBtn.dataset.filter;
+    applyFilter(filterValue, false);
+  });
+});
+
