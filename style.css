@@ -165,6 +165,78 @@ html { scroll-behavior: smooth; }
   transform: translateY(-20px);
 }
 
+
+/* ================================ */
+/* GALLERY APP LAYOUT */
+/* ================================ */
+
+#gallery-app {
+  width: 100%;
+  background: #0f0f0f;
+}
+
+/* ---------- TOP PANEL ---------- */
+.top-panel {
+  width: 100%;
+  padding: 16px 24px;
+  background: #141414;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  z-index: 10;
+}
+
+/* ---------- MAIN LAYOUT ---------- */
+.gallery-layout {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* ---------- SIDE MENU ---------- */
+.side-menu {
+  width: 220px;
+  flex-shrink: 0;
+  background: #111;
+  border-right: 1px solid rgba(255,255,255,0.08);
+  padding: 16px;
+}
+
+/* menu structure */
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.menu-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.menu-title {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.6;
+}
+
+.menu-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ---------- GALLERY CONTENT ---------- */
+.gallery-content {
+  flex: 1;
+  padding: 24px;
+  overflow: hidden;
+}
+
+
+
+
+
 .filter-btn {
   flex: 0 1 auto;  /* allow buttons to move to next row */
   padding: clamp(6px, 1vw, 12px) clamp(10px, 2vw, 20px);
