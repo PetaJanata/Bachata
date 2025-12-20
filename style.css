@@ -172,16 +172,19 @@ html { scroll-behavior: smooth; }
 
 #gallery-app {
   width: 100%;
-  background: #0f0f0f;
+  background: #ffffff;
+  color: #000;
 }
 
 /* ---------- TOP PANEL ---------- */
 .top-panel {
   width: 100%;
+  position: sticky;
+  top:0;
   padding: 16px 24px;
-  background: #141414;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  z-index: 10;
+  background: #ffffff;
+  border-bottom: 1px solid #000;
+  z-index: 100;
 }
 
 /* ---------- MAIN LAYOUT ---------- */
@@ -194,9 +197,13 @@ html { scroll-behavior: smooth; }
 /* ---------- SIDE MENU ---------- */
 .side-menu {
   width: 220px;
+  position: sticky;
+  top: 64px; /* adjust if your top panel is taller */
+  height: calc(100vh - 64px);
+  overflow-y: auto;
   flex-shrink: 0;
-  background: #111;
-  border-right: 1px solid rgba(255,255,255,0.08);
+  background: #ffffff;
+  border-right: 1px solid #000;
   padding: 16px;
 }
 
@@ -230,7 +237,8 @@ html { scroll-behavior: smooth; }
 .gallery-content {
   flex: 1;
   padding: 24px;
-  overflow: hidden;
+  overflow: visible;
+  background: #ffffff;
 }
 
 
