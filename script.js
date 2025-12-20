@@ -977,3 +977,35 @@ document.querySelectorAll(".menu-sub button").forEach(subBtn => {
   });
 });
 
+
+const hamburgerBtn = document.getElementById("hamburger-btn");
+const menuOverlay = document.querySelector(".side-menu"); // reuse existing menu
+const backdrop = document.createElement("div");
+
+backdrop.classList.add("menu-backdrop");
+document.body.appendChild(backdrop);
+
+function openMenu() {
+  menuOverlay.classList.add("open");
+  backdrop.classList.add("active");
+  document.body.style.overflow = "hidden"; // optional: prevent page scroll
+}
+
+function closeMenu() {
+  menuOverlay.classList.remove("open");
+  backdrop.classList.remove("active");
+  document.body.style.overflow = ""; // restore scroll
+}
+
+// hamburger click
+hamburgerBtn.addEventListener("click", () => {
+  if (menuOverlay.classList.contains("open")) {
+    closeMenu();
+  } else {
+    openMenu();
+  }
+});
+
+// click on backdrop to close menu
+backdrop.addEventListener("click", closeMenu);
+
