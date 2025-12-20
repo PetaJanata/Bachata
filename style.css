@@ -332,10 +332,10 @@ html { scroll-behavior: smooth; }
   /* make menu overlay occupy full height, 75% width */
   .side-menu {
     position: fixed;
-    top: 0;
+    top: 64px;
     left: -75%;
     width: 75%;
-    height: 100%;
+    height: calc(100% - 64px);  /* <-- full height minus top panel */
     background: white;
     z-index: 2000;
     flex-direction: column;
