@@ -1009,17 +1009,5 @@ hamburgerBtn.addEventListener("click", () => {
 // click on backdrop to close menu
 backdrop.addEventListener("click", closeMenu);
 
-function updateTopPanelHeight() {
-  const topPanel = document.querySelector(".top-panel");
-  if (!topPanel) return;
-
-  document.documentElement.style.setProperty(
-    "--top-panel-height",
-    `${topPanel.offsetHeight}px`
-  );
-}
-
-window.addEventListener("load", updateTopPanelHeight);
-window.addEventListener("resize", updateTopPanelHeight);
 
 
