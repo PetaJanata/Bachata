@@ -142,8 +142,8 @@ html { scroll-behavior: smooth; }
 
 
 .hero-buttons {
-  position: sticky;
-  top: 0;
+  position: absolute;
+  bottom: 3vh;
   display: flex;
   flex-wrap: wrap; /* allow buttons to move to next row */
   gap: 10px;
@@ -152,8 +152,7 @@ html { scroll-behavior: smooth; }
  /* border-radius: 10px; */
   z-index: 10;       /* above the hero image */
   justify-content: center;
-  margin-top: -10vh; 
-  transition: opacity 0.4s ease, transform 0.4s ease; /* to hide hero buttons seamlessly*/
+   transition: opacity 0.4s ease, transform 0.4s ease; /* to hide hero buttons seamlessly*/
 
   /* Responsive padding */
   padding: clamp(5px, 1vw, 12px) clamp(10px, 2vw, 20px);
