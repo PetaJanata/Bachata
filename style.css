@@ -411,7 +411,6 @@ html { scroll-behavior: smooth; }
   height: 16px;
   border: 1px solid black;
   box-sizing: border-box;
-  transition: background-color 0.1s ease;
 }
 
 /* filled (active) */
@@ -428,6 +427,12 @@ html { scroll-behavior: smooth; }
 .grid-btn.expanded {
   padding: 4px;
 }
+
+/* hover reduce preview (turn off extra grids) */
+.grid-cell.unpreview {
+  background: white;
+}
+
 
 
 /* ---------- GALLERY CONTENT ---------- */
