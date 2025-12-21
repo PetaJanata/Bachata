@@ -950,6 +950,86 @@ backToHeroBtn.addEventListener("click", () => {
   }, 700);
 });
 
+// ================================
+// VIDEO COUNT CONFIGURATION
+// ================================
+function getScreenCategory() {
+  return window.innerWidth <= 768 ? "mobile" : "desktop";
+}
+
+let gridOverride = {
+  mobile: null,
+  desktop: null
+};
+
+function applyGridColumns(cols) {
+  const videoBlock = document.querySelector(".video-block");
+  if (!videoBlock) return;
+
+  if (!cols) {
+    videoBlock.style.gridTemplateColumns = "";
+    return;
+  }
+
+  videoBlock.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+}
+/*dynamic popup build-up*/
+const gridBtn = document.getElementById("grid-btn");
+const gridMenu = document.getElementById("grid-menu");
+
+function buildGridMenu() {
+  const category = getScreenCategory();
+  gridMenu.innerHTML = "";
+
+  const max = category === "mobile" ? 3 : 6;
+
+  for (let i = 1; i <= max; i++) {
+    const btn = document.createElement("div");
+    btn.className = "grid-option";
+    btn.textContent = i;
+
+    if (gridOverride[category] === i) {
+      btn.classList.add("active");
+    }
+
+    btn.addEventListener("click", () => {
+      gridOverride[category] = i;
+      applyGridColumns(i);
+      buildGridMenu();
+    });
+
+    gridMenu.appendChild(btn);
+  }
+}
+/*toggle popup*/
+gridBtn.addEventListener("click", () => {
+  gridMenu.classList.toggle("hidden");
+  buildGridMenu();
+});
+/*reset when screen width changes*/
+let lastCategory = getScreenCategory();
+
+window.addEventListener("resize", () => {
+  const current = getScreenCategory();
+
+  if (current !== lastCategory) {
+    // reset override
+    gridOverride[lastCategory] = null;
+    applyGridColumns(null);
+    gridMenu.classList.add("hidden");
+    lastCategory = current;
+  }
+});
+
+function updateGridIcon() {
+  const category = getScreenCategory();
+  const cols = gridOverride[category] ||
+    (category === "mobile" ? 1 : 6);
+
+  gridBtn.textContent = "⬛".repeat(Math.min(cols, 6));
+}
+
+setInterval(updateGridIcon, 300);
 
 
 // ================================
