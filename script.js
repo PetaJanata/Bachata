@@ -975,8 +975,9 @@ function getDynamicCols() {
 
   const minWidth = window.innerWidth <= 768 ? 250 : 180; // px per column
   const cols = Math.floor(videoBlock.clientWidth / minWidth);
-  return Math.max(cols, 1); // always at least 1
+  return Math.min(Math.max(cols, 1), 6); // always 1-6
 }
+
 
 
 // Returns the current column count: user override or dynamic
