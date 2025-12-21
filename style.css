@@ -409,23 +409,22 @@ html { scroll-behavior: smooth; }
 .grid-cell {
   width: 16px;
   height: 16px;
+  min-width: 16px;
+  min-height: 16px;
+  flex-shrink: 0;
   border: 1px solid black;
   box-sizing: border-box;
 }
 
 /* filled (active) */
 .grid-cell.filled {
-  background: black;
+  background: #000;
+  opacity:1;
 }
 
 /* hover preview */
 .grid-cell.preview {
   background: black;
-}
-
-/* expanded mode */
-.grid-btn.expanded {
-  padding: 4px;
 }
 
 /* hover reduce preview (turn off extra grids) */
