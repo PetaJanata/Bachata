@@ -197,8 +197,8 @@ html { scroll-behavior: smooth; }
 .side-menu {
   width: 220px;
   position: sticky;
-  top: 64px; /* adjust if your top panel is taller */
-  height: calc(100vh - 64px);
+  top: 58px; /* adjust if your top panel is taller */
+  height: calc(100vh - 58px);
   overflow-y: auto;
   flex-shrink: 0;
   background: #ffffff;
@@ -285,8 +285,8 @@ html { scroll-behavior: smooth; }
 /*back to hero button */
 #back-to-hero {
   position: fixed;
-  top: 80px;
-  right: 16px;
+  top: 5px;
+  left: 100px;
   z-index: 3000;
   display: none;
   padding: 8px 12px;
