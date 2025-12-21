@@ -953,6 +953,8 @@ backToHeroBtn.addEventListener("click", () => {
 // ================================
 // VIDEO COUNT CONFIGURATION
 // ================================
+
+
 function getScreenCategory() {
   return window.innerWidth <= 768 ? "mobile" : "desktop";
 }
@@ -968,8 +970,14 @@ let expanded = false;
 
 // Determine dynamic number of columns based on screen width
 function getDynamicCols() {
-  return window.innerWidth <= 768 ? 1 : 6;
+  const videoBlock = document.querySelector(".video-block");
+  if (!videoBlock) return window.innerWidth <= 768 ? 1 : 6;
+
+  const minWidth = window.innerWidth <= 768 ? 250 : 180; // px per column
+  const cols = Math.floor(videoBlock.clientWidth / minWidth);
+  return Math.max(cols, 1); // always at least 1
 }
+
 
 // Returns the current column count: user override or dynamic
 function getCurrentCols() {
@@ -978,12 +986,18 @@ function getCurrentCols() {
 }
 
 // Apply columns to video block
-function applyGridColumns(cols) {
+function applyGridColumns(cols, isUserOverride = false) {
   const videoBlock = document.querySelector(".video-block");
   if (!videoBlock) return;
 
   videoBlock.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+
+  if (isUserOverride) {
+    const category = getScreenCategory();
+    gridOverride[category] = cols;
+  }
 }
+
 
 // Initial rendering of grid button
 function renderGridCompact() {
@@ -1003,8 +1017,8 @@ function renderGridExpanded() {
   gridBtn.innerHTML = "";
   gridBtn.classList.add("expanded");
 
-  const max = window.innerWidth <= 768 ? 3 : 6;
   const current = getCurrentCols();
+  const max = window.innerWidth <= 768 ? 3 : Math.min(6, getDynamicCols());
   const category = getScreenCategory();
 
   for (let i = 1; i <= max; i++) {
@@ -1026,13 +1040,13 @@ function renderGridExpanded() {
       );
     });
 
-    cell.addEventListener("click", e => {
-      e.stopPropagation();
-      gridOverride[category] = i;      // user override applied for this category
-      applyGridColumns(i);
-      expanded = false;
-      renderGridCompact();
-    });
+   cell.addEventListener("click", e => {
+  e.stopPropagation();
+  applyGridColumns(i, true); // mark as user override
+  expanded = false;
+  renderGridCompact();
+});
+
 
     gridBtn.appendChild(cell);
   }
