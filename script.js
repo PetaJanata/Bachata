@@ -845,12 +845,25 @@ function updateHeroBottom() {
 window.addEventListener("load", updateHeroBottom);
 window.addEventListener("resize", updateHeroBottom);
 
-/*button to take me to gallery*/
+
+function enforceHeroLock() {
+  if (!heroLocked) return;
+
+  // If scrolled above heroBottomY, snap back instantly
+  if (window.scrollY < heroBottomY) {
+    window.scrollTo({ top: heroBottomY, behavior: "auto" });
+  }
+
+  requestAnimationFrame(enforceHeroLock);
+}
+
+// Call this once when locking hero
 function lockHero() {
   if (heroLocked || isReturningToHero) return;
   updateHeroBottom();
   heroLocked = true;
   showHeroReturnButton();
+  enforceHeroLock(); // continuously enforce scroll lock
 }
 
 
@@ -886,16 +899,6 @@ function preventScrollUp(e) {
     });
   }
 }
-
-//enforce no rubber band animation
-function enforceHeroLock() {
-  if (!heroLocked) return;
-  if (window.scrollY < heroBottomY) {
-    window.scrollTo({ top: heroBottomY, behavior: "auto" });
-  }
-  requestAnimationFrame(enforceHeroLock);
-}
-
 
 //hard blocks
 window.addEventListener("wheel", preventScrollUp, { passive: false });
