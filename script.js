@@ -1,5 +1,6 @@
 let heroLocked = false;
 let heroBottomY = 0;
+let isReturningToHero = false;
 
 
 // ================================
@@ -117,19 +118,19 @@ function renderCarousel() {
   });
 }
 
-/*button to take me to gallery*/
+
 function scrollToGallery() {
   const hero = document.querySelector(".hero");
-  const heroBottom =  hero.getBoundingClientRect().bottom + window.scrollY;
+  const heroBottom = hero.getBoundingClientRect().bottom + window.scrollY;
 
   window.scrollTo({
-    top: heroBottom, 
+    top: heroBottom,
     behavior: "smooth"
   });
-  heroLocked = true;
-showHeroReturnButton();
-  
+
+  lockHero();
 }
+
 
 
 // Initial render
@@ -844,32 +845,59 @@ function updateHeroBottom() {
 window.addEventListener("load", updateHeroBottom);
 window.addEventListener("resize", updateHeroBottom);
 
-/*scroll guard */
-window.addEventListener("scroll", () => {
+/*button to take me to gallery*/
+function lockHero() {
+  if (heroLocked || isReturningToHero) return;
+  updateHeroBottom();
+  heroLocked = true;
+  showHeroReturnButton();
+}
+
+
+//mobile touch tracking
+let lastTouchY = 0;
+window.addEventListener("touchstart", e => {
+  lastTouchY = e.touches[0].clientY;
+}, { passive: true });
+
+/*hard lock*/
+function preventScrollUp(e) {
   if (!heroLocked || isReturningToHero) return;
 
-  if (window.scrollY < heroBottomY) {
-    window.scrollTo({
-      top: heroBottomY,
-      behavior: "auto"
-    });
+  const deltaY =
+    e.type === "wheel" ? e.deltaY :
+    e.type === "touchmove" ? (e.touches?.[0]?.clientY < lastTouchY ? -1 : 1) :
+    null;
+
+  // block only UPWARD intent
+  if (deltaY < 0) {
+    e.preventDefault();
+    window.scrollTo({ top: heroBottomY, behavior: "auto"});
   }
-}, { passive: false });
+}
 
-/*observer*/
-const hero = document.querySelector(".hero");
+//hard blocks
+window.addEventListener("wheel", preventScrollUp, { passive: false });
+window.addEventListener("touchmove", preventScrollUp, { passive: false });
+window.addEventListener("keydown", e => {
+  if (!heroLocked || isReturningToHero) return;
 
+  const keys = ["ArrowUp", "PageUp", "Home"];
+  if (keys.includes(e.key)) {
+    e.preventDefault();
+    window.scrollTo(heroBottomY, 0);
+  }
+});
+//observer
 const heroObserver = new IntersectionObserver(entries => {
   entries.forEach(entry => {
-    if (!entry.isIntersecting && !heroLocked) {
-      heroLocked = true;
-      showHeroReturnButton();
+    if (!entry.isIntersecting) {
+      lockHero();
     }
   });
 }, { threshold: 0 });
 
-
-if (heroSection) heroObserver.observe(heroSection);
+heroObserver.observe(document.querySelector(".hero"));
 
 /*helpers*/
 const backToHeroBtn = document.getElementById("back-to-hero");
@@ -897,6 +925,7 @@ backToHeroBtn.addEventListener("click", () => {
     hideHeroReturnButton();
   }, 700);
 });
+
 
 
 // ================================
