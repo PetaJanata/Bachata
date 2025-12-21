@@ -286,7 +286,6 @@ html { scroll-behavior: smooth; }
 
 /*back to hero button */
 #back-to-hero {
-  position: fixed;
   z-index: 3000;
   display: none;
   padding: 8px 12px;
