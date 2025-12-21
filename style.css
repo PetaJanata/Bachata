@@ -437,14 +437,10 @@ html { scroll-behavior: smooth; }
 /* ---------- GALLERY CONTENT ---------- */
 .gallery-content {
   flex: 1;
-  padding: 24px;
+  /*padding: 24px;*/
   overflow: visible;
   background: #ffffff;
 }
-
-
-
-
 
 .filter-btn {
   flex: 0 1 auto;  /* allow buttons to move to next row */
