@@ -864,32 +864,38 @@ window.addEventListener("touchstart", e => {
 function preventScrollUp(e) {
   if (!heroLocked || isReturningToHero) return;
 
-  let deltaY = null;
+  let deltaY = 0;
 
   if (e.type === "wheel") {
     deltaY = e.deltaY;
-  }
-
-  if (e.type === "touchmove") {
+  } else if (e.type === "touchmove") {
     const currentY = e.touches[0].clientY;
-
-    // ✅ correct direction:
-    // finger moves DOWN → page wants to scroll UP → deltaY < 0
     deltaY = lastTouchY - currentY;
-
-    // update for next move
-    lastTouchY = currentY;
+    lastTouchY = currentY; // update for next move
   }
 
-  // 🚫 block ONLY upward page scroll
-  if (deltaY < 0) {
+  // Only enforce lock when scroll would go above heroBottomY
+  if (window.scrollY < heroBottomY || deltaY < 0) {
     e.preventDefault();
+    e.stopPropagation();
+
+    // Snap back to heroBottomY
     window.scrollTo({
       top: heroBottomY,
-      behavior: "auto"
+      behavior: "auto" // must be instant to prevent momentum
     });
   }
 }
+
+//enforce no rubber band animation
+function enforceHeroLock() {
+  if (!heroLocked) return;
+  if (window.scrollY < heroBottomY) {
+    window.scrollTo({ top: heroBottomY, behavior: "auto" });
+  }
+  requestAnimationFrame(enforceHeroLock);
+}
+
 
 //hard blocks
 window.addEventListener("wheel", preventScrollUp, { passive: false });
