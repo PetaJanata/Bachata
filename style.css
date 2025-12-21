@@ -184,6 +184,8 @@ html { scroll-behavior: smooth; }
   background: #ffffff;
   border-bottom: 1px solid #000;
   z-index: 3000;
+  gap:10px; /*spacing between buttons */
+  display: flex;
 }
 
 /* ---------- MAIN LAYOUT ---------- */
@@ -285,11 +287,10 @@ html { scroll-behavior: smooth; }
 /*back to hero button */
 #back-to-hero {
   position: fixed;
-  top: 5px;
-  left: 100px;
   z-index: 3000;
   display: none;
   padding: 8px 12px;
+  height: 40px;
   border-radius: 999px;
   background: white;
   border: 1px solid #ddd;
