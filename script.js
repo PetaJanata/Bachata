@@ -973,63 +973,103 @@ function applyGridColumns(cols) {
 
   videoBlock.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
 }
-/*dynamic popup build-up*/
+
 const gridBtn = document.getElementById("grid-btn");
-const gridMenu = document.getElementById("grid-menu");
 
-function buildGridMenu() {
+function getMaxCols() {
+  return window.innerWidth <= 768 ? 3 : 6;
+}
+
+function getCurrentCols() {
   const category = getScreenCategory();
-  gridMenu.innerHTML = "";
+  return gridOverride[category] ?? (category === "mobile" ? 1 : 6);
+}
 
-  const max = category === "mobile" ? 3 : 6;
+/* render compact button (normal state) */
+function renderGridCompact() {
+  gridBtn.innerHTML = "";
+  gridBtn.classList.remove("expanded");
 
-  for (let i = 1; i <= max; i++) {
-    const btn = document.createElement("div");
-    btn.className = "grid-option";
-    btn.textContent = i;
-
-    if (gridOverride[category] === i) {
-      btn.classList.add("active");
-    }
-
-    btn.addEventListener("click", () => {
-      gridOverride[category] = i;
-      applyGridColumns(i);
-      buildGridMenu();
-    });
-
-    gridMenu.appendChild(btn);
+  const cols = getCurrentCols();
+  for (let i = 0; i < cols; i++) {
+    const cell = document.createElement("div");
+    cell.className = "grid-cell filled";
+    gridBtn.appendChild(cell);
   }
 }
-/*toggle popup*/
-gridBtn.addEventListener("click", () => {
-  gridMenu.classList.toggle("hidden");
-  buildGridMenu();
+
+/* render expanded selector */
+function renderGridExpanded() {
+  gridBtn.innerHTML = "";
+  gridBtn.classList.add("expanded");
+
+  const max = getMaxCols();
+  const current = getCurrentCols();
+  const category = getScreenCategory();
+
+  for (let i = 1; i <= max; i++) {
+    const cell = document.createElement("div");
+    cell.className = "grid-cell";
+
+    if (i <= current) cell.classList.add("filled");
+
+    cell.addEventListener("mouseenter", () => {
+      gridBtn.querySelectorAll(".grid-cell").forEach((c, idx) => {
+        c.classList.toggle("preview", idx < i);
+      });
+    });
+
+    cell.addEventListener("mouseleave", () => {
+      gridBtn.querySelectorAll(".grid-cell").forEach(c =>
+        c.classList.remove("preview")
+      );
+    });
+
+    cell.addEventListener("click", e => {
+      e.stopPropagation();
+      gridOverride[category] = i;
+      applyGridColumns(i);
+      expanded = false;
+      renderGridCompact();
+    });
+
+    gridBtn.appendChild(cell);
+  }
+}
+
+/* toggle behavior */
+let expanded = false;
+
+gridBtn.addEventListener("click", e => {
+  e.stopPropagation();
+  expanded ? renderGridCompact() : renderGridExpanded();
+  expanded = !expanded;
 });
-/*reset when screen width changes*/
+
+/* close on outside click */
+document.addEventListener("click", () => {
+  if (expanded) {
+    renderGridCompact();
+    expanded = false;
+  }
+});
+
+/* reset on resize */
 let lastCategory = getScreenCategory();
 
 window.addEventListener("resize", () => {
   const current = getScreenCategory();
 
   if (current !== lastCategory) {
-    // reset override
     gridOverride[lastCategory] = null;
     applyGridColumns(null);
-    gridMenu.classList.add("hidden");
     lastCategory = current;
   }
+
+  expanded = false;
+  renderGridCompact();
 });
 
-function updateGridIcon() {
-  const category = getScreenCategory();
-  const cols = gridOverride[category] ||
-    (category === "mobile" ? 1 : 6);
-
-  gridBtn.textContent = "⬛".repeat(Math.min(cols, 6));
-}
-
-setInterval(updateGridIcon, 300);
 
 
 // ================================
