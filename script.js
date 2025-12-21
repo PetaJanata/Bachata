@@ -1018,7 +1018,7 @@ function renderGridExpanded() {
   gridBtn.classList.add("expanded");
 
   const current = getCurrentCols();
-  const max = window.innerWidth <= 768 ? 3 : Math.min(6, getDynamicCols());
+  const max = window.innerWidth <= 768 ? 3 : 6;
   const category = getScreenCategory();
 
   for (let i = 1; i <= max; i++) {
