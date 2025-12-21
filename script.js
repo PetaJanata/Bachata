@@ -962,6 +962,27 @@ let gridOverride = {
   desktop: null
 };
 
+function initializeGridButton() {
+  const category = getScreenCategory();
+
+  // Only set override if not already set
+  if (gridOverride[category] === null) {
+    const videoBlock = document.querySelector(".video-block");
+    if (videoBlock) {
+      // get computed style
+      const style = window.getComputedStyle(videoBlock);
+      const cols = style.getPropertyValue("grid-template-columns").split(" ").length;
+      gridOverride[category] = cols;
+      applyGridColumns(cols);
+    }
+  }
+
+  renderGridCompact();
+}
+
+window.addEventListener("DOMContentLoaded", initializeGridButton);
+
+
 function applyGridColumns(cols) {
   const videoBlock = document.querySelector(".video-block");
   if (!videoBlock) return;
