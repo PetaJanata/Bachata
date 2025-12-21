@@ -112,25 +112,17 @@ function renderCarousel() {
     carouselContainer.appendChild(img);
   });
 }
+
 /*button to take me to gallery*/
 function scrollToGallery() {
   const hero = document.querySelector(".hero");
- /* const topPanel = document.querySelector(".top-panel"); */
+  const heroBottom =  hero.getBoundingClientRect().bottom + window.scrollY;
 
-  const heroBottom =
-    hero.getBoundingClientRect().bottom + window.scrollY;
-
-/*  const topPanelHeight = topPanel
-    ? topPanel.offsetHeight
-    : 0;
-*/
   window.scrollTo({
-    top: heroBottom, /* - topPanelHeight, */
+    top: heroBottom, 
     behavior: "smooth"
   });
 }
-
-
 
 
 // Initial render
