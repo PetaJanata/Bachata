@@ -1013,11 +1013,19 @@ function renderGridExpanded() {
 
     if (i <= current) cell.classList.add("filled");
 
-    cell.addEventListener("mouseenter", () => {
-      gridBtn.querySelectorAll(".grid-cell").forEach((c, idx) => {
-        c.classList.toggle("preview", idx < i);
-      });
-    });
+   cell.addEventListener("mouseenter", () => {
+  gridBtn.querySelectorAll(".grid-cell").forEach((c, idx) => {
+    c.classList.remove("preview", "unpreview");
+
+    if (i > current) {
+      // increasing → fill forward
+      if (idx < i) c.classList.add("preview");
+    } else if (i < current) {
+      // reducing → unfill backward
+      if (idx >= i) c.classList.add("unpreview");
+    }
+  });
+});
 
     cell.addEventListener("mouseleave", () => {
       gridBtn.querySelectorAll(".grid-cell").forEach(c =>
