@@ -1,3 +1,7 @@
+let heroLocked = false;
+let heroBottomY = 0;
+
+
 // ================================
 // HERO CAROUSEL
 // ================================
@@ -122,6 +126,9 @@ function scrollToGallery() {
     top: heroBottom, 
     behavior: "smooth"
   });
+  heroLocked = true;
+showHeroReturnButton();
+  
 }
 
 
@@ -820,6 +827,76 @@ if (btnYouTube) {
     }) // closes fetch().then(...)
     .catch(err => console.error("Error loading CSV:", err));
 }); // closes DOMContentLoaded
+
+// ================================
+// HERO LOCKED + RETURN BUTTON
+// ================================
+
+
+function updateHeroBottom() {
+  const hero = document.querySelector(".hero");
+  if (!hero) return;
+
+  heroBottomY =
+    hero.getBoundingClientRect().bottom + window.scrollY;
+}
+
+window.addEventListener("load", updateHeroBottom);
+window.addEventListener("resize", updateHeroBottom);
+
+/*scroll guard */
+window.addEventListener("scroll", () => {
+  if (!heroLocked || isReturningToHero) return;
+
+  if (window.scrollY < heroBottomY) {
+    window.scrollTo({
+      top: heroBottomY,
+      behavior: "auto"
+    });
+  }
+}, { passive: false });
+
+/*observer*/
+const hero = document.querySelector(".hero");
+
+const heroObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting && !heroLocked) {
+      heroLocked = true;
+      showHeroReturnButton();
+    }
+  });
+}, { threshold: 0 });
+
+
+if (heroSection) heroObserver.observe(heroSection);
+
+/*helpers*/
+const backToHeroBtn = document.getElementById("back-to-hero");
+
+function showHeroReturnButton() {
+  backToHeroBtn.style.display = "block";
+}
+
+function hideHeroReturnButton() {
+  backToHeroBtn.style.display = "none";
+}
+
+/*return to top */
+backToHeroBtn.addEventListener("click", () => {
+  isReturningToHero = true;
+  heroLocked = false;
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
+  setTimeout(() => {
+    isReturningToHero = false;
+    hideHeroReturnButton();
+  }, 700);
+});
 
 
 // ================================
