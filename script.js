@@ -957,56 +957,35 @@ function getScreenCategory() {
   return window.innerWidth <= 768 ? "mobile" : "desktop";
 }
 
+// Stores manual user overrides
 let gridOverride = {
   mobile: null,
   desktop: null
 };
 
-function initializeGridButton() {
-  const category = getScreenCategory();
+const gridBtn = document.getElementById("grid-btn");
+let expanded = false;
 
-  // Only set override if not already set
-  if (gridOverride[category] === null) {
-    const videoBlock = document.querySelector(".video-block");
-    if (videoBlock) {
-      // get computed style
-      const style = window.getComputedStyle(videoBlock);
-      const cols = style.getPropertyValue("grid-template-columns").split(" ").length;
-      gridOverride[category] = cols;
-      applyGridColumns(cols);
-    }
-  }
-  expanded = false;
-  renderGridCompact();
+// Determine dynamic number of columns based on screen width
+function getDynamicCols() {
+  return window.innerWidth <= 768 ? 1 : 6;
 }
 
-window.addEventListener("DOMContentLoaded", initializeGridButton);
+// Returns the current column count: user override or dynamic
+function getCurrentCols() {
+  const category = getScreenCategory();
+  return gridOverride[category] ?? getDynamicCols();
+}
 
-
+// Apply columns to video block
 function applyGridColumns(cols) {
   const videoBlock = document.querySelector(".video-block");
   if (!videoBlock) return;
 
-  if (!cols) {
-    videoBlock.style.gridTemplateColumns = "";
-    return;
-  }
-
   videoBlock.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
 }
 
-const gridBtn = document.getElementById("grid-btn");
-
-function getMaxCols() {
-  return window.innerWidth <= 768 ? 3 : 6;
-}
-
-function getCurrentCols() {
-  const category = getScreenCategory();
-  return gridOverride[category] ?? (category === "mobile" ? 1 : 6);
-}
-
-/* render compact button (normal state) */
+// Initial rendering of grid button
 function renderGridCompact() {
   gridBtn.innerHTML = "";
   gridBtn.classList.remove("expanded");
@@ -1019,44 +998,37 @@ function renderGridCompact() {
   }
 }
 
-/* render expanded selector */
+// Expanded selector
 function renderGridExpanded() {
   gridBtn.innerHTML = "";
   gridBtn.classList.add("expanded");
 
-  const max = getMaxCols();
+  const max = window.innerWidth <= 768 ? 3 : 6;
   const current = getCurrentCols();
   const category = getScreenCategory();
 
   for (let i = 1; i <= max; i++) {
     const cell = document.createElement("div");
     cell.className = "grid-cell";
-
     if (i <= current) cell.classList.add("filled");
 
-   cell.addEventListener("mouseenter", () => {
-  gridBtn.querySelectorAll(".grid-cell").forEach((c, idx) => {
-    c.classList.remove("preview", "unpreview");
-
-    if (i > current) {
-      // increasing → fill forward
-      if (idx < i) c.classList.add("preview");
-    } else if (i < current) {
-      // reducing → unfill backward
-      if (idx >= i) c.classList.add("unpreview");
-    }
-  });
-});
+    cell.addEventListener("mouseenter", () => {
+      gridBtn.querySelectorAll(".grid-cell").forEach((c, idx) => {
+        c.classList.remove("preview", "unpreview");
+        if (i > current && idx < i) c.classList.add("preview");
+        if (i < current && idx >= i) c.classList.add("unpreview");
+      });
+    });
 
     cell.addEventListener("mouseleave", () => {
-      gridBtn.querySelectorAll(".grid-cell").forEach(c =>
+      gridBtn.querySelectorAll(".grid-cell").forEach(c => 
         c.classList.remove("preview", "unpreview")
       );
     });
 
     cell.addEventListener("click", e => {
       e.stopPropagation();
-      gridOverride[category] = i;
+      gridOverride[category] = i;      // user override applied for this category
       applyGridColumns(i);
       expanded = false;
       renderGridCompact();
@@ -1066,16 +1038,14 @@ function renderGridExpanded() {
   }
 }
 
-/* toggle behavior */
-let expanded = false;
-
+// Toggle expanded state
 gridBtn.addEventListener("click", e => {
   e.stopPropagation();
   expanded ? renderGridCompact() : renderGridExpanded();
   expanded = !expanded;
 });
 
-/* close on outside click */
+// Close on outside click
 document.addEventListener("click", () => {
   if (expanded) {
     renderGridCompact();
@@ -1083,33 +1053,29 @@ document.addEventListener("click", () => {
   }
 });
 
-/* reset on resize */
-let lastCategory = getScreenCategory();
-
+// Handle resize
 window.addEventListener("resize", () => {
-  const current = getScreenCategory();
+  const category = getScreenCategory();
 
-  if (current !== lastCategory) {
-    // Reset the previous category override
-    gridOverride[lastCategory] = null;
-
-    // Only apply dynamic columns if user hasn't set an override
-    if (gridOverride[current] === null) {
-      const videoBlock = document.querySelector(".video-block");
-      if (videoBlock) {
-        const style = window.getComputedStyle(videoBlock);
-        const cols = style.getPropertyValue("grid-template-columns").split(" ").length;
-        applyGridColumns(cols);
-      }
-    }
-
-    lastCategory = current;
+  // Reset manual override for new category if none exists
+  if (gridOverride[category] === null) {
+    applyGridColumns(getDynamicCols());
+  } else {
+    // Apply existing override for this category
+    applyGridColumns(gridOverride[category]);
   }
 
-  // Ensure button state is compact and not expanded
+  // Ensure button is compact
   expanded = false;
   renderGridCompact();
 });
+
+// Initialize on page load
+document.addEventListener("DOMContentLoaded", () => {
+  applyGridColumns(getCurrentCols());
+  renderGridCompact();
+});
+
 
 
 
