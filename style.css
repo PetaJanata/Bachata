@@ -386,6 +386,10 @@ html { scroll-behavior: smooth; }
   border-radius: 8px;
   cursor: pointer;
   font-size: 0.9rem;
+  display: flex;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
 }
 
 /* popup */
@@ -404,24 +408,28 @@ html { scroll-behavior: smooth; }
   display: none;
 }
 
-/* square buttons */
-.grid-option {
-  width: 36px;
-  height: 36px;
-  display: grid;
-  place-items: center;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.8rem;
+/* grid cell */
+.grid-cell {
+  width: 16px;
+  height: 16px;
+  border: 1px solid black;
+  box-sizing: border-box;
 }
 
-.grid-option.active {
-  background: #000;
-  color: white;
+/* filled (active) */
+.grid-cell.filled {
+  background: black;
 }
 
+/* hover preview */
+.grid-cell.preview {
+  background: rgba(0, 0, 0, 0.4);
+}
 
+/* expanded mode */
+.grid-btn.expanded {
+  padding: 4px;
+}
 
 
 /* ---------- GALLERY CONTENT ---------- */
