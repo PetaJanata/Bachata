@@ -1093,13 +1093,14 @@ window.addEventListener("resize", () => {
     // Reset the previous category override
     gridOverride[lastCategory] = null;
 
-    // Initialize the new category correctly
-    const videoBlock = document.querySelector(".video-block");
-    if (videoBlock) {
-      const style = window.getComputedStyle(videoBlock);
-      const cols = style.getPropertyValue("grid-template-columns").split(" ").length;
-      gridOverride[current] = cols;
-      applyGridColumns(cols);
+    // Only apply dynamic columns if user hasn't set an override
+    if (gridOverride[current] === null) {
+      const videoBlock = document.querySelector(".video-block");
+      if (videoBlock) {
+        const style = window.getComputedStyle(videoBlock);
+        const cols = style.getPropertyValue("grid-template-columns").split(" ").length;
+        applyGridColumns(cols);
+      }
     }
 
     lastCategory = current;
@@ -1109,6 +1110,7 @@ window.addEventListener("resize", () => {
   expanded = false;
   renderGridCompact();
 });
+
 
 
 
