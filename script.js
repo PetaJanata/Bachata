@@ -976,7 +976,7 @@ function initializeGridButton() {
       applyGridColumns(cols);
     }
   }
-
+  expanded = false;
   renderGridCompact();
 }
 
@@ -1050,7 +1050,7 @@ function renderGridExpanded() {
 
     cell.addEventListener("mouseleave", () => {
       gridBtn.querySelectorAll(".grid-cell").forEach(c =>
-        c.classList.remove("preview")
+        c.classList.remove("preview", "unpreview")
       );
     });
 
