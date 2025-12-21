@@ -125,7 +125,7 @@ function scrollToGallery() {
     : 0;
 
   window.scrollTo({
-    top: heroBottom - topPanelHeight,
+    top: heroBottom, /* - topPanelHeight, */
     behavior: "smooth"
   });
 }
