@@ -411,6 +411,7 @@ html { scroll-behavior: smooth; }
   height: 16px;
   border: 1px solid black;
   box-sizing: border-box;
+  transition: background-color 0.1s ease;
 }
 
 /* filled (active) */
@@ -420,7 +421,7 @@ html { scroll-behavior: smooth; }
 
 /* hover preview */
 .grid-cell.preview {
-  background: rgba(0, 0, 0, 0);
+  background: black;
 }
 
 /* expanded mode */
