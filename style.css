@@ -178,6 +178,7 @@ html { scroll-behavior: smooth; }
 /* ---------- TOP PANEL ---------- */
 .top-panel {
   width: 100%;
+  align-items: center;  /* vertical alignment */
   position: sticky;
   top:0;
   padding: 16px 24px;
