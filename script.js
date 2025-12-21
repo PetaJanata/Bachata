@@ -860,29 +860,36 @@ window.addEventListener("touchstart", e => {
   lastTouchY = e.touches[0].clientY;
 }, { passive: true });
 
-/*hard lock*/
 /* hard lock */
 function preventScrollUp(e) {
   if (!heroLocked || isReturningToHero) return;
 
-  const deltaY =
-    e.type === "wheel" ? e.deltaY :
-    e.type === "touchmove"
-      ? (e.touches?.[0]?.clientY < lastTouchY ? -1 : 1)
-      : null;
+  let deltaY = null;
 
-  // 🚫 block ONLY upward intent
+  if (e.type === "wheel") {
+    deltaY = e.deltaY;
+  }
+
+  if (e.type === "touchmove") {
+    const currentY = e.touches[0].clientY;
+
+    // ✅ correct direction:
+    // finger moves DOWN → page wants to scroll UP → deltaY < 0
+    deltaY = lastTouchY - currentY;
+
+    // update for next move
+    lastTouchY = currentY;
+  }
+
+  // 🚫 block ONLY upward page scroll
   if (deltaY < 0) {
     e.preventDefault();
-
-    // ✅ THIS IS POINT 3 — EXACT LOCATION
     window.scrollTo({
       top: heroBottomY,
       behavior: "auto"
     });
   }
 }
-
 
 //hard blocks
 window.addEventListener("wheel", preventScrollUp, { passive: false });
