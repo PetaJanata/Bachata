@@ -181,7 +181,7 @@ html { scroll-behavior: smooth; }
   align-items: center;  /* vertical alignment */
   position: sticky;
   top:0;
-  padding: 16px 24px;
+  padding: 8px 24px;
   background: #ffffff;
   border-bottom: 1px solid #000;
   z-index: 3000;
