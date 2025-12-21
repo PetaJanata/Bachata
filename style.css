@@ -282,6 +282,21 @@ html { scroll-behavior: smooth; }
   margin-right: 10px;
 }
 
+/*back to hero button */
+#back-to-hero {
+  position: fixed;
+  top: 80px;
+  right: 16px;
+  z-index: 3000;
+  display: none;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: white;
+  border: 1px solid #ddd;
+  cursor: pointer;
+}
+
+
 /* show on small/mobile */
 @media (max-width: 768px) {
   .hamburger {
