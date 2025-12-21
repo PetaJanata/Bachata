@@ -378,12 +378,9 @@ html { scroll-behavior: smooth; }
 
 /*video count configuration button*/
 #grid-btn {
-  height: 40px;
   min-width: 40px;
   padding: 0 10px;
-  border: 1px solid #ddd;
   background: white;
-  border-radius: 8px;
   cursor: pointer;
   font-size: 0.9rem;
   display: flex;
