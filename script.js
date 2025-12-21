@@ -1090,14 +1090,26 @@ window.addEventListener("resize", () => {
   const current = getScreenCategory();
 
   if (current !== lastCategory) {
+    // Reset the previous category override
     gridOverride[lastCategory] = null;
-    applyGridColumns(null);
+
+    // Initialize the new category correctly
+    const videoBlock = document.querySelector(".video-block");
+    if (videoBlock) {
+      const style = window.getComputedStyle(videoBlock);
+      const cols = style.getPropertyValue("grid-template-columns").split(" ").length;
+      gridOverride[current] = cols;
+      applyGridColumns(cols);
+    }
+
     lastCategory = current;
   }
 
+  // Ensure button state is compact and not expanded
   expanded = false;
   renderGridCompact();
 });
+
 
 
 
