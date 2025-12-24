@@ -873,45 +873,6 @@ window.addEventListener("touchstart", e => {
   lastTouchY = e.touches[0].clientY;
 }, { passive: true });
 
-/* hard lock */
-function preventScrollUp(e) {
-  if (!heroLocked || isReturningToHero) return;
-
-  let deltaY = 0;
-
-  if (e.type === "wheel") {
-    deltaY = e.deltaY;
-  } else if (e.type === "touchmove") {
-    const currentY = e.touches[0].clientY;
-    deltaY = lastTouchY - currentY;
-    lastTouchY = currentY; // update for next move
-  }
-
-  // Only enforce lock when scroll would go above heroBottomY
-  if (window.scrollY < heroBottomY || deltaY < 0) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    // Snap back to heroBottomY
-    window.scrollTo({
-      top: heroBottomY,
-      behavior: "auto" // must be instant to prevent momentum
-    });
-  }
-}
-
-//hard blocks
-window.addEventListener("wheel", preventScrollUp, { passive: false });
-window.addEventListener("touchmove", preventScrollUp, { passive: false });
-window.addEventListener("keydown", e => {
-  if (!heroLocked || isReturningToHero) return;
-
-  const keys = ["ArrowUp", "PageUp", "Home"];
-  if (keys.includes(e.key)) {
-    e.preventDefault();
-    window.scrollTo(heroBottomY, 0);
-  }
-});
 //observer
 const heroObserver = new IntersectionObserver(entries => {
   entries.forEach(entry => {
@@ -1134,6 +1095,7 @@ function attachSpeedScroll(video, label, iconOnly = false) {
 
   const wheelHandler = e => {
     e.preventDefault();
+    e.stopPropagation();   // ⬅️ add this
     if (e.deltaY < 0) index = Math.min(index + 1, speeds.length - 1);
     else index = Math.max(index - 1, 0);
 
@@ -1142,7 +1104,7 @@ function attachSpeedScroll(video, label, iconOnly = false) {
   };
 
   if (iconOnly) {
-    label.addEventListener("wheel", wheelHandler);
+    label.addEventListener("wheel", wheelHandler, { passive: false });
   } else {
     video.addEventListener("wheel", wheelHandler);
   }
