@@ -771,15 +771,7 @@ window.addEventListener("DOMContentLoaded", () => {
           const isTogglingOff = activeFilter === "Peťa a Peťa";
           applyFilter(isTogglingOff ? null : "Peťa a Peťa", true);
         });
-
-    if (btnTrenink) {
-  btnTrenink.addEventListener("click", () => {
-    const isTogglingOff = activeFilter === "Trénink s Peťou";
-    applyFilter(isTogglingOff ? null : "Trénink s Peťou", true);
-  });
-}
-
-
+ 
       const btnRed = document.getElementById("btn-red");
       const btnYellow = document.getElementById("btn-yellow");
       const btnGreen = document.getElementById("btn-green");
@@ -803,7 +795,7 @@ window.addEventListener("DOMContentLoaded", () => {
         });
 
        const btnTrenink = document.getElementById("btn-trenink");
-
+      
 if (btnTrenink) {
   btnTrenink.addEventListener("click", () => {
     const isTogglingOff = activeFilter === "Trénink s Peťou";
