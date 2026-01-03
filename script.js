@@ -722,6 +722,67 @@ function openFacebookOverlay(url) {
 }
 
 
+// ================================
+// PASSWORD PROMPT FOR TRÉNINK
+// ================================
+function showPasswordPrompt(onSuccess) {
+
+  // blur background
+  document.body.classList.add("blurred");
+
+  // overlay
+  const overlay = document.createElement("div");
+  overlay.className = "password-overlay";
+
+  overlay.innerHTML = `
+    <div class="password-box">
+      <h3>Zadej heslo</h3>
+      <input type="password" id="pw-input" placeholder="Heslo…" />
+      <div class="pw-buttons">
+        <button id="pw-ok">OK</button>
+        <button id="pw-cancel">Zrušit</button>
+      </div>
+      <p class="pw-error" style="display:none;color:red;margin-top:10px;">
+        Nesprávné heslo
+      </p>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  const input = overlay.querySelector("#pw-input");
+  const ok = overlay.querySelector("#pw-ok");
+  const cancel = overlay.querySelector("#pw-cancel");
+  const error = overlay.querySelector(".pw-error");
+
+  input.focus();
+
+  function closePrompt() {
+    overlay.remove();
+    document.body.classList.remove("blurred");
+  }
+
+  function submit() {
+    if (input.value === "petaapeta") {
+      closePrompt();
+      onSuccess(); // 👉 run filter AFTER password OK
+    } else {
+      error.style.display = "block";
+    }
+  }
+
+  ok.addEventListener("click", submit);
+  input.addEventListener("keydown", e => {
+    if (e.key === "Enter") submit();
+  });
+
+  cancel.addEventListener("click", closePrompt);
+
+  // clicking outside box closes
+  overlay.addEventListener("click", e => {
+    if (e.target === overlay) closePrompt();
+  });
+}
 
 
 
@@ -769,11 +830,20 @@ window.addEventListener("DOMContentLoaded", () => {
           applyFilter(isTogglingOff ? null : "Peťa a Peťa", true);
         });
 
-     if (btnAll)
+    if (btnAll)
   btnAll.addEventListener("click", () => {
-    applyFilter(null, false); // filter only, no scroll
-    scrollToGallery();       // precise scroll
+
+    activeFilter = null; // clear named filters first
+
+    // Show only videos NOT starting with "Lekce s"
+    displayedVideos = allVideos.filter(v =>
+      !(v.Button && v.Button.trim().startsWith("Lekce s"))
+    );
+
+    renderVideos(displayedVideos);
+    scrollToGallery();
   });
+
 
 
       const btnRed = document.getElementById("btn-red");
@@ -802,10 +872,21 @@ window.addEventListener("DOMContentLoaded", () => {
 
 if (btnTrenink) {
   btnTrenink.addEventListener("click", () => {
-    const isTogglingOff = activeFilter === "Trénink s Peťou";
-    applyFilter(isTogglingOff ? null : "Trénink s Peťou", true);
+
+    // toggle OFF normally
+    if (activeFilter === "Trénink s Peťou") {
+      applyFilter(null, true);
+      return;
+    }
+
+    // otherwise require password
+    showPasswordPrompt(() => {
+      applyFilter("Trénink s Peťou", true);
+    });
+
   });
 }
+
   
    const btnStolarna = document.getElementById("btn-stolarna");
 
