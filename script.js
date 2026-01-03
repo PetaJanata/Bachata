@@ -934,11 +934,13 @@ let expanded = false;
 // Determine dynamic number of columns based on screen width
 function getDynamicCols() {
   const videoBlock = document.querySelector(".video-block");
-  if (!videoBlock) return window.innerWidth <= 768 ? 1 : 6;
+  if (!videoBlock) return window.innerWidth <= 768 ? 1 : 5; // desktop max 5 now
 
   const minWidth = window.innerWidth <= 768 ? 250 : 180; // px per column
   const cols = Math.floor(videoBlock.clientWidth / minWidth);
-  return Math.min(Math.max(cols, 1), 6); // always 1-6
+
+  const maxCols = window.innerWidth <= 768 ? 3 : 5; // max columns
+  return Math.min(Math.max(cols, 1), maxCols); // always 1 - maxCols
 }
 
 
@@ -964,14 +966,18 @@ function applyGridColumns(cols, isUserOverride = false) {
 
 
 // Initial rendering of grid button
+// Compact button shows all possible sizes but highlights selected
 function renderGridCompact() {
   gridBtn.innerHTML = "";
   gridBtn.classList.remove("expanded");
 
-  const cols = getCurrentCols();
-  for (let i = 0; i < cols; i++) {
+  const current = getCurrentCols();
+  const max = window.innerWidth <= 768 ? 3 : 5;
+
+  for (let i = 1; i <= max; i++) {
     const cell = document.createElement("div");
-    cell.className = "grid-cell filled";
+    cell.className = "grid-cell";
+    if (i <= current) cell.classList.add("filled"); // selected columns filled
     gridBtn.appendChild(cell);
   }
 }
@@ -982,14 +988,16 @@ function renderGridExpanded() {
   gridBtn.classList.add("expanded");
 
   const current = getCurrentCols();
-  const max = window.innerWidth <= 768 ? 3 : 6;
+  const max = window.innerWidth <= 768 ? 3 : 5; // mobile 3, desktop 5
   const category = getScreenCategory();
 
   for (let i = 1; i <= max; i++) {
     const cell = document.createElement("div");
     cell.className = "grid-cell";
-    if (i <= current) cell.classList.add("filled");
 
+    if (i <= current) cell.classList.add("filled"); // selected columns filled
+
+    // hover preview/unpreview
     cell.addEventListener("mouseenter", () => {
       gridBtn.querySelectorAll(".grid-cell").forEach((c, idx) => {
         c.classList.remove("preview", "unpreview");
@@ -999,18 +1007,18 @@ function renderGridExpanded() {
     });
 
     cell.addEventListener("mouseleave", () => {
-      gridBtn.querySelectorAll(".grid-cell").forEach(c => 
+      gridBtn.querySelectorAll(".grid-cell").forEach(c =>
         c.classList.remove("preview", "unpreview")
       );
     });
 
-   cell.addEventListener("click", e => {
-  e.stopPropagation();
-  applyGridColumns(i, true); // mark as user override
-  expanded = false;
-  renderGridCompact();
-});
-
+    // click sets columns
+    cell.addEventListener("click", e => {
+      e.stopPropagation();
+      applyGridColumns(i, true);
+      expanded = false;
+      renderGridCompact();
+    });
 
     gridBtn.appendChild(cell);
   }
@@ -1053,11 +1061,6 @@ document.addEventListener("DOMContentLoaded", () => {
   applyGridColumns(getCurrentCols());
   renderGridCompact();
 });
-
-
-
-
-
 
 // ================================
 // TOP PANEL HEIGHT SYNC (MOBILE MENU)
