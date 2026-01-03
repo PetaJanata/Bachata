@@ -747,16 +747,13 @@ window.addEventListener("DOMContentLoaded", () => {
         startSec: row["StartSec"] ? Number(row["StartSec"]) : null,
         endSec: row["EndSec"] ? Number(row["EndSec"]) : null,
         facebook: row["FacebookURL"]?.trim() || null,
-        instagram: row["InstagramURL"]?.trim() || null,
-        figury: row["Figury"]?.trim() || null   // ← add this
+        instagram: row["InstagramURL"]?.trim() || null
       }));
 
       console.log("Videos loaded from CSV:", videos);
 
       // ⛔ NO SCROLL ON PAGE LOAD
       applyFilter(null, false);
-      // 🔹 Insert figure buttons after videos are loaded
-      insertFigureButtons();
 
       const btnRenCa = document.getElementById("btn-renča");
       const btnPeta = document.getElementById("btn-peta");
@@ -829,10 +826,6 @@ if (btnYouTube) {
     applyFilter(isTogglingOff ? null : "YouTube", true);
   });
 }
-
-// ================================
-// ADD FIGURE BUTTONS ABOVE LEKCE
-// ================================
 
     }) // closes fetch().then(...)
     .catch(err => console.error("Error loading CSV:", err));
