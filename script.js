@@ -159,19 +159,12 @@ function shuffleArray(array) {
 // FILTER FUNCTION (NOW WITH shouldScroll)
 // ================================
 function applyFilter(filterValue, shouldScroll = false) {
-  // 🔒 Password protection for "Trénink s Peťou"
-  if (filterValue === "Trénink s Peťou") {
-    const password = prompt("Zadejte heslo pro Trénink s Peťou:");
-    if (password !== "petaapeta") {
-      // Incorrect password → do nothing
-      return;
-    }
-  }
-
   activeFilter = filterValue;
 
   // Update button active styles
   document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
+
+  // Highlight the correct button
   switch(filterValue) {
     case "Peťák a Renča": document.getElementById("btn-renča")?.classList.add("active"); break;
     case "Peťa a Peťa": document.getElementById("btn-peta")?.classList.add("active"); break;
@@ -180,30 +173,34 @@ function applyFilter(filterValue, shouldScroll = false) {
     case "green": document.getElementById("btn-green")?.classList.add("active"); break;
     case "YouTube": document.getElementById("btn-youtube")?.classList.add("active"); break;
     case "Trénink s Peťou": document.getElementById("btn-trenink")?.classList.add("active"); break;
-    case "Stolárna": document.getElementById("btn-stolarna")?.classList.add("active"); break;
+    case "Stolárna": document.getElementById("btn-stolarna")?.classList.add("active");
+  break;
+
     default: document.getElementById("btn-all")?.classList.add("active");
   }
 
   let filteredVideos;
 
-  if (!filterValue) {
-    // Page load / "all" → exclude "Trénink s Peťou"
-    filteredVideos = videos.filter(v => v.button !== "Trénink s Peťou");
-  } else if (filterValue === "red") filteredVideos = videos.filter(v => v.znam?.trim() === "neznám");
-  else if (filterValue === "yellow") filteredVideos = videos.filter(v => v.znam?.trim() === "potřebuju zlepšit");
-  else if (filterValue === "green") filteredVideos = videos.filter(v => v.znam?.trim() === "znám");
-  else {
-    // Normal filter
-    filteredVideos = videos.filter(v => v.button === filterValue);
-  }
-
-  const shuffledVideos = shuffleArray(filteredVideos);
-  loadGallery(shuffledVideos);
-  lazyLoadVideos();
-
-  if (shouldScroll) scrollToGallery();
+if (filterValue === "red") filteredVideos = videos.filter(v => v.znam?.trim() === "neznám");
+else if (filterValue === "yellow") filteredVideos = videos.filter(v => v.znam?.trim() === "potřebuju zlepšit");
+else if (filterValue === "green") filteredVideos = videos.filter(v => v.znam?.trim() === "znám");
+  else if (!filterValue) {
+  filteredVideos = [...videos];
+}
+else {
+  // default: filter strictly by Button column
+  filteredVideos = videos.filter(v => v.button === filterValue);
 }
 
+
+//debug
+  console.log("Filter:", filterValue, "matching videos:", filteredVideos.length);
+  // Shuffle
+  const shuffledVideos = shuffleArray(filteredVideos);
+
+  loadGallery(shuffledVideos);
+  lazyLoadVideos();
+  }
 
 
 // ================================
@@ -771,7 +768,14 @@ window.addEventListener("DOMContentLoaded", () => {
           const isTogglingOff = activeFilter === "Peťa a Peťa";
           applyFilter(isTogglingOff ? null : "Peťa a Peťa", true);
         });
- 
+
+     if (btnAll)
+  btnAll.addEventListener("click", () => {
+    applyFilter(null, false); // filter only, no scroll
+    scrollToGallery();       // precise scroll
+  });
+
+
       const btnRed = document.getElementById("btn-red");
       const btnYellow = document.getElementById("btn-yellow");
       const btnGreen = document.getElementById("btn-green");
@@ -795,7 +799,7 @@ window.addEventListener("DOMContentLoaded", () => {
         });
 
        const btnTrenink = document.getElementById("btn-trenink");
-      
+
 if (btnTrenink) {
   btnTrenink.addEventListener("click", () => {
     const isTogglingOff = activeFilter === "Trénink s Peťou";
@@ -823,33 +827,6 @@ if (btnYouTube) {
 
     }) // closes fetch().then(...)
     .catch(err => console.error("Error loading CSV:", err));
-  
-// ================================
-// VIDEO GALERIE BUTTON FIX
-// ================================
-const btnVideoGalerie = document.getElementById("btn-video-galerie");
-
-if (btnVideoGalerie) {
-  // 1️⃣ Remove any accidental 'active' state on page load
-  btnVideoGalerie.classList.remove("active");
-
-  // 2️⃣ Ensure activeFilter is null initially
-  activeFilter = null;
-
-  // 3️⃣ Click handler for scrolling and showing gallery
-  btnVideoGalerie.addEventListener("click", () => {
-    // Apply 'null' filter so all videos show
-    applyFilter(null, false);
-
-    // Smooth scroll to the gallery
-    const gallery = document.getElementById("video-gallery");
-    if (!gallery) return;
-
-    gallery.scrollIntoView({ behavior: "smooth" });
-  });
-}
-
-  
 }); // closes DOMContentLoaded
 
 // ================================
