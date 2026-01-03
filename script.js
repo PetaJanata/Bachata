@@ -747,7 +747,8 @@ window.addEventListener("DOMContentLoaded", () => {
         startSec: row["StartSec"] ? Number(row["StartSec"]) : null,
         endSec: row["EndSec"] ? Number(row["EndSec"]) : null,
         facebook: row["FacebookURL"]?.trim() || null,
-        instagram: row["InstagramURL"]?.trim() || null
+        instagram: row["InstagramURL"]?.trim() || null,
+        figury: row["Figury"]?.trim() || null   // ← add this
       }));
 
       console.log("Videos loaded from CSV:", videos);
