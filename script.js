@@ -184,9 +184,13 @@ function applyFilter(filterValue, shouldScroll = false) {
 if (filterValue === "red") filteredVideos = videos.filter(v => v.znam?.trim() === "neznám");
 else if (filterValue === "yellow") filteredVideos = videos.filter(v => v.znam?.trim() === "potřebuju zlepšit");
 else if (filterValue === "green") filteredVideos = videos.filter(v => v.znam?.trim() === "znám");
-  else if (!filterValue) {
-  filteredVideos = [...videos];
+ else if (!filterValue) {
+  // Show ALL videos EXCEPT "Lekce s ..."
+  filteredVideos = videos.filter(v =>
+    !(v.button && v.button.trim().startsWith("Lekce s"))
+  );
 }
+
 else {
   // default: filter strictly by Button column
   filteredVideos = videos.filter(v => v.button === filterValue);
@@ -830,10 +834,11 @@ window.addEventListener("DOMContentLoaded", () => {
           applyFilter(isTogglingOff ? null : "Peťa a Peťa", true);
         });
 
-    if (btnAll)
+if (btnAll)
   btnAll.addEventListener("click", () => {
+    applyFilter(null, true);
+  });
 
-    activeFilter = null; // clear named filters first
 
     // Show only videos NOT starting with "Lekce s"
     displayedVideos = allVideos.filter(v =>
