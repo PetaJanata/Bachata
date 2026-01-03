@@ -839,14 +839,6 @@ if (btnAll)
     applyFilter(null, true);
   });
 
-
-    // Show only videos NOT starting with "Lekce s"
-    displayedVideos = allVideos.filter(v =>
-      !(v.Button && v.Button.trim().startsWith("Lekce s"))
-    );
-
-    renderVideos(displayedVideos);
-    scrollToGallery();
   });
 
 
