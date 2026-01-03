@@ -827,6 +827,53 @@ if (btnYouTube) {
   });
 }
 
+// ================================
+// ADD FIGURE BUTTONS ABOVE LEKCE
+// ================================
+
+// 1️⃣ Create container for figure buttons
+const figuresContainer = document.createElement("div");
+figuresContainer.classList.add("figures-buttons-container");
+
+// Insert it above the "Lekce" menu
+const lekceMenu = document.querySelector("#lekce-menu"); // make sure your Lekce menu has this ID
+lekceMenu.parentNode.insertBefore(figuresContainer, lekceMenu);
+
+// 2️⃣ Extract all unique figure names from CSV
+let figureNames = new Set();
+
+videos.forEach(v => {
+  const figuryCell = v.Figury || v.figury || ""; // depending on CSV key
+  figuryCell.split(",").forEach(name => {
+    const trimmed = name.trim();
+    if (trimmed) figureNames.add(trimmed);
+  });
+});
+
+// Convert set to array
+figureNames = Array.from(figureNames).sort();
+
+// 3️⃣ Create a button for each figure name
+figureNames.forEach(name => {
+  const btn = document.createElement("button");
+  btn.classList.add("filter-btn", "figure-btn");
+  btn.textContent = name;
+
+  // Assign random pastel background + darker text
+  const hue = Math.floor(Math.random() * 360);
+  btn.style.backgroundColor = `hsl(${hue}, 70%, 85%)`;
+  btn.style.color = `hsl(${hue}, 70%, 25%)`;
+
+  btn.addEventListener("click", () => {
+    // Toggle active state
+    const isActive = activeFilter === name;
+    applyFilter(isActive ? null : name, true);
+  });
+
+  figuresContainer.appendChild(btn);
+});
+
+      
     }) // closes fetch().then(...)
     .catch(err => console.error("Error loading CSV:", err));
 }); // closes DOMContentLoaded
