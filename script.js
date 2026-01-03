@@ -755,6 +755,8 @@ window.addEventListener("DOMContentLoaded", () => {
 
       // ⛔ NO SCROLL ON PAGE LOAD
       applyFilter(null, false);
+      // 🔹 Insert figure buttons after videos are loaded
+      insertFigureButtons();
 
       const btnRenCa = document.getElementById("btn-renča");
       const btnPeta = document.getElementById("btn-peta");
@@ -832,56 +834,6 @@ if (btnYouTube) {
 // ADD FIGURE BUTTONS ABOVE LEKCE
 // ================================
 
-// 1️⃣ Create container for figure buttons
-const figuresContainer = document.createElement("div");
-figuresContainer.classList.add("figures-buttons-container");
-
-// Insert it above the "Lekce" menu
-const lekceMenu = document.querySelector("#lekce-menu"); 
-if (lekceMenu) {
-  lekceMenu.parentNode.insertBefore(figuresContainer, lekceMenu);
-} else {
-  console.warn("#lekce-menu not found — figure buttons cannot be inserted");
-}
-
-
-// 2️⃣ Extract all unique figure names from CSV
-let figureNames = new Set();
-
-videos.forEach(v => {
-  const figuryCell = (v.figury || "").trim(); // lowercase 'figury' matches mapped property
-if (!figuryCell) return; // skip empty cells
-figuryCell.split(",").forEach(name => {
-  const trimmed = name.trim();
-  if (trimmed) figureNames.add(trimmed);
-});
-
-});
-
-// Convert set to array
-figureNames = Array.from(figureNames).sort();
-
-// 3️⃣ Create a button for each figure name
-figureNames.forEach(name => {
-  const btn = document.createElement("button");
-  btn.classList.add("filter-btn", "figure-btn");
-  btn.textContent = name;
-
-  // Assign random pastel background + darker text
-  const hue = Math.floor(Math.random() * 360);
-  btn.style.backgroundColor = `hsl(${hue}, 70%, 85%)`;
-  btn.style.color = `hsl(${hue}, 70%, 25%)`;
-
-  btn.addEventListener("click", () => {
-    // Toggle active state
-    const isActive = activeFilter === name;
-    applyFilter(isActive ? null : name, true);
-  });
-
-  figuresContainer.appendChild(btn);
-});
-
-      
     }) // closes fetch().then(...)
     .catch(err => console.error("Error loading CSV:", err));
 }); // closes DOMContentLoaded
