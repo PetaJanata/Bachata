@@ -727,3 +727,30 @@ html { scroll-behavior: smooth; }
   }
 }
 
+
+.figury-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
+  gap: 8px;
+}
+
+.figury-grid button {
+  padding: 6px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  border: 1px solid rgba(0,0,0,0.15);
+  transition: transform .1s ease, box-shadow .1s ease;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.figury-grid button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0,0,0,.2);
+}
+
+.figury-grid button.active {
+  outline: 2px solid black;
+}
+
