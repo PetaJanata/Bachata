@@ -173,28 +173,29 @@ function applyFilter(filterValue, shouldScroll = false) {
     case "green": document.getElementById("btn-green")?.classList.add("active"); break;
     case "YouTube": document.getElementById("btn-youtube")?.classList.add("active"); break;
     case "Trénink s Peťou": document.getElementById("btn-trenink")?.classList.add("active"); break;
-    case "Stolárna": document.getElementById("btn-stolarna")?.classList.add("active");
-  break;
+    case "Stolárna": document.getElementById("btn-stolarna")?.classList.add("active"); break;
 
     default: document.getElementById("btn-all")?.classList.add("active");
   }
 
   let filteredVideos;
 
-if (filterValue === "red") filteredVideos = videos.filter(v => v.znam?.trim() === "neznám");
-else if (filterValue === "yellow") filteredVideos = videos.filter(v => v.znam?.trim() === "potřebuju zlepšit");
-else if (filterValue === "green") filteredVideos = videos.filter(v => v.znam?.trim() === "znám");
- else if (!filterValue) {
+if (filterValue === "red") {
+  filteredVideos = videos.filter(v => v.znam?.trim() === "neznám");
+} else if (filterValue === "yellow") {
+  filteredVideos = videos.filter(v => v.znam?.trim() === "potřebuju zlepšit");
+} else if (filterValue === "green") {
+  filteredVideos = videos.filter(v => v.znam?.trim() === "znám");
+} else if (!filterValue) {
   // Show ALL videos EXCEPT "Lekce s ..."
   filteredVideos = videos.filter(v =>
     !(v.button && v.button.trim().startsWith("Lekce s"))
   );
-}
-
-else {
+} else {
   // default: filter strictly by Button column
   filteredVideos = videos.filter(v => v.button === filterValue);
 }
+
 
 
 //debug
