@@ -837,18 +837,25 @@ const figuresContainer = document.createElement("div");
 figuresContainer.classList.add("figures-buttons-container");
 
 // Insert it above the "Lekce" menu
-const lekceMenu = document.querySelector("#lekce-menu"); // make sure your Lekce menu has this ID
-lekceMenu.parentNode.insertBefore(figuresContainer, lekceMenu);
+const lekceMenu = document.querySelector("#lekce-menu"); 
+if (lekceMenu) {
+  lekceMenu.parentNode.insertBefore(figuresContainer, lekceMenu);
+} else {
+  console.warn("#lekce-menu not found — figure buttons cannot be inserted");
+}
+
 
 // 2️⃣ Extract all unique figure names from CSV
 let figureNames = new Set();
 
 videos.forEach(v => {
-  const figuryCell = v.Figury || v.figury || ""; // depending on CSV key
-  figuryCell.split(",").forEach(name => {
-    const trimmed = name.trim();
-    if (trimmed) figureNames.add(trimmed);
-  });
+  const figuryCell = (v.figury || "").trim(); // lowercase 'figury' matches mapped property
+if (!figuryCell) return; // skip empty cells
+figuryCell.split(",").forEach(name => {
+  const trimmed = name.trim();
+  if (trimmed) figureNames.add(trimmed);
+});
+
 });
 
 // Convert set to array
