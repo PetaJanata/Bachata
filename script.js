@@ -823,6 +823,33 @@ if (btnYouTube) {
 
     }) // closes fetch().then(...)
     .catch(err => console.error("Error loading CSV:", err));
+  
+// ================================
+// VIDEO GALERIE BUTTON FIX
+// ================================
+const btnVideoGalerie = document.getElementById("btn-video-galerie");
+
+if (btnVideoGalerie) {
+  // 1️⃣ Remove any accidental 'active' state on page load
+  btnVideoGalerie.classList.remove("active");
+
+  // 2️⃣ Ensure activeFilter is null initially
+  activeFilter = null;
+
+  // 3️⃣ Click handler for scrolling and showing gallery
+  btnVideoGalerie.addEventListener("click", () => {
+    // Apply 'null' filter so all videos show
+    applyFilter(null, false);
+
+    // Smooth scroll to the gallery
+    const gallery = document.getElementById("video-gallery");
+    if (!gallery) return;
+
+    gallery.scrollIntoView({ behavior: "smooth" });
+  });
+}
+
+  
 }); // closes DOMContentLoaded
 
 // ================================
