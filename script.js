@@ -1126,10 +1126,10 @@ function createHideToggle(card, video, znamValue) {
   const toggle = document.createElement("div");
   toggle.classList.add("hide-toggle");
 
-  if (znamValue === "znám") toggle.classList.add("green");
+ /* if (znamValue === "znám") toggle.classList.add("green");
   else if (znamValue === "potřebuju zlepšit") toggle.classList.add("yellow");
   else if (znamValue === "neznám") toggle.classList.add("red");
-
+*/
   const placeholder = document.createElement("div");
   placeholder.classList.add("video-placeholder");
   placeholder.style.display = "none";
