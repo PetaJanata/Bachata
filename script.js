@@ -1289,5 +1289,29 @@ hamburgerBtn.addEventListener("click", () => {
 // click on backdrop to close menu
 backdrop.addEventListener("click", closeMenu);
 
+const backToHeroBtn = document.getElementById("back-to-hero");
+
+function updateBackToHeroBtn() {
+  const hero = document.querySelector(".hero");
+  if (!hero) return;
+
+  const heroBottom = hero.getBoundingClientRect().bottom;
+
+  if (heroBottom < 0) {
+    // User scrolled past hero
+    backToHeroBtn.style.display = "block";
+  } else {
+    backToHeroBtn.style.display = "none";
+  }
+}
+
+// Scroll listener
+window.addEventListener("scroll", updateBackToHeroBtn, { passive: true });
+window.addEventListener("resize", updateBackToHeroBtn);
+
+// Click: scroll back to hero
+backToHeroBtn.addEventListener("click", () => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
 
 
