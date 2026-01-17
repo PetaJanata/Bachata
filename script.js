@@ -150,17 +150,17 @@ function shuffleArray(array) {
 }
 
 // ================================
-// FILTER FUNCTION (NOW WITH shouldScroll)
+// FILTER FUNCTION
 // ================================
 function applyFilter(filterValue, shouldScroll = false) {
-  activeFilter = filterValue;
+  activeFilter = filterValue?.trim();
 
   // ------------------------------
-  // Update button active states dynamically
+  // Update button active states
   // ------------------------------
   document.querySelectorAll(".filter-btn, .menu-sub button").forEach(btn => {
     btn.classList.remove("active");
-    if (btn.dataset.filter?.trim() === filterValue?.trim() || btn.id && btn.id.endsWith(filterValue?.replace(/\s/g, "").toLowerCase())) {
+    if (btn.dataset.filter?.trim() === activeFilter) {
       btn.classList.add("active");
     }
   });
@@ -168,35 +168,33 @@ function applyFilter(filterValue, shouldScroll = false) {
   let filteredVideos;
 
   // ------------------------------
-  // Handle special password-protected category
+  // Password-protected categories
   // ------------------------------
-  // Password-protected training categories
-const passwordProtected = {
-  "Trénink s Peťou": "petaapeta",
-  "Trénink Hanka": "petaahanka",
-  "Trénink Barča": "petaabarca"
-};
+  const passwordProtected = {
+    "Trénink s Peťou": "petaapeta",
+    "Trénink Hanka": "petaahanka",
+    "Trénink Barča": "petaabarca"
+  };
 
-if (passwordProtected[filterValue]) {
-  const password = prompt(`Zadejte heslo pro ${filterValue}:`);
-  if (password !== passwordProtected[filterValue]) return;
-  filteredVideos = videos.filter(v => v.button?.trim() === filterValue.trim());
-}
-
+  if (passwordProtected[activeFilter]) {
+    const password = prompt(`Zadejte heslo pro ${activeFilter}:`);
+    if (password !== passwordProtected[activeFilter]) return; // stop if wrong
+    filteredVideos = videos.filter(v => v.button?.trim() === activeFilter);
+  } 
   // ------------------------------
   // Filter by "znam" categories
   // ------------------------------
-  else if (!filterValue) {
-    // Show all except password-protected
-    filteredVideos = videos.filter(v => v.button?.trim() !== "Trénink s Peťou");
-  } else if (filterValue === "red") filteredVideos = videos.filter(v => v.znam?.trim() === "neznám");
-  else if (filterValue === "yellow") filteredVideos = videos.filter(v => v.znam?.trim() === "potřebuju zlepšit");
-  else if (filterValue === "green") filteredVideos = videos.filter(v => v.znam?.trim() === "znám");
+  else if (!activeFilter) {
+    // Show all except password-protected Trénink videos
+    filteredVideos = videos.filter(v => !Object.keys(passwordProtected).includes(v.button?.trim()));
+  } else if (activeFilter === "red") filteredVideos = videos.filter(v => v.znam?.trim() === "neznám");
+  else if (activeFilter === "yellow") filteredVideos = videos.filter(v => v.znam?.trim() === "potřebuju zlepšit");
+  else if (activeFilter === "green") filteredVideos = videos.filter(v => v.znam?.trim() === "znám");
   // ------------------------------
   // Dynamic subcategory filter
   // ------------------------------
   else {
-    filteredVideos = videos.filter(v => v.button?.trim() === filterValue?.trim());
+    filteredVideos = videos.filter(v => v.button?.trim() === activeFilter);
   }
 
   // Shuffle & load
