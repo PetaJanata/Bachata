@@ -153,44 +153,45 @@ function shuffleArray(array) {
 // FILTER FUNCTION (NOW WITH shouldScroll)
 // ================================
 function applyFilter(filterValue, shouldScroll = false) {
-  // 🔒 Password protection for "Trénink s Peťou"
-  if (filterValue === "Trénink s Peťou") {
-    const password = prompt("Zadejte heslo pro Trénink s Peťou:");
-    if (password !== "petaapeta") {
-      // Incorrect password → do nothing
-      return;
-    }
-  }
-
   activeFilter = filterValue;
 
-  // Update button active styles
-  document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
-  switch(filterValue) {
-    case "Peťák a Renča": document.getElementById("btn-renča")?.classList.add("active"); break;
-    case "Peťa a Peťa": document.getElementById("btn-peta")?.classList.add("active"); break;
-    case "red": document.getElementById("btn-red")?.classList.add("active"); break;
-    case "yellow": document.getElementById("btn-yellow")?.classList.add("active"); break;
-    case "green": document.getElementById("btn-green")?.classList.add("active"); break;
-    case "YouTube": document.getElementById("btn-youtube")?.classList.add("active"); break;
-    case "Trénink s Peťou": document.getElementById("btn-trenink")?.classList.add("active"); break;
-    case "Stolárna": document.getElementById("btn-stolarna")?.classList.add("active"); break;
-    default: document.getElementById("btn-all")?.classList.add("active");
-  }
+  // ------------------------------
+  // Update button active states dynamically
+  // ------------------------------
+  document.querySelectorAll(".filter-btn, .menu-sub button").forEach(btn => {
+    btn.classList.remove("active");
+    if (btn.dataset.filter?.trim() === filterValue?.trim() || btn.id && btn.id.endsWith(filterValue?.replace(/\s/g, "").toLowerCase())) {
+      btn.classList.add("active");
+    }
+  });
 
   let filteredVideos;
 
-  if (!filterValue) {
-    // Page load / "all" → exclude "Trénink s Peťou"
-    filteredVideos = videos.filter(v => v.button !== "Trénink s Peťou");
+  // ------------------------------
+  // Handle special password-protected category
+  // ------------------------------
+  if (filterValue === "Trénink s Peťou") {
+    const password = prompt("Zadejte heslo pro Trénink s Peťou:");
+    if (password !== "petaapeta") return;
+    filteredVideos = videos.filter(v => v.button?.trim() === filterValue.trim());
+  }
+  // ------------------------------
+  // Filter by "znam" categories
+  // ------------------------------
+  else if (!filterValue) {
+    // Show all except password-protected
+    filteredVideos = videos.filter(v => v.button?.trim() !== "Trénink s Peťou");
   } else if (filterValue === "red") filteredVideos = videos.filter(v => v.znam?.trim() === "neznám");
   else if (filterValue === "yellow") filteredVideos = videos.filter(v => v.znam?.trim() === "potřebuju zlepšit");
   else if (filterValue === "green") filteredVideos = videos.filter(v => v.znam?.trim() === "znám");
+  // ------------------------------
+  // Dynamic subcategory filter
+  // ------------------------------
   else {
-    // Normal filter
-    filteredVideos = videos.filter(v => v.button === filterValue);
+    filteredVideos = videos.filter(v => v.button?.trim() === filterValue?.trim());
   }
 
+  // Shuffle & load
   const shuffledVideos = shuffleArray(filteredVideos);
   loadGallery(shuffledVideos);
   lazyLoadVideos();
@@ -735,18 +736,19 @@ window.addEventListener("DOMContentLoaded", () => {
     .then(csvText => {
       const results = Papa.parse(csvText, { header: true, skipEmptyLines: true });
 
-      videos = results.data.map(row => ({
-        src480: row["480p"] || null,
-        hd: row["1080p"] || null,
-        alt: row["Alt"] || null,
-        button: row["Button"] || null,
-        znam: row["znám?"] || null,
-        youtube: row["YouTubeURL"]?.trim() || null,
-        startSec: row["StartSec"] ? Number(row["StartSec"]) : null,
-        endSec: row["EndSec"] ? Number(row["EndSec"]) : null,
-        facebook: row["FacebookURL"]?.trim() || null,
-        instagram: row["InstagramURL"]?.trim() || null
-      }));
+     videos = results.data.map(row => ({
+  src480: row["480p"] || null,
+  hd: row["1080p"] || null,
+  alt: row["Alt"] || null,
+  button: row["Button"]?.trim() || null,   // <-- trim whitespace
+  znam: row["znám?"]?.trim() || null,
+  youtube: row["YouTubeURL"]?.trim() || null,
+  startSec: row["StartSec"] ? Number(row["StartSec"]) : null,
+  endSec: row["EndSec"] ? Number(row["EndSec"]) : null,
+  facebook: row["FacebookURL"]?.trim() || null,
+  instagram: row["InstagramURL"]?.trim() || null
+}));
+
 
       console.log("Videos loaded from CSV:", videos);
 
