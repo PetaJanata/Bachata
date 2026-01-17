@@ -396,7 +396,6 @@ if (v.facebook) {
     }
 
     // Hover logic
-
     
 card.addEventListener("mouseenter", () => {
   if (card.dataset.hidden || video.style.display === "none") return;
@@ -416,15 +415,10 @@ card.addEventListener("mouseleave", () => {
   if (hideToggle) hideToggle.style.display = "none";
 });
 
-
-
     attachSpeedScroll(video, speedIcon, true);
 
     // Hide toggle for Peťák a Renča & Stolárna
-   if (v.button === "Peťák a Renča" || v.button === "Stolárna") {
   createHideToggle(card, video, v.znam);
-}
-
     gallery.appendChild(card);
   });
 }
@@ -485,7 +479,6 @@ function monitorLoop(start, end) {
     }
   }, 200);
 }
-
 
 
 // ================================
