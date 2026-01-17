@@ -406,10 +406,12 @@ card.addEventListener("mouseenter", () => {
   if (card.dataset.hidden || video.style.display === "none") return;
   if (speedIcon) speedIcon.style.display = "block";
   if (fullscreenIcon) fullscreenIcon.style.display = "block";
+  if (hideToggle) hideToggle.style.display = "block"; // 🟢 show
 });
 card.addEventListener("mouseleave", () => {
   if (speedIcon) speedIcon.style.display = "none";
   if (fullscreenIcon) fullscreenIcon.style.display = "none";
+  if (hideToggle) hideToggle.style.display = "none"; // 🔴 hide
 });
 
 
