@@ -128,7 +128,7 @@ function scrollToGallery() {
     behavior: "smooth"
   });
 
-  lockHero();
+  //lockHero();
 }
 
 
@@ -858,7 +858,7 @@ function updateHeroBottom() {
 window.addEventListener("load", updateHeroBottom);
 window.addEventListener("resize", updateHeroBottom);
 
-
+/*
 function enforceHeroLock() {
   if (!heroLocked) return;
 
@@ -868,7 +868,7 @@ function enforceHeroLock() {
   }
 
   requestAnimationFrame(enforceHeroLock);
-}
+}*/
 
 // Call this once when locking hero
 function lockHero() {
@@ -886,7 +886,7 @@ window.addEventListener("touchstart", e => {
   lastTouchY = e.touches[0].clientY;
 }, { passive: true });
 
-//observer
+/*//observer
 const heroObserver = new IntersectionObserver(entries => {
   entries.forEach(entry => {
     if (!entry.isIntersecting) {
@@ -896,7 +896,7 @@ const heroObserver = new IntersectionObserver(entries => {
 }, { threshold: 0 });
 
 heroObserver.observe(document.querySelector(".hero"));
-
+*/
 /*helpers*/
 const backToHeroBtn = document.getElementById("back-to-hero");
 
