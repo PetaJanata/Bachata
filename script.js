@@ -1,8 +1,3 @@
-let heroLocked = false;
-let heroBottomY = 0;
-let isReturningToHero = false;
-
-
 // ================================
 // HERO CAROUSEL
 // ================================
@@ -128,7 +123,6 @@ function scrollToGallery() {
     behavior: "smooth"
   });
 
-  //lockHero();
 }
 
 
@@ -842,87 +836,6 @@ if (btnYouTube) {
     .catch(err => console.error("Error loading CSV:", err));
 }); // closes DOMContentLoaded
 
-// ================================
-// HERO LOCKED + RETURN BUTTON
-// ================================
-
-
-function updateHeroBottom() {
-  const hero = document.querySelector(".hero");
-  if (!hero) return;
-
-  heroBottomY =
-    hero.getBoundingClientRect().bottom + window.scrollY;
-}
-
-window.addEventListener("load", updateHeroBottom);
-window.addEventListener("resize", updateHeroBottom);
-
-/*
-function enforceHeroLock() {
-  if (!heroLocked) return;
-
-  // If scrolled above heroBottomY, snap back instantly
-  if (window.scrollY < heroBottomY) {
-    window.scrollTo({ top: heroBottomY, behavior: "auto" });
-  }
-
-  requestAnimationFrame(enforceHeroLock);
-}*/
-
-// Call this once when locking hero
-function lockHero() {
-  if (heroLocked || isReturningToHero) return;
-  updateHeroBottom();
-  heroLocked = true;
-  showHeroReturnButton();
-  enforceHeroLock(); // continuously enforce scroll lock
-}
-
-
-//mobile touch tracking
-let lastTouchY = 0;
-window.addEventListener("touchstart", e => {
-  lastTouchY = e.touches[0].clientY;
-}, { passive: true });
-
-/*//observer
-const heroObserver = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (!entry.isIntersecting) {
-      lockHero();
-    }
-  });
-}, { threshold: 0 });
-
-heroObserver.observe(document.querySelector(".hero"));
-*/
-/*helpers*/
-const backToHeroBtn = document.getElementById("back-to-hero");
-
-function showHeroReturnButton() {
-  backToHeroBtn.style.display = "block";
-}
-
-function hideHeroReturnButton() {
-  backToHeroBtn.style.display = "none";
-}
-
-/*return to top */
-backToHeroBtn.addEventListener("click", () => {
-  isReturningToHero = true;
-  heroLocked = false;
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
-
-  setTimeout(() => {
-    isReturningToHero = false;
-    hideHeroReturnButton();
-  }, 700);
-});
 
 // ================================
 // VIDEO COUNT CONFIGURATION
@@ -1188,55 +1101,6 @@ placeholder.addEventListener("click", () => {
   card.appendChild(toggle);
   card.appendChild(placeholder);
 }
-
-
-
-// ================================
-// HERO BUTTON AUTO-HIDE
-// ================================
-function isHeroOutOfView() {
-  const hero = document.querySelector(".hero");
-  const rect = hero.getBoundingClientRect();
-  return rect.bottom <= 0;
-}
-
-const heroBar = document.querySelector(".hero-buttons");
-let hideTimeout = null;
-
-function isScrollOnVideo(e) {
-  const el = e.target;
-  if (!(el instanceof Element)) return false;
-  return el.closest("video") || el.closest(".speed-icon");
-}
-
-function showHeroBar() {
-  heroBar.classList.remove("hidden-hero");
-}
-
-function hideHeroBar() {
-  heroBar.classList.add("hidden-hero");
-}
-
-function onPageScroll(e) {
-  if (isScrollOnVideo(e)) return;
-
-  if (!isHeroOutOfView()) {
-    showHeroBar();
-    if (hideTimeout) clearTimeout(hideTimeout);
-    return;
-  }
-
-  showHeroBar();
-
-  if (hideTimeout) clearTimeout(hideTimeout);
-
-  hideTimeout = setTimeout(() => {
-    hideHeroBar();
-  }, 2000);
-}
-
-window.addEventListener("wheel", onPageScroll, { passive: true });
-window.addEventListener("scroll", onPageScroll, { passive: true });
 
 /*new layout */
 document.querySelectorAll(".menu-main").forEach(mainBtn => {
