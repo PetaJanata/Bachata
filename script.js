@@ -808,25 +808,7 @@ if (btnTrenink) {
     applyFilter(isTogglingOff ? null : "Trénink s Peťou", true);
   });
 }
-
-const btnHanka = document.getElementById("btn-hanka");
-const btnBarca = document.getElementById("btn-barca");
-
-if (btnHanka) {
-  btnHanka.addEventListener("click", () => {
-    const isTogglingOff = activeFilter === "Trénink Hanka";
-    applyFilter(isTogglingOff ? null : "Trénink Hanka", true);
-  });
-}
-
-if (btnBarca) {
-  btnBarca.addEventListener("click", () => {
-    const isTogglingOff = activeFilter === "Trénink Barča";
-    applyFilter(isTogglingOff ? null : "Trénink Barča", true);
-  });
-}
-     
-   const btnStolarna = document.getElementById("btn-stolarna");
+        const btnStolarna = document.getElementById("btn-stolarna");
 
 if (btnStolarna) {
   btnStolarna.addEventListener("click", () => {
