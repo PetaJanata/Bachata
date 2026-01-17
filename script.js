@@ -1245,6 +1245,10 @@ document.querySelectorAll(".menu-main").forEach(mainBtn => {
     group.classList.toggle("open");
   });
 });
+// 🔥 Open all submenu categories by default on load
+document.querySelectorAll(".menu-group").forEach(group => {
+  group.classList.add("open");
+});
 
 document.querySelectorAll(".menu-sub button").forEach(subBtn => {
   subBtn.addEventListener("click", () => {
@@ -1253,7 +1257,7 @@ document.querySelectorAll(".menu-sub button").forEach(subBtn => {
   });
 });
 
-
+// END OF MENU LAYOUT 
 const hamburgerBtn = document.getElementById("hamburger-btn");
 const menuOverlay = document.querySelector(".side-menu"); // reuse existing menu
 const backdrop = document.createElement("div");
