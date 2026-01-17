@@ -119,7 +119,7 @@ html { scroll-behavior: smooth; }
   user-select: none;
 }
 
-.mobile-arrow:hover {
+.mobile-arrow: {
   color: #fff;
   background: rgba(0, 0, 0, 0.6);
   transform: translateY(-50%) scale(1.2);
@@ -264,7 +264,7 @@ html { scroll-behavior: smooth; }
   font-size: 0.9rem;
 }
 
-.menu-sub button:hover {
+.menu-sub button: {
   background: #f0f0f0;
 }
 
@@ -293,6 +293,9 @@ html { scroll-behavior: smooth; }
   height: 40px;
   background: white;
   cursor: pointer;
+  position: fixed;
+  top: 20px;      /* adjust where you want it */
+  right: 20px;
 }
 
 
@@ -422,12 +425,12 @@ html { scroll-behavior: smooth; }
   opacity:1;
 }
 
-/* hover preview */
+/*  preview */
 .grid-cell.preview {
   background: black;
 }
 
-/* hover reduce preview (turn off extra grids) */
+/*  reduce preview (turn off extra grids) */
 .grid-cell.unpreview {
   background: white;
 }
