@@ -402,6 +402,9 @@ if (v.facebook) {
     }
 
     // Hover logic
+
+    const hideToggle = card.querySelector(".hide-toggle");
+    
 card.addEventListener("mouseenter", () => {
   if (card.dataset.hidden || video.style.display === "none") return;
   if (speedIcon) speedIcon.style.display = "block";
