@@ -170,11 +170,19 @@ function applyFilter(filterValue, shouldScroll = false) {
   // ------------------------------
   // Handle special password-protected category
   // ------------------------------
-  if (filterValue === "Trénink s Peťou") {
-    const password = prompt("Zadejte heslo pro Trénink s Peťou:");
-    if (password !== "petaapeta") return;
-    filteredVideos = videos.filter(v => v.button?.trim() === filterValue.trim());
-  }
+  // Password-protected training categories
+const passwordProtected = {
+  "Trénink s Peťou": "petaapeta",
+  "Trénink Hanka": "petaahanka",
+  "Trénink Barča": "petaabarca"
+};
+
+if (passwordProtected[filterValue]) {
+  const password = prompt(`Zadejte heslo pro ${filterValue}:`);
+  if (password !== passwordProtected[filterValue]) return;
+  filteredVideos = videos.filter(v => v.button?.trim() === filterValue.trim());
+}
+
   // ------------------------------
   // Filter by "znam" categories
   // ------------------------------
