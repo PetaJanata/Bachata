@@ -1164,12 +1164,25 @@ toggle.addEventListener("click", e => {
 
 // Restore video
 placeholder.addEventListener("click", () => {
-  delete card.dataset.hidden;     // 🟢 unmark hidden
+  delete card.dataset.hidden; // 🟢 unmark hidden
 
   video.style.display = "block";
   placeholder.style.display = "none";
-  toggle.style.display = "block";
+
+  const speedIcon = card.querySelector(".speed-icon");
+  const fullscreenIcon = card.querySelector(".fullscreen-icon");
+
+  // 🔥 If mouse is already over the card, show icons immediately
+  if (card.matches(":hover")) {
+    if (speedIcon) speedIcon.style.display = "block";
+    if (fullscreenIcon) fullscreenIcon.style.display = "block";
+    toggle.style.display = "block";
+  } else {
+    // otherwise wait for hover
+    toggle.style.display = "none";
+  }
 });
+
 
 
   card.appendChild(toggle);
