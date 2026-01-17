@@ -200,8 +200,8 @@ html { scroll-behavior: smooth; }
 .side-menu {
   width: 220px;
   position: sticky;
-  top: 58px; /* adjust if your top panel is taller */
-  height: calc(100vh - 58px);
+  top: 40px; /* adjust if your top panel is taller */
+  height: calc(100vh - 40px);
   overflow-y: auto;
   flex-shrink: 0;
   background: #ffffff;
