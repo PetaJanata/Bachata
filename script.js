@@ -424,7 +424,7 @@ card.addEventListener("mouseleave", () => {
 
     attachSpeedScroll(video, speedIcon, true);
 
-    // Hide toggle for Peťák a Renča & Stolárna
+    // Hide toggle 
   createHideToggle(card, video, v.znam);
     gallery.appendChild(card);
   });
