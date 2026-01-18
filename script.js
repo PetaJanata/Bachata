@@ -993,21 +993,11 @@ function updateTopPanelHeight() {
   const topPanel = document.querySelector(".top-panel");
   if (!topPanel) return;
 
-  const rect = topPanel.getBoundingClientRect();
-
-  // 🔥 Height stays constant
   document.documentElement.style.setProperty(
     "--top-panel-height",
-    `${rect.height}px`
-  );
-
-  // 🔥 Track visible offset from top of viewport
-  document.documentElement.style.setProperty(
-    "--top-panel-offset",
-    `${Math.max(rect.top, 0)}px`
+    `${topPanel.offsetHeight}px`
   );
 }
-
 
 // keep value correct at all times
 window.addEventListener("load", updateTopPanelHeight);
