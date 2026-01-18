@@ -482,7 +482,9 @@ html { scroll-behavior: smooth; }
 }
 
 .video-card video {
-  width: 100%;
+  position:relative;
+        z-index:1;
+        width: 100%;
   height: auto;
   border-radius: 8px;
   cursor: pointer;
@@ -615,9 +617,13 @@ html { scroll-behavior: smooth; }
   border-radius: 8px;
   cursor: pointer;
   z-index: 4;                       /* below icons, above video */
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
+}
+
+.video-card[data-hidden="true"] .video-placeholder {
+  display: flex;
 }
 
 /* Optional text hint */
@@ -767,4 +773,10 @@ html { scroll-behavior: smooth; }
     font-size: 0.9rem;
   }
 }
+
+.video-card[data-hidden="true"] video {
+  opacity: 0;
+  pointer-events: none;
+}
+
 
