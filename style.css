@@ -477,6 +477,8 @@ html { scroll-behavior: smooth; }
   break-inside: avoid;
   margin-bottom: 20px;
   width: 100%;
+  position: relative;   /* 🔥 REQUIRED */
+ overflow: hidden;
 }
 
 .video-card video {
