@@ -346,27 +346,33 @@ html { scroll-behavior: smooth; }
 /*small screens and mobile*/
 
 @media (max-width: 768px) {
-  /* make menu overlay occupy full height, 75% width */
   .side-menu {
-  position: fixed;
-  top: var(--top-panel-height);
-  left: 0;
+    position: fixed;
 
-  width: 75vw;
-  height: calc(100vh - var(--top-panel-height));
+    /* 🔥 Start exactly below visible top panel */
+    top: calc(var(--top-panel-offset) + var(--top-panel-height));
 
-  background: white;
-  z-index: 3000;
+    left: 0;
+    width: 75vw;
 
-  transform: translateX(-100%);
-  transition: transform 0.3s ease;
+    /* 🔥 Respect current viewport, not document height */
+    height: calc(100dvh - var(--top-panel-height));
 
-  overflow-y: auto;
+    background: white;
+    z-index: 3000;
+
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .side-menu.open {
+    transform: translateX(0);
+  }
 }
 
-.side-menu.open {
-  transform: translateX(0);
-}
 
   /* optional: hide main menu scrolling scrollbar on desktop */
   .side-menu::-webkit-scrollbar {
