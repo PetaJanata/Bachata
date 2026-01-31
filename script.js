@@ -1,3 +1,9 @@
+let activeT1 = null;
+let activeT2 = null;
+let activeZnam = null;
+
+
+
 // ================================
 // HERO CAROUSEL
 // ================================
@@ -135,7 +141,7 @@ window.addEventListener("resize", renderCarousel);
 // GLOBAL VARIABLES
 // ================================
 let videos = []; // holds all video metadata from CSV
-let activeFilter = null; // current active filter
+
 const gallery = document.getElementById("video-gallery");
 
 // ================================
@@ -149,60 +155,97 @@ function shuffleArray(array) {
   return array;
 }
 
-// ================================
-// FILTER FUNCTION
-// ================================
-function applyFilter(filterValue, shouldScroll = false) {
-  activeFilter = filterValue?.trim();
 
-  // ------------------------------
-  // Update button active states
-  // ------------------------------
-  document.querySelectorAll(".filter-btn, .menu-sub button").forEach(btn => {
-    btn.classList.remove("active");
-    if (btn.dataset.filter?.trim() === activeFilter) {
-      btn.classList.add("active");
-    }
+// ================================
+// MENU BUILDER
+// ================================
+
+function buildMenu(videos) {
+  const menu = document.getElementById("dynamic-menu");
+  menu.innerHTML = "";
+
+  const tree = {};
+
+  videos.forEach(v => {
+    if (!tree[v.t1]) tree[v.t1] = new Set();
+    tree[v.t1].add(v.t2);
   });
 
-  let filteredVideos;
+  Object.entries(tree).forEach(([t1, t2set]) => {
+    const group = document.createElement("div");
+    group.className = "menu-group open";
 
-  // ------------------------------
-  // Password-protected categories
-  // ------------------------------
-  const passwordProtected = {
-    "Trénink s Peťou": "petaapeta",
-    "Trénink Hanka": "petaahanka",
-    "Trénink Barča": "petaabarca"
-  };
+    const main = document.createElement("button");
+    main.className = "menu-main";
+    main.textContent = t1;
 
-  if (passwordProtected[activeFilter]) {
-    const password = prompt(`Zadejte heslo pro ${activeFilter}:`);
-    if (password !== passwordProtected[activeFilter]) return; // stop if wrong
-    filteredVideos = videos.filter(v => v.button?.trim() === activeFilter);
-  } 
-  // ------------------------------
-  // Filter by "znam" categories
-  // ------------------------------
-  else if (!activeFilter) {
-    // Show all except password-protected Trénink videos
-    filteredVideos = videos.filter(v => !Object.keys(passwordProtected).includes(v.button?.trim()));
-  } else if (activeFilter === "red") filteredVideos = videos.filter(v => v.znam?.trim() === "neznám");
-  else if (activeFilter === "yellow") filteredVideos = videos.filter(v => v.znam?.trim() === "potřebuju zlepšit");
-  else if (activeFilter === "green") filteredVideos = videos.filter(v => v.znam?.trim() === "znám");
-  // ------------------------------
-  // Dynamic subcategory filter
-  // ------------------------------
-  else {
-    filteredVideos = videos.filter(v => v.button?.trim() === activeFilter);
+    const sub = document.createElement("div");
+    sub.className = "menu-sub";
+
+    t2set.forEach(t2 => {
+      const btn = document.createElement("button");
+      btn.textContent = t2;
+      btn.dataset.t1 = t1;
+      btn.dataset.t2 = t2;
+      btn.addEventListener("click", () => applyPrimaryFilter(t1, t2));
+      sub.appendChild(btn);
+    });
+
+    group.appendChild(main);
+    group.appendChild(sub);
+    menu.appendChild(group);
+  });
+}
+
+
+
+// ================================
+// MENU BUILDER END
+// ================================
+const passwordProtected = {
+  "Trénink s Peťou": "petaapeta",
+  "Trénink Hanka": "petaahanka",
+  "Trénink Barča": "petaabarca"
+};
+
+function isPasswordProtected(t2) {
+  return passwordProtected[t2];
+}
+
+function checkPassword(t2) {
+  return prompt("Zadejte heslo:") === passwordProtected[t2];
+}
+
+function applyPrimaryFilter(t1, t2) {
+  if (isPasswordProtected(t2) && !checkPassword(t2)) return;
+
+  activeT1 = t1;
+  activeT2 = t2;
+
+  applyFilters();
+}
+
+function applyZnamFilter(value) {
+  activeZnam = activeZnam === value ? null : value;
+  applyFilters();
+}
+function applyFilters() {
+  let result = [...videos];
+
+  result = result.filter(v =>
+    !isPasswordProtected(v.t2) || v.t2 === activeT2
+  );
+
+  if (activeT1 && activeT2) {
+    result = result.filter(v => v.t1 === activeT1 && v.t2 === activeT2);
   }
 
-  // Shuffle & load
-  const shuffledVideos = shuffleArray(filteredVideos);
-  loadGallery(shuffledVideos);
-  lazyLoadVideos();
+  if (activeZnam) {
+    result = result.filter(v => v.znam === activeZnam);
+  }
 
-  if (shouldScroll) scrollToGallery();
+  loadGallery(shuffleArray(result));
+  lazyLoadVideos();
 }
 
 
@@ -746,7 +789,8 @@ window.addEventListener("DOMContentLoaded", () => {
   src480: row["480p"] || null,
   hd: row["1080p"] || null,
   alt: row["Alt"] || null,
-  button: row["Button"]?.trim() || null,   // <-- trim whitespace
+  t1: row["T1"]?.trim() || null,
+  t2: row["T2"]?.trim() || null,
   znam: row["znám?"]?.trim() || null,
   youtube: row["YouTubeURL"]?.trim() || null,
   startSec: row["StartSec"] ? Number(row["StartSec"]) : null,
@@ -754,87 +798,43 @@ window.addEventListener("DOMContentLoaded", () => {
   facebook: row["FacebookURL"]?.trim() || null,
   instagram: row["InstagramURL"]?.trim() || null
 }));
+      
+videos = videos.filter(v => v.t1 && v.t2);
+      
+
+
+document.querySelectorAll("[data-znam]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    applyZnamFilter(btn.dataset.znam);
+  });
+});
 
 
       console.log("Videos loaded from CSV:", videos);
 
       // ⛔ NO SCROLL ON PAGE LOAD
-      applyFilter(null, false);
+      applyFilters();
+buildMenu(videos);
 
-      const btnRenCa = document.getElementById("btn-renča");
-      const btnPeta = document.getElementById("btn-peta");
-      const btnAll = document.getElementById("btn-all");
-
-      if (btnRenCa)
-        btnRenCa.addEventListener("click", () => {
-          const isTogglingOff = activeFilter === "Peťák a Renča";
-          applyFilter(isTogglingOff ? null : "Peťák a Renča", true);
-        });
-
-      if (btnPeta)
-        btnPeta.addEventListener("click", () => {
-          const isTogglingOff = activeFilter === "Peťa a Peťa";
-          applyFilter(isTogglingOff ? null : "Peťa a Peťa", true);
-        });
-
-     if (btnAll)
-  btnAll.addEventListener("click", () => {
-    applyFilter(null, false); // filter only, no scroll
-    scrollToGallery();       // precise scroll
-  });
-
-
-      const btnRed = document.getElementById("btn-red");
-      const btnYellow = document.getElementById("btn-yellow");
-      const btnGreen = document.getElementById("btn-green");
-
-      if (btnRed)
-        btnRed.addEventListener("click", () => {
-          const isTogglingOff = activeFilter === "red";
-          applyFilter(isTogglingOff ? null : "red", true);
-        });
-
-      if (btnYellow)
-        btnYellow.addEventListener("click", () => {
-          const isTogglingOff = activeFilter === "yellow";
-          applyFilter(isTogglingOff ? null : "yellow", true);
-        });
-
-      if (btnGreen)
-        btnGreen.addEventListener("click", () => {
-          const isTogglingOff = activeFilter === "green";
-          applyFilter(isTogglingOff ? null : "green", true);
-        });
-
-       const btnTrenink = document.getElementById("btn-trenink");
-
-if (btnTrenink) {
-  btnTrenink.addEventListener("click", () => {
-    const isTogglingOff = activeFilter === "Trénink s Peťou";
-    applyFilter(isTogglingOff ? null : "Trénink s Peťou", true);
-  });
-}
-        const btnStolarna = document.getElementById("btn-stolarna");
-
-if (btnStolarna) {
-  btnStolarna.addEventListener("click", () => {
-    const isTogglingOff = activeFilter === "Stolárna";
-    applyFilter(isTogglingOff ? null : "Stolárna", true);
-  });
-}       
-      
-      const btnYouTube = document.getElementById("btn-youtube");
-
-if (btnYouTube) {
-  btnYouTube.addEventListener("click", () => {
-    const isTogglingOff = activeFilter === "YouTube";
-    applyFilter(isTogglingOff ? null : "YouTube", true);
-  });
-}
-
+         
     }) // closes fetch().then(...)
     .catch(err => console.error("Error loading CSV:", err));
 }); // closes DOMContentLoaded
+
+
+const btnAll = document.getElementById("btn-all");
+
+if (btnAll) {
+  btnAll.addEventListener("click", () => {
+    activeT1 = null;
+    activeT2 = null;
+    activeZnam = null;
+
+    applyFilters();
+    scrollToGallery();
+  });
+}
+
 
 
 // ================================
@@ -1114,12 +1114,6 @@ document.querySelectorAll(".menu-group").forEach(group => {
   group.classList.add("open");
 });
 
-document.querySelectorAll(".menu-sub button").forEach(subBtn => {
-  subBtn.addEventListener("click", () => {
-    const filterValue = subBtn.dataset.filter;
-    applyFilter(filterValue, false);
-  });
-});
 
 // END OF MENU LAYOUT 
 const hamburgerBtn = document.getElementById("hamburger-btn");
