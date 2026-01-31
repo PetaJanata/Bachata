@@ -203,7 +203,7 @@ function buildMenu(videos) {
 // MENU BUILDER END
 // ================================
 const passwordProtected = {
-  "Trénink s Peťou": "petaapeta",
+  "Trénink Peťa": "petaapeta",
   "Trénink Hanka": "petaahanka",
   "Trénink Barča": "petaabarca"
 };
@@ -222,13 +222,21 @@ function applyPrimaryFilter(t1, t2) {
   activeT1 = t1;
   activeT2 = t2;
 
+  // 🔄 reset secondary filter when switching category
+  activeZnam = null;
+  updateZnamUI();
+
   applyFilters();
 }
 
+
 function applyZnamFilter(value) {
+  // toggle behavior
   activeZnam = activeZnam === value ? null : value;
+  updateZnamUI();
   applyFilters();
 }
+
 function applyFilters() {
   let result = [...videos];
 
@@ -241,12 +249,20 @@ function applyFilters() {
   }
 
   if (activeZnam) {
-    result = result.filter(v => v.znam === activeZnam);
-  }
+  result = result.filter(v => v.znam && v.znam === activeZnam);
+}
+
 
   loadGallery(shuffleArray(result));
   lazyLoadVideos();
 }
+
+function updateZnamUI() {
+  document.querySelectorAll("[data-znam]").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.znam === activeZnam);
+  });
+}
+
 
 
 // ================================
