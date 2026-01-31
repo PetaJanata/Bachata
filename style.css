@@ -298,6 +298,20 @@ html { scroll-behavior: smooth; }
   right: 20px;
 }
 
+.znam-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #000;
+  background: white;
+  cursor: pointer;
+}
+
+.znam-btn.active {
+  background: #000;
+  color: white;
+}
+
+
 
 /* show on small/mobile */
 @media (max-width: 768px) {
