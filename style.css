@@ -459,6 +459,26 @@ html { scroll-behavior: smooth; }
 }
 
 
+.top-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid black;
+  background: white;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.top-btn.active {
+  background: #eee;
+}
+
+.hidden {
+  display: none;
+}
+
+
+
+
 
 /* ---------- GALLERY CONTENT ---------- */
 .gallery-content {
