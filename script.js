@@ -264,7 +264,7 @@ function applyFilters() {
     result = shuffleArray(result);
   }
 
-  loadGallery(shuffleArray(result));
+  loadGallery(result);
   lazyLoadVideos();
 }
 
