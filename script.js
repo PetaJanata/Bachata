@@ -222,20 +222,30 @@ function applyPrimaryFilter(t1, t2) {
   activeT1 = t1;
   activeT2 = t2;
 
-  // 🔄 reset secondary filter when switching category
+  // 🔥 reset znam filter when primary changes
   activeZnam = null;
-  updateZnamUI();
+  document.querySelectorAll(".znam-btn").forEach(b => b.classList.remove("active"));
 
   applyFilters();
 }
+
 
 
 function applyZnamFilter(value) {
-  // toggle behavior
+  // toggle logic
   activeZnam = activeZnam === value ? null : value;
-  updateZnamUI();
+
+  // update button UI
+  document.querySelectorAll(".znam-btn").forEach(btn => {
+    btn.classList.toggle(
+      "active",
+      btn.dataset.znam === activeZnam
+    );
+  });
+
   applyFilters();
 }
+
 
 function applyFilters() {
   let result = [...videos];
