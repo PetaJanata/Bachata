@@ -1,6 +1,8 @@
 let activeT1 = null;
 let activeT2 = null;
 let activeZnam = null;
+let sortNewest = false;
+
 
 
 
@@ -221,6 +223,8 @@ function applyPrimaryFilter(t1, t2) {
 
   activeT1 = t1;
   activeT2 = t2;
+  sortNewest = false; // reset sorting
+updateNewestButtonVisibility();
 
   // 🔄 reset secondary filter when switching category
   activeZnam = null;
@@ -251,7 +255,14 @@ function applyFilters() {
   if (activeZnam) {
   result = result.filter(v => v.znam && v.znam === activeZnam);
 }
-
+// 🔥 NEWEST SORT (only Peťák a Renča)
+  if (sortNewest && activeT2 === "Peťák a Renča") {
+    result = result
+      .filter(v => Number.isFinite(v.videoId))
+      .sort((a, b) => b.videoId - a.videoId);
+  } else {
+    result = shuffleArray(result);
+  }
 
   loadGallery(shuffleArray(result));
   lazyLoadVideos();
@@ -808,6 +819,7 @@ window.addEventListener("DOMContentLoaded", () => {
   t1: row["T1"]?.trim() || null,
   t2: row["T2"]?.trim() || null,
   znam: row["znám?"]?.trim() || null,
+  videoId: row["VideoID"] ? Number(row["VideoID"]) : null,
   youtube: row["YouTubeURL"]?.trim() || null,
   startSec: row["StartSec"] ? Number(row["StartSec"]) : null,
   endSec: row["EndSec"] ? Number(row["EndSec"]) : null,
@@ -1162,4 +1174,32 @@ hamburgerBtn.addEventListener("click", () => {
 
 // click on backdrop to close menu
 backdrop.addEventListener("click", closeMenu);
+
+
+
+
+function updateNewestButtonVisibility() {
+  const btn = document.getElementById("btn-newest");
+  if (!btn) return;
+
+  if (activeT2 === "Peťák a Renča") {
+    btn.classList.remove("hidden");
+  } else {
+    btn.classList.add("hidden");
+    btn.classList.remove("active");
+    sortNewest = false;
+  }
+}
+
+const newestBtn = document.getElementById("btn-newest");
+
+if (newestBtn) {
+  newestBtn.addEventListener("click", () => {
+    sortNewest = !sortNewest;
+    newestBtn.classList.toggle("active", sortNewest);
+    applyFilters();
+  });
+}
+
+
 
