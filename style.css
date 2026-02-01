@@ -298,26 +298,55 @@ html { scroll-behavior: smooth; }
   right: 20px;
 }
 
+/* container inside top panel */
+.znam-filter {
+  display: flex;
+  gap: 10px;
+  margin: 0 auto;          /* centers horizontally */
+}
+
+/* base button */
 .znam-btn {
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: 1px solid #ccc;      /* light border by default */
-  background: white;
-  color: black;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid transparent;
   cursor: pointer;
+  padding: 0;
   transition: all 0.2s ease;
 }
 
-/* Hover state */
-.znam-btn:hover {
-  border: 1px solid #000;      /* black border on hover */
+/* colors */
+.znam-btn.red {
+  background: #e74c3c;
 }
 
-/* Active state */
-.znam-btn.active {
-  background: #e0e0e0;         /* slightly grey background */
-  border: 1px solid #000;      /* keep black border */
+.znam-btn.yellow {
+  background: #f1c40f;
 }
+
+.znam-btn.green {
+  background: #2ecc71;
+}
+
+/* hover = darker border */
+.znam-btn.red:hover {
+  border-color: #b93a2f;
+}
+
+.znam-btn.yellow:hover {
+  border-color: #c9a20d;
+}
+
+.znam-btn.green:hover {
+  border-color: #239a55;
+}
+
+/* active state */
+.znam-btn.active {
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.6);
+}
+
 
 
 
