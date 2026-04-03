@@ -415,27 +415,21 @@ html { scroll-behavior: smooth; }
   user-select: none;
 }
 
+/* popup */
 .grid-menu {
   position: absolute;
-  top: calc(100% + 6px);   /* directly below button */
-  left: 50%;
-  transform: translateX(-50%);
-
+  top: calc(var(--top-panel-height) + 6px);
+  left: 120px; /* adjust relative to hamburger */
   background: white;
-  padding: 8px;
+  padding: 10px;
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-
+  gap: 8px;
   z-index: 4000;
-  border-radius: 8px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
 }
 
 .grid-menu.hidden {
   display: none;
 }
-
 
 /* grid cell */
 .grid-cell {
@@ -462,13 +456,6 @@ html { scroll-behavior: smooth; }
 /*  reduce preview (turn off extra grids) */
 .grid-cell.unpreview {
   background: white;
-}
-
-
-.grid-wrapper {
-  position: relative;   /* anchor for dropdown */
-  display: inline-flex;
-  align-items: center;
 }
 
 
@@ -523,25 +510,31 @@ html { scroll-behavior: smooth; }
 
 /* VIDEO GALLERY */
 .video-block {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 20px;
+  columns: 5;
+  column-gap: 20px;
   padding: 2rem;
 }
 
-.video-card video {
+.video-card {
+  break-inside: avoid;
+  margin-bottom: 20px;
+}
+
+.video-card video,
+.video-card img.video-thumb {
   width: 100%;
   height: auto;
+  display: block;
   border-radius: 8px;
   cursor: pointer;
 }
 
 /* Responsive */
-@media (max-width: 1600px) { .video-block { grid-template-columns: repeat(5, 1fr); } }
-@media (max-width: 1300px) { .video-block { grid-template-columns: repeat(4, 1fr); } }
-@media (max-width: 1000px) { .video-block { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 700px)  { .video-block { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 500px)  { .video-block { grid-template-columns: 1fr; } }
+@media (max-width: 1600px) { .video-block { columns: 5; } }
+@media (max-width: 1300px) { .video-block { columns: 4; } }
+@media (max-width: 1000px) { .video-block { columns: 3; } }
+@media (max-width: 700px)  { .video-block { columns: 2; } }
+@media (max-width: 500px)  { .video-block { columns: 1; } }
 
 
 /* Knowledge color borders */
@@ -793,4 +786,3 @@ html { scroll-behavior: smooth; }
     font-size: 0.9rem;
   }
 }
-
