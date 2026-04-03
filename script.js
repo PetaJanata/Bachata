@@ -260,6 +260,21 @@ function applyFilters() {
     result = result
       .filter(v => Number.isFinite(v.videoId))
       .sort((a, b) => b.videoId - a.videoId);
+
+    // Reorder so newest appear across the top row, not down the first column.
+    // CSS columns fills top-to-bottom, so we interleave by column count:
+    // sorted [1,2,3,4,5,6] with 3 cols → stored as [1,4,2,5,3,6]
+    // so CSS places: col1=[1,4], col2=[2,5], col3=[3,6] → row1 shows 1,2,3 ✓
+    const cols = getCurrentCols();
+    const rows = Math.ceil(result.length / cols);
+    const interleaved = [];
+    for (let col = 0; col < cols; col++) {
+      for (let row = 0; row < rows; row++) {
+        const idx = row * cols + col;
+        if (idx < result.length) interleaved.push(result[idx]);
+      }
+    }
+    result = interleaved;
   } else {
     result = shuffleArray(result);
   }
