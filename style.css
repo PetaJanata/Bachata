@@ -508,16 +508,25 @@ html { scroll-behavior: smooth; }
 }
 
 
-/* VIDEO GALLERY */
+/* VIDEO GALLERY — column divs managed by JS */
 .video-block {
-  columns: 5;
-  column-gap: 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 20px;
   padding: 2rem;
 }
 
+.gallery-column {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 .video-card {
-  break-inside: avoid;
   margin-bottom: 20px;
+  position: relative;
 }
 
 .video-card video,
@@ -526,15 +535,7 @@ html { scroll-behavior: smooth; }
   height: auto;
   display: block;
   border-radius: 8px;
-  cursor: pointer;
 }
-
-/* Responsive */
-@media (max-width: 1600px) { .video-block { columns: 5; } }
-@media (max-width: 1300px) { .video-block { columns: 4; } }
-@media (max-width: 1000px) { .video-block { columns: 3; } }
-@media (max-width: 700px)  { .video-block { columns: 2; } }
-@media (max-width: 500px)  { .video-block { columns: 1; } }
 
 
 /* Knowledge color borders */
