@@ -532,24 +532,6 @@ function rebuildColumns(numCols) {
   buildColumnLayout(renderedVideos, numCols);
 }
 
-// Show/hide cards by key — never moves cards between columns
-// visibility:hidden keeps the card's space so nothing below it shifts up
-function filterInPlace(wantedKeys) {
-  gallery.querySelectorAll(".video-card").forEach(card => {
-    const key = card.dataset.videoKey;
-    const visible = key && wantedKeys.has(key);
-    if (visible) {
-      card.style.visibility = "";
-      card.style.pointerEvents = "";
-    } else {
-      const vid = card.querySelector("video");
-      if (vid) vid.pause();
-      card.style.visibility = "hidden";
-      card.style.pointerEvents = "none";
-    }
-  });
-}
-
 function loadGallery(videoList, forceRebuild = false) {
   if (!gallery) return;
   const numCols = getCurrentCols();
@@ -557,11 +539,56 @@ function loadGallery(videoList, forceRebuild = false) {
   if (forceRebuild) {
     gallery.querySelectorAll("video").forEach(v => { v.pause(); v.src = ""; });
     buildColumnLayout(videoList, numCols);
-  } else {
-    // Just show/hide — positions locked per column
-    const wantedKeys = new Set(videoList.map(videoKey).filter(Boolean));
-    filterInPlace(wantedKeys);
+    return;
   }
+
+  // Filter mode:
+  // - Cards whose key is in videoList → keep in place, show
+  // - Cards whose key is NOT in videoList → replace with a video from videoList
+  //   that isn't already occupying a slot, preserving the card's DOM position
+
+  const wantedKeys = new Set(videoList.map(videoKey).filter(Boolean));
+
+  // Find which wanted videos are already visible in the DOM
+  const alreadyShown = new Set();
+  gallery.querySelectorAll(".video-card").forEach(card => {
+    if (wantedKeys.has(card.dataset.videoKey)) {
+      alreadyShown.add(card.dataset.videoKey);
+    }
+  });
+
+  // Pool of wanted videos not yet in the DOM — these will fill unwanted slots
+  const pool = videoList.filter(v => {
+    const k = videoKey(v);
+    return k && !alreadyShown.has(k);
+  });
+
+  // Walk all cards: keep matching ones, replace non-matching ones from pool
+  gallery.querySelectorAll(".video-card").forEach(card => {
+    const key = card.dataset.videoKey;
+
+    if (wantedKeys.has(key)) {
+      // Belongs — make sure it is visible
+      card.style.visibility = "";
+      card.style.pointerEvents = "";
+      return;
+    }
+
+    // Does not belong — replace with next from pool if available
+    if (pool.length > 0) {
+      const v = pool.shift();
+      const newCard = createVideoCard(v);
+      if (newCard) {
+        card.parentNode.replaceChild(newCard, card);
+      }
+    } else {
+      // No replacement — hide but keep space so rows below stay put
+      const vid = card.querySelector("video");
+      if (vid) vid.pause();
+      card.style.visibility = "hidden";
+      card.style.pointerEvents = "none";
+    }
+  });
 }
 
 
