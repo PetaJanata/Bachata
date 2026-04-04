@@ -388,7 +388,7 @@ function extractYouTubeID(url) {
 }
 
 
-// Returns a unique key for a video object — used to identify cards in the DOM
+// Returns a unique key for a video object
 function videoKey(v) {
   return v.src480 || v.youtube || v.facebook || v.instagram || null;
 }
@@ -511,40 +511,56 @@ function createVideoCard(v) {
 function loadGallery(videoList) {
   if (!gallery) return;
 
-  // Build a map of currently rendered cards by their video key
-  const existingCards = new Map();
-  gallery.querySelectorAll(".video-card[data-video-key]").forEach(card => {
-    existingCards.set(card.dataset.videoKey, card);
+  // Build a lookup: key -> video object for the new desired list
+  const wantedMap = new Map();
+  videoList.forEach(v => {
+    const key = videoKey(v);
+    if (key) wantedMap.set(key, v);
   });
 
-  // Build the set of keys we want to show
-  const wantedKeys = new Set(
-    videoList.map(videoKey).filter(Boolean)
-  );
+  // Get all current cards in DOM order
+  const currentCards = Array.from(gallery.querySelectorAll(".video-card"));
 
-  // Remove cards that are no longer needed — pause videos before removing
-  existingCards.forEach((card, key) => {
-    if (!wantedKeys.has(key)) {
+  // Pool of new videos not yet in the DOM — these will replace unwanted slots
+  const newVideos = videoList.filter(v => {
+    const key = videoKey(v);
+    if (!key) return true; // keyless always create fresh
+    return !currentCards.some(c => c.dataset.videoKey === key);
+  });
+  let newPool = [...newVideos];
+
+  // Walk existing cards: keep matching ones, replace non-matching ones in place
+  currentCards.forEach(card => {
+    const key = card.dataset.videoKey;
+    if (key && wantedMap.has(key)) {
+      // This card belongs — leave it exactly where it is, do nothing
+      return;
+    }
+
+    // This card does not belong — replace it with the next new video
+    if (newPool.length > 0) {
+      const v = newPool.shift();
+      const newCard = createVideoCard(v);
+      if (newCard) {
+        gallery.replaceChild(newCard, card);
+      } else {
+        card.remove();
+      }
+    } else {
+      // No replacement available — remove the card
       const vid = card.querySelector("video");
       if (vid) { vid.pause(); vid.src = ""; }
       card.remove();
     }
   });
 
-  // Append cards in the correct order (reuse existing, create new ones)
-  videoList.forEach(v => {
-    const key = videoKey(v);
-    let card = key ? existingCards.get(key) : null;
-
-    if (!card) {
-      card = createVideoCard(v);
-      if (!card) return;
-    }
-
-    // Always append in order — this repositions existing cards too
-    gallery.appendChild(card);
+  // If there are still new videos left over (more than current cards), append them
+  newPool.forEach(v => {
+    const newCard = createVideoCard(v);
+    if (newCard) gallery.appendChild(newCard);
   });
 }
+
 
 function buildYouTubeEmbed(url, start, end) {
   const videoId = extractYouTubeID(url);
