@@ -388,135 +388,160 @@ function extractYouTubeID(url) {
 }
 
 
-function loadGallery(videoList) {
-  if (!gallery) return;
-  gallery.innerHTML = "";
-
-  videoList.forEach(v => {
-    const card = document.createElement("div");
-    card.classList.add("video-card");
-    card.style.position = "relative";
-
-    let speedIcon = null;
-    let fullscreenIcon = null;
-
-    // ──────────────── Instagram ────────────────
-    if (v.instagram) {
-      const thumb = document.createElement("img");
-      thumb.src = "images/instagram-placeholder.jpg";
-      thumb.classList.add("video-thumb");
-      thumb.style.cursor = "pointer";
-
-      speedIcon = document.createElement("div");
-      speedIcon.classList.add("speed-icon");
-      speedIcon.textContent = "IG";
-      card.appendChild(speedIcon);
-
-      thumb.addEventListener("click", () => openInstagramOverlay(v.instagram));
-
-      card.appendChild(thumb);
-      gallery.appendChild(card);
-      return;
-    }
-
-    // ──────────────── YouTube ────────────────
-    if (v.youtube) {
-      const ytID = extractYouTubeID(v.youtube);
-
-      const thumb = document.createElement("img");
-      thumb.src = `https://i.ytimg.com/vi/${ytID}/hqdefault.jpg`;
-      thumb.classList.add("video-thumb");
-      thumb.style.cursor = "pointer";
-
-      speedIcon = document.createElement("div");
-      speedIcon.classList.add("speed-icon");
-      speedIcon.textContent = "YT";
-      card.appendChild(speedIcon);
-
-     thumb.addEventListener("click", () => openYouTubeOverlay(v));
-
-
-      card.appendChild(thumb);
-      gallery.appendChild(card);
-      return;
-    }
-
-    // ──────────────── Facebook ────────────────
-if (v.facebook) {
-  const thumb = document.createElement("img");
-  thumb.src = "images/facebook-placeholder.jpg"; // static placeholder
-  thumb.classList.add("video-thumb");
-  thumb.style.cursor = "pointer";
-
-  const icon = document.createElement("div");
-  icon.classList.add("speed-icon");
-  icon.textContent = "FB";
-  card.appendChild(icon);
-
-  thumb.addEventListener("click", () => openFacebookOverlay(v.facebook));
-
-  card.appendChild(thumb);
-  gallery.appendChild(card);
-  return;
+// Returns a unique key for a video object — used to identify cards in the DOM
+function videoKey(v) {
+  return v.src480 || v.youtube || v.facebook || v.instagram || null;
 }
 
+// Builds a fresh card DOM node for a video object
+function createVideoCard(v) {
+  const card = document.createElement("div");
+  card.classList.add("video-card");
+  card.style.position = "relative";
 
-    // ──────────────── Local Video ────────────────
-    if (!v.src480) return;
+  const key = videoKey(v);
+  if (key) card.dataset.videoKey = key;
 
-    const video = document.createElement("video");
-    video.dataset.src = v.src480;
-    video.muted = true;
-    video.loop = true;
-    video.playsInline = true;
-    video.style.cursor = "default";
+  let speedIcon = null;
+  let fullscreenIcon = null;
 
-    if (v.znam === "znám") video.classList.add("know-green");
-    else if (v.znam === "potřebuju zlepšit") video.classList.add("know-yellow");
-    else if (v.znam === "neznám") video.classList.add("know-red");
+  // ──────────────── Instagram ────────────────
+  if (v.instagram) {
+    const thumb = document.createElement("img");
+    thumb.src = "images/instagram-placeholder.jpg";
+    thumb.classList.add("video-thumb");
+    thumb.style.cursor = "pointer";
 
-    card.appendChild(video);
-
-    // Speed icon
     speedIcon = document.createElement("div");
     speedIcon.classList.add("speed-icon");
-    speedIcon.textContent = "1×";
+    speedIcon.textContent = "IG";
     card.appendChild(speedIcon);
 
-    // Fullscreen icon for HD
-    if (v.hd) {
-      fullscreenIcon = document.createElement("div");
-      fullscreenIcon.classList.add("fullscreen-icon");
-      fullscreenIcon.innerHTML = "⤢";
-      card.appendChild(fullscreenIcon);
+    thumb.addEventListener("click", () => openInstagramOverlay(v.instagram));
+    card.appendChild(thumb);
+    return card;
+  }
 
-      fullscreenIcon.addEventListener("click", () => openOverlay(v));
+  // ──────────────── YouTube ────────────────
+  if (v.youtube) {
+    const ytID = extractYouTubeID(v.youtube);
+
+    const thumb = document.createElement("img");
+    thumb.src = `https://i.ytimg.com/vi/${ytID}/hqdefault.jpg`;
+    thumb.classList.add("video-thumb");
+    thumb.style.cursor = "pointer";
+
+    speedIcon = document.createElement("div");
+    speedIcon.classList.add("speed-icon");
+    speedIcon.textContent = "YT";
+    card.appendChild(speedIcon);
+
+    thumb.addEventListener("click", () => openYouTubeOverlay(v));
+    card.appendChild(thumb);
+    return card;
+  }
+
+  // ──────────────── Facebook ────────────────
+  if (v.facebook) {
+    const thumb = document.createElement("img");
+    thumb.src = "images/facebook-placeholder.jpg";
+    thumb.classList.add("video-thumb");
+    thumb.style.cursor = "pointer";
+
+    const icon = document.createElement("div");
+    icon.classList.add("speed-icon");
+    icon.textContent = "FB";
+    card.appendChild(icon);
+
+    thumb.addEventListener("click", () => openFacebookOverlay(v.facebook));
+    card.appendChild(thumb);
+    return card;
+  }
+
+  // ──────────────── Local Video ────────────────
+  if (!v.src480) return null;
+
+  const video = document.createElement("video");
+  video.dataset.src = v.src480;
+  video.muted = true;
+  video.loop = true;
+  video.playsInline = true;
+  video.style.cursor = "default";
+
+  if (v.znam === "znám") video.classList.add("know-green");
+  else if (v.znam === "potřebuju zlepšit") video.classList.add("know-yellow");
+  else if (v.znam === "neznám") video.classList.add("know-red");
+
+  card.appendChild(video);
+
+  speedIcon = document.createElement("div");
+  speedIcon.classList.add("speed-icon");
+  speedIcon.textContent = "1×";
+  card.appendChild(speedIcon);
+
+  if (v.hd) {
+    fullscreenIcon = document.createElement("div");
+    fullscreenIcon.classList.add("fullscreen-icon");
+    fullscreenIcon.innerHTML = "⤢";
+    card.appendChild(fullscreenIcon);
+    fullscreenIcon.addEventListener("click", () => openOverlay(v));
+  }
+
+  card.addEventListener("mouseenter", () => {
+    if (card.dataset.hidden || video.style.display === "none") return;
+    if (speedIcon) speedIcon.style.display = "block";
+    if (fullscreenIcon) fullscreenIcon.style.display = "block";
+    const hideToggle = card.querySelector(".hide-toggle");
+    if (hideToggle) hideToggle.style.display = "block";
+  });
+
+  card.addEventListener("mouseleave", () => {
+    if (speedIcon) speedIcon.style.display = "none";
+    if (fullscreenIcon) fullscreenIcon.style.display = "none";
+    const hideToggle = card.querySelector(".hide-toggle");
+    if (hideToggle) hideToggle.style.display = "none";
+  });
+
+  attachSpeedScroll(video, speedIcon, true);
+  createHideToggle(card, video, v.znam);
+
+  return card;
+}
+
+function loadGallery(videoList) {
+  if (!gallery) return;
+
+  // Build a map of currently rendered cards by their video key
+  const existingCards = new Map();
+  gallery.querySelectorAll(".video-card[data-video-key]").forEach(card => {
+    existingCards.set(card.dataset.videoKey, card);
+  });
+
+  // Build the set of keys we want to show
+  const wantedKeys = new Set(
+    videoList.map(videoKey).filter(Boolean)
+  );
+
+  // Remove cards that are no longer needed — pause videos before removing
+  existingCards.forEach((card, key) => {
+    if (!wantedKeys.has(key)) {
+      const vid = card.querySelector("video");
+      if (vid) { vid.pause(); vid.src = ""; }
+      card.remove();
+    }
+  });
+
+  // Append cards in the correct order (reuse existing, create new ones)
+  videoList.forEach(v => {
+    const key = videoKey(v);
+    let card = key ? existingCards.get(key) : null;
+
+    if (!card) {
+      card = createVideoCard(v);
+      if (!card) return;
     }
 
-    // Hover logic
-    
-card.addEventListener("mouseenter", () => {
-  if (card.dataset.hidden || video.style.display === "none") return;
-
-  if (speedIcon) speedIcon.style.display = "block";
-  if (fullscreenIcon) fullscreenIcon.style.display = "block";
-
-  const hideToggle = card.querySelector(".hide-toggle");
-  if (hideToggle) hideToggle.style.display = "block";
-});
-
-card.addEventListener("mouseleave", () => {
-  if (speedIcon) speedIcon.style.display = "none";
-  if (fullscreenIcon) fullscreenIcon.style.display = "none";
-
-  const hideToggle = card.querySelector(".hide-toggle");
-  if (hideToggle) hideToggle.style.display = "none";
-});
-
-    attachSpeedScroll(video, speedIcon, true);
-
-    // Hide toggle 
-  createHideToggle(card, video, v.znam);
+    // Always append in order — this repositions existing cards too
     gallery.appendChild(card);
   });
 }
