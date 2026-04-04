@@ -544,47 +544,47 @@ function loadGallery(videoList, forceRebuild = false) {
 
   // Filter mode:
   // - Cards whose key is in videoList → keep in place, show
-  // - Cards whose key is NOT in videoList → replace with a video from videoList
-  //   that isn't already occupying a slot, preserving the card's DOM position
+  // - Cards whose key is NOT in videoList → replace in-place with a wanted video
+  //   that isn't already sitting in a kept slot
 
   const wantedKeys = new Set(videoList.map(videoKey).filter(Boolean));
 
-  // Find which wanted videos are already visible in the DOM
-  const alreadyShown = new Set();
+  // First pass: find which wanted keys are already sitting in a slot that will be KEPT
+  // (i.e. the card is in a position whose key matches — it won't be replaced)
+  const keptKeys = new Set();
   gallery.querySelectorAll(".video-card").forEach(card => {
-    if (wantedKeys.has(card.dataset.videoKey)) {
-      alreadyShown.add(card.dataset.videoKey);
-    }
+    const key = card.dataset.videoKey;
+    if (wantedKeys.has(key)) keptKeys.add(key);
   });
 
-  // Pool of wanted videos not yet in the DOM — these will fill unwanted slots
+  // Pool = wanted videos whose key is NOT already kept in a slot
+  // These need to be placed into the slots that are being replaced
   const pool = videoList.filter(v => {
     const k = videoKey(v);
-    return k && !alreadyShown.has(k);
+    return k && !keptKeys.has(k);
   });
 
-  // Walk all cards: keep matching ones, replace non-matching ones from pool
+  // Second pass: walk cards and act
   gallery.querySelectorAll(".video-card").forEach(card => {
     const key = card.dataset.videoKey;
 
     if (wantedKeys.has(key)) {
-      // Belongs — make sure it is visible
+      // This card belongs — ensure it is visible
       card.style.visibility = "";
       card.style.pointerEvents = "";
       return;
     }
 
-    // Does not belong — replace with next from pool if available
+    // This card does not belong — replace with next from pool
+    const vid = card.querySelector("video");
+    if (vid) vid.pause();
+
     if (pool.length > 0) {
       const v = pool.shift();
       const newCard = createVideoCard(v);
-      if (newCard) {
-        card.parentNode.replaceChild(newCard, card);
-      }
+      if (newCard) card.parentNode.replaceChild(newCard, card);
     } else {
-      // No replacement — hide but keep space so rows below stay put
-      const vid = card.querySelector("video");
-      if (vid) vid.pause();
+      // Pool exhausted — hide slot, preserve space so rows below don't move
       card.style.visibility = "hidden";
       card.style.pointerEvents = "none";
     }
