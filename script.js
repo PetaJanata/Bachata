@@ -544,38 +544,31 @@ function loadGallery(videoList, forceRebuild = false) {
 
   // Filter mode:
   // - Cards whose key is in videoList → keep in place, show
-  // - Cards whose key is NOT in videoList → replace in-place with a wanted video
-  //   that isn't already sitting in a kept slot
+  // - Cards whose key is NOT in videoList → replace with next wanted video not already kept
 
   const wantedKeys = new Set(videoList.map(videoKey).filter(Boolean));
 
-  // First pass: find which wanted keys are already sitting in a slot that will be KEPT
-  // (i.e. the card is in a position whose key matches — it won't be replaced)
+  // First pass: find which wanted keys are already in a slot that will be kept
   const keptKeys = new Set();
   gallery.querySelectorAll(".video-card").forEach(card => {
-    const key = card.dataset.videoKey;
-    if (wantedKeys.has(key)) keptKeys.add(key);
+    if (wantedKeys.has(card.dataset.videoKey)) keptKeys.add(card.dataset.videoKey);
   });
 
-  // Pool = wanted videos whose key is NOT already kept in a slot
-  // These need to be placed into the slots that are being replaced
+  // Pool = wanted videos not already kept — go into freed slots
   const pool = videoList.filter(v => {
     const k = videoKey(v);
     return k && !keptKeys.has(k);
   });
 
-  // Second pass: walk cards and act
+  // Second pass: keep matching cards, replace non-matching ones
   gallery.querySelectorAll(".video-card").forEach(card => {
     const key = card.dataset.videoKey;
 
     if (wantedKeys.has(key)) {
-      // This card belongs — ensure it is visible
-      card.style.visibility = "";
-      card.style.pointerEvents = "";
+      card.style.display = "";
       return;
     }
 
-    // This card does not belong — replace with next from pool
     const vid = card.querySelector("video");
     if (vid) vid.pause();
 
@@ -584,9 +577,7 @@ function loadGallery(videoList, forceRebuild = false) {
       const newCard = createVideoCard(v);
       if (newCard) card.parentNode.replaceChild(newCard, card);
     } else {
-      // Pool exhausted — hide slot, preserve space so rows below don't move
-      card.style.visibility = "hidden";
-      card.style.pointerEvents = "none";
+      card.style.display = "none";
     }
   });
 }
