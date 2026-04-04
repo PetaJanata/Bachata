@@ -543,43 +543,75 @@ function loadGallery(videoList, forceRebuild = false) {
   }
 
   // Filter mode:
-  // - Cards whose key is in videoList → keep in place, show
-  // - Cards whose key is NOT in videoList → replace with next wanted video not already kept
+  // 1. Mark cards that match the filter as "keep"
+  // 2. Remove cards that don't match
+  // 3. Distribute replacement videos evenly across columns that lost cards
 
   const wantedKeys = new Set(videoList.map(videoKey).filter(Boolean));
 
-  // First pass: find which wanted keys are already in a slot that will be kept
+  // Find which wanted keys are already sitting in a slot
   const keptKeys = new Set();
   gallery.querySelectorAll(".video-card").forEach(card => {
     if (wantedKeys.has(card.dataset.videoKey)) keptKeys.add(card.dataset.videoKey);
   });
 
-  // Pool = wanted videos not already kept — go into freed slots
+  // Pool = wanted videos not already in a kept slot
   const pool = videoList.filter(v => {
     const k = videoKey(v);
     return k && !keptKeys.has(k);
   });
 
-  // Second pass: keep matching cards, replace non-matching ones
-  gallery.querySelectorAll(".video-card").forEach(card => {
-    const key = card.dataset.videoKey;
+  // Get all column elements
+  const columns = Array.from(gallery.querySelectorAll(".gallery-column"));
 
-    if (wantedKeys.has(key)) {
-      card.style.display = "";
-      return;
-    }
-
-    const vid = card.querySelector("video");
-    if (vid) vid.pause();
-
-    if (pool.length > 0) {
-      const v = pool.shift();
-      const newCard = createVideoCard(v);
-      if (newCard) card.parentNode.replaceChild(newCard, card);
-    } else {
-      card.style.display = "none";
-    }
+  // First pass: show kept cards, collect empty slots per column
+  // empty slots = placeholder divs that mark where replacements should go
+  columns.forEach(col => {
+    Array.from(col.querySelectorAll(".video-card")).forEach(card => {
+      const key = card.dataset.videoKey;
+      if (wantedKeys.has(key)) {
+        // Keep and show
+        card.style.display = "";
+      } else {
+        // Remove and leave a placeholder so we know this slot needs filling
+        const vid = card.querySelector("video");
+        if (vid) vid.pause();
+        const placeholder = document.createElement("div");
+        placeholder.className = "gallery-slot-placeholder";
+        col.replaceChild(placeholder, card);
+      }
+    });
   });
+
+  // Second pass: distribute pool videos into placeholders, shortest column first
+  // so columns stay balanced
+  let remaining = [...pool];
+  while (remaining.length > 0) {
+    // Find column with most placeholders (needs filling most)
+    const allPlaceholders = columns.map(col => ({
+      col,
+      slots: Array.from(col.querySelectorAll(".gallery-slot-placeholder"))
+    })).filter(c => c.slots.length > 0);
+
+    if (allPlaceholders.length === 0) break;
+
+    // Sort by most placeholders first so we fill greedily
+    allPlaceholders.sort((a, b) => b.slots.length - a.slots.length);
+
+    // Fill one slot in the neediest column
+    const { col, slots } = allPlaceholders[0];
+    const placeholder = slots[0];
+    const v = remaining.shift();
+    const newCard = createVideoCard(v);
+    if (newCard) {
+      col.replaceChild(newCard, placeholder);
+    } else {
+      placeholder.remove();
+    }
+  }
+
+  // Remove any remaining unfilled placeholders (pool ran out)
+  gallery.querySelectorAll(".gallery-slot-placeholder").forEach(p => p.remove());
 }
 
 
