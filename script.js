@@ -533,16 +533,19 @@ function rebuildColumns(numCols) {
 }
 
 // Show/hide cards by key — never moves cards between columns
+// visibility:hidden keeps the card's space so nothing below it shifts up
 function filterInPlace(wantedKeys) {
   gallery.querySelectorAll(".video-card").forEach(card => {
     const key = card.dataset.videoKey;
     const visible = key && wantedKeys.has(key);
     if (visible) {
-      card.style.display = "";
+      card.style.visibility = "";
+      card.style.pointerEvents = "";
     } else {
       const vid = card.querySelector("video");
       if (vid) vid.pause();
-      card.style.display = "none";
+      card.style.visibility = "hidden";
+      card.style.pointerEvents = "none";
     }
   });
 }
