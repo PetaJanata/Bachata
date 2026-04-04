@@ -242,6 +242,16 @@ function applyZnamFilter(value) {
 }
 
 function applyFilters(forceRebuild = false) {
+  // On forceRebuild (refresh): clear all filters first
+  if (forceRebuild) {
+    activeT1 = null;
+    activeT2 = null;
+    activeZnam = null;
+    sortNewest = false;
+    updateZnamUI();
+    updateNewestButtonVisibility();
+  }
+
   let result = [...videos];
 
   result = result.filter(v =>
@@ -256,41 +266,19 @@ function applyFilters(forceRebuild = false) {
     result = result.filter(v => v.znam && v.znam === activeZnam);
   }
 
-  const videoBlock = document.querySelector(".video-block");
-  const cols = getCurrentCols();
-
-  // 🔥 NEWEST SORT (only Peťák a Renča) — always force rebuild so order is correct
+  // 🔥 NEWEST SORT — always rebuild so order is correct
   if (sortNewest && activeT2 === "Peťák a Renča") {
     result = result
       .filter(v => Number.isFinite(v.videoId))
       .sort((a, b) => b.videoId - a.videoId);
-
-    if (videoBlock) {
-      videoBlock.style.display = "grid";
-      videoBlock.style.gridTemplateColumns = "repeat(" + cols + ", 1fr)";
-      videoBlock.style.gap = "20px";
-      videoBlock.style.columns = "";
-      videoBlock.style.columnGap = "";
-    }
-
-    loadGallery(result, true); // rebuild in sorted order
+    loadGallery(result, true);
+  } else if (forceRebuild) {
+    // Refresh: reshuffle all videos and rebuild columns
+    result = shuffleArray([...videos].filter(v => !isPasswordProtected(v.t2)));
+    loadGallery(result, true);
   } else {
-    if (videoBlock) {
-      videoBlock.style.display = "";
-      videoBlock.style.gridTemplateColumns = "";
-      videoBlock.style.gap = "";
-      videoBlock.style.columns = String(cols);
-      videoBlock.style.columnGap = "20px";
-    }
-
-    if (forceRebuild) {
-      // Refresh: reshuffle everything and rebuild DOM
-      result = shuffleArray(result);
-      loadGallery(result, true);
-    } else {
-      // Filter change: show/hide existing cards, positions preserved
-      loadGallery(result, false);
-    }
+    // Filter change: show/hide in place — columns never reflow
+    loadGallery(result, false);
   }
 
   lazyLoadVideos();
@@ -405,6 +393,8 @@ function createVideoCard(v) {
   const card = document.createElement("div");
   card.classList.add("video-card");
   card.style.position = "relative";
+  card.style.marginBottom = "20px";
+  card.style.breakInside = "avoid";
 
   const key = videoKey(v);
   if (key) card.dataset.videoKey = key;
@@ -418,12 +408,10 @@ function createVideoCard(v) {
     thumb.src = "images/instagram-placeholder.jpg";
     thumb.classList.add("video-thumb");
     thumb.style.cursor = "pointer";
-
     speedIcon = document.createElement("div");
     speedIcon.classList.add("speed-icon");
     speedIcon.textContent = "IG";
     card.appendChild(speedIcon);
-
     thumb.addEventListener("click", () => openInstagramOverlay(v.instagram));
     card.appendChild(thumb);
     return card;
@@ -432,17 +420,14 @@ function createVideoCard(v) {
   // ──────────────── YouTube ────────────────
   if (v.youtube) {
     const ytID = extractYouTubeID(v.youtube);
-
     const thumb = document.createElement("img");
     thumb.src = `https://i.ytimg.com/vi/${ytID}/hqdefault.jpg`;
     thumb.classList.add("video-thumb");
     thumb.style.cursor = "pointer";
-
     speedIcon = document.createElement("div");
     speedIcon.classList.add("speed-icon");
     speedIcon.textContent = "YT";
     card.appendChild(speedIcon);
-
     thumb.addEventListener("click", () => openYouTubeOverlay(v));
     card.appendChild(thumb);
     return card;
@@ -454,12 +439,10 @@ function createVideoCard(v) {
     thumb.src = "images/facebook-placeholder.jpg";
     thumb.classList.add("video-thumb");
     thumb.style.cursor = "pointer";
-
     const icon = document.createElement("div");
     icon.classList.add("speed-icon");
     icon.textContent = "FB";
     card.appendChild(icon);
-
     thumb.addEventListener("click", () => openFacebookOverlay(v.facebook));
     card.appendChild(thumb);
     return card;
@@ -511,52 +494,71 @@ function createVideoCard(v) {
 
   attachSpeedScroll(video, speedIcon, true);
   createHideToggle(card, video, v.znam);
-
   return card;
 }
 
-// The full rendered video list in current shuffle order — never reshuffled except on refresh
-let renderedVideos = [];
+// ================================
+// COLUMN-BASED GALLERY
+// Each column is a real <div> — hiding cards in one column never affects others
+// ================================
 
-function loadGallery(videoList, forceRebuild = false) {
-  if (!gallery) return;
+let renderedVideos = []; // full shuffled list currently in DOM
 
-  // forceRebuild = true means wipe everything and start fresh (refresh button / initial load)
-  if (forceRebuild) {
-    // Pause and clear all existing videos
-    gallery.querySelectorAll("video").forEach(v => { v.pause(); v.src = ""; });
-    gallery.innerHTML = "";
-    renderedVideos = [];
+// Build N column divs inside gallery, distribute cards round-robin
+function buildColumnLayout(videoList, numCols) {
+  gallery.innerHTML = "";
+  renderedVideos = [...videoList];
 
-    videoList.forEach(v => {
-      const card = createVideoCard(v);
-      if (card) {
-        gallery.appendChild(card);
-        renderedVideos.push(v);
-      }
-    });
-    return;
+  // Create column containers
+  const columns = [];
+  for (let i = 0; i < numCols; i++) {
+    const col = document.createElement("div");
+    col.className = "gallery-column";
+    col.style.flex = "1";
+    col.style.minWidth = "0";
+    gallery.appendChild(col);
+    columns.push(col);
   }
 
-  // Filter mode: show/hide cards based on whether they match videoList
-  // videoList here is the FILTERED subset — we show matching cards, hide the rest
-  const wantedKeys = new Set(videoList.map(videoKey).filter(Boolean));
+  // Distribute cards round-robin across columns
+  videoList.forEach((v, i) => {
+    const card = createVideoCard(v);
+    if (card) columns[i % numCols].appendChild(card);
+  });
+}
 
+// Redistribute existing cards into a new column count (e.g. user changed grid)
+function rebuildColumns(numCols) {
+  buildColumnLayout(renderedVideos, numCols);
+}
+
+// Show/hide cards by key — never moves cards between columns
+function filterInPlace(wantedKeys) {
   gallery.querySelectorAll(".video-card").forEach(card => {
     const key = card.dataset.videoKey;
-    const wanted = key && wantedKeys.has(key);
-
-    if (wanted) {
+    const visible = key && wantedKeys.has(key);
+    if (visible) {
       card.style.display = "";
-      card.style.marginBottom = ""; // restore column spacing
     } else {
-      // Hide but keep in DOM so positions of visible cards are unaffected
       const vid = card.querySelector("video");
       if (vid) vid.pause();
       card.style.display = "none";
-      card.style.marginBottom = "0";
     }
   });
+}
+
+function loadGallery(videoList, forceRebuild = false) {
+  if (!gallery) return;
+  const numCols = getCurrentCols();
+
+  if (forceRebuild) {
+    gallery.querySelectorAll("video").forEach(v => { v.pause(); v.src = ""; });
+    buildColumnLayout(videoList, numCols);
+  } else {
+    // Just show/hide — positions locked per column
+    const wantedKeys = new Set(videoList.map(videoKey).filter(Boolean));
+    filterInPlace(wantedKeys);
+  }
 }
 
 
@@ -960,28 +962,13 @@ function getCurrentCols() {
 
 // Apply columns to video block
 function applyGridColumns(cols, isUserOverride = false) {
-  const videoBlock = document.querySelector(".video-block");
-  if (!videoBlock) return;
-
-  // If newest sort is active, keep grid mode but update column count
-  if (sortNewest) {
-    videoBlock.style.display = "grid";
-    videoBlock.style.gridTemplateColumns = "repeat(" + cols + ", 1fr)";
-    videoBlock.style.gap = "20px";
-    videoBlock.style.columns = "";
-    videoBlock.style.columnGap = "";
-  } else {
-    videoBlock.style.display = "";
-    videoBlock.style.gridTemplateColumns = "";
-    videoBlock.style.gap = "";
-    videoBlock.style.columns = String(cols);
-    videoBlock.style.columnGap = "20px";
-  }
-
   if (isUserOverride) {
     const category = getScreenCategory();
     gridOverride[category] = cols;
   }
+  // Rebuild column divs with new count, preserving current rendered videos
+  rebuildColumns(cols);
+  renderGridCompact();
 }
 
 
@@ -1062,14 +1049,13 @@ document.addEventListener("click", () => {
 // Handle resize
 window.addEventListener("resize", () => {
   const category = getScreenCategory();
+  const cols = gridOverride[category] ?? getDynamicCols();
 
-  // Reset manual override for new category if none exists
-  if (gridOverride[category] === null) {
-    applyGridColumns(getDynamicCols());
-  } else {
-    // Apply existing override for this category
-    applyGridColumns(gridOverride[category]);
-  }
+  // Rebuild column divs for new count
+  rebuildColumns(cols);
+
+  // Re-apply current filter visibility
+  applyFilters(false);
 
   // Ensure button is compact
   expanded = false;
