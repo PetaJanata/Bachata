@@ -241,7 +241,7 @@ function applyZnamFilter(value) {
   applyFilters();
 }
 
-function applyFilters() {
+function applyFilters(forceReshuffle = false) {
   let result = [...videos];
 
   result = result.filter(v =>
@@ -253,18 +253,18 @@ function applyFilters() {
   }
 
   if (activeZnam) {
-  result = result.filter(v => v.znam && v.znam === activeZnam);
-}
-// 🔥 NEWEST SORT (only Peťák a Renča)
+    result = result.filter(v => v.znam && v.znam === activeZnam);
+  }
+
   const videoBlock = document.querySelector(".video-block");
   const cols = getCurrentCols();
 
+  // 🔥 NEWEST SORT (only Peťák a Renča)
   if (sortNewest && activeT2 === "Peťák a Renča") {
     result = result
       .filter(v => Number.isFinite(v.videoId))
       .sort((a, b) => b.videoId - a.videoId);
 
-    // Switch to CSS grid so cards fill left-to-right row by row: n, n-1, n-2...
     if (videoBlock) {
       videoBlock.style.display = "grid";
       videoBlock.style.gridTemplateColumns = "repeat(" + cols + ", 1fr)";
@@ -273,9 +273,9 @@ function applyFilters() {
       videoBlock.style.columnGap = "";
     }
   } else {
-    result = shuffleArray(result);
+    // Only shuffle on explicit refresh or first load — not on every filter change
+    if (forceReshuffle) result = shuffleArray(result);
 
-    // Restore CSS columns (masonry) for normal shuffle mode
     if (videoBlock) {
       videoBlock.style.display = "";
       videoBlock.style.gridTemplateColumns = "";
@@ -902,8 +902,8 @@ document.querySelectorAll("[data-znam]").forEach(btn => {
 
       console.log("Videos loaded from CSV:", videos);
 
-      // ⛔ NO SCROLL ON PAGE LOAD
-      applyFilters();
+      // Initial load — shuffle once
+      applyFilters(true);
 buildMenu(videos);
 
          
@@ -916,12 +916,7 @@ const btnAll = document.getElementById("btn-all");
 
 if (btnAll) {
   btnAll.addEventListener("click", () => {
-    activeT1 = null;
-    activeT2 = null;
-    activeZnam = null;
-
-    applyFilters();
-    scrollToGallery();
+    scrollToGallery(); // just scroll, videos stay as-is
   });
 }
 
@@ -1273,5 +1268,15 @@ if (newestBtn) {
     sortNewest = !sortNewest;
     newestBtn.classList.toggle("active", sortNewest);
     applyFilters();
+  });
+}
+
+// ================================
+// REFRESH BUTTON — reshuffle and reload
+// ================================
+const refreshBtn = document.getElementById("refresh-btn");
+if (refreshBtn) {
+  refreshBtn.addEventListener("click", () => {
+    applyFilters(true); // force reshuffle
   });
 }
