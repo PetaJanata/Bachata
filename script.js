@@ -241,7 +241,7 @@ function applyZnamFilter(value) {
   applyFilters();
 }
 
-function applyFilters(forceReshuffle = false) {
+function applyFilters(forceRebuild = false) {
   let result = [...videos];
 
   result = result.filter(v =>
@@ -259,7 +259,7 @@ function applyFilters(forceReshuffle = false) {
   const videoBlock = document.querySelector(".video-block");
   const cols = getCurrentCols();
 
-  // 🔥 NEWEST SORT (only Peťák a Renča)
+  // 🔥 NEWEST SORT (only Peťák a Renča) — always force rebuild so order is correct
   if (sortNewest && activeT2 === "Peťák a Renča") {
     result = result
       .filter(v => Number.isFinite(v.videoId))
@@ -272,10 +272,9 @@ function applyFilters(forceReshuffle = false) {
       videoBlock.style.columns = "";
       videoBlock.style.columnGap = "";
     }
-  } else {
-    // Only shuffle on explicit refresh or first load — not on every filter change
-    if (forceReshuffle) result = shuffleArray(result);
 
+    loadGallery(result, true); // rebuild in sorted order
+  } else {
     if (videoBlock) {
       videoBlock.style.display = "";
       videoBlock.style.gridTemplateColumns = "";
@@ -283,9 +282,17 @@ function applyFilters(forceReshuffle = false) {
       videoBlock.style.columns = String(cols);
       videoBlock.style.columnGap = "20px";
     }
+
+    if (forceRebuild) {
+      // Refresh: reshuffle everything and rebuild DOM
+      result = shuffleArray(result);
+      loadGallery(result, true);
+    } else {
+      // Filter change: show/hide existing cards, positions preserved
+      loadGallery(result, false);
+    }
   }
 
-  loadGallery(result);
   lazyLoadVideos();
 }
 
@@ -508,56 +515,47 @@ function createVideoCard(v) {
   return card;
 }
 
-function loadGallery(videoList) {
+// The full rendered video list in current shuffle order — never reshuffled except on refresh
+let renderedVideos = [];
+
+function loadGallery(videoList, forceRebuild = false) {
   if (!gallery) return;
 
-  // Build a lookup: key -> video object for the new desired list
-  const wantedMap = new Map();
-  videoList.forEach(v => {
-    const key = videoKey(v);
-    if (key) wantedMap.set(key, v);
-  });
+  // forceRebuild = true means wipe everything and start fresh (refresh button / initial load)
+  if (forceRebuild) {
+    // Pause and clear all existing videos
+    gallery.querySelectorAll("video").forEach(v => { v.pause(); v.src = ""; });
+    gallery.innerHTML = "";
+    renderedVideos = [];
 
-  // Get all current cards in DOM order
-  const currentCards = Array.from(gallery.querySelectorAll(".video-card"));
-
-  // Pool of new videos not yet in the DOM — these will replace unwanted slots
-  const newVideos = videoList.filter(v => {
-    const key = videoKey(v);
-    if (!key) return true; // keyless always create fresh
-    return !currentCards.some(c => c.dataset.videoKey === key);
-  });
-  let newPool = [...newVideos];
-
-  // Walk existing cards: keep matching ones, replace non-matching ones in place
-  currentCards.forEach(card => {
-    const key = card.dataset.videoKey;
-    if (key && wantedMap.has(key)) {
-      // This card belongs — leave it exactly where it is, do nothing
-      return;
-    }
-
-    // This card does not belong — replace it with the next new video
-    if (newPool.length > 0) {
-      const v = newPool.shift();
-      const newCard = createVideoCard(v);
-      if (newCard) {
-        gallery.replaceChild(newCard, card);
-      } else {
-        card.remove();
+    videoList.forEach(v => {
+      const card = createVideoCard(v);
+      if (card) {
+        gallery.appendChild(card);
+        renderedVideos.push(v);
       }
-    } else {
-      // No replacement available — remove the card
-      const vid = card.querySelector("video");
-      if (vid) { vid.pause(); vid.src = ""; }
-      card.remove();
-    }
-  });
+    });
+    return;
+  }
 
-  // If there are still new videos left over (more than current cards), append them
-  newPool.forEach(v => {
-    const newCard = createVideoCard(v);
-    if (newCard) gallery.appendChild(newCard);
+  // Filter mode: show/hide cards based on whether they match videoList
+  // videoList here is the FILTERED subset — we show matching cards, hide the rest
+  const wantedKeys = new Set(videoList.map(videoKey).filter(Boolean));
+
+  gallery.querySelectorAll(".video-card").forEach(card => {
+    const key = card.dataset.videoKey;
+    const wanted = key && wantedKeys.has(key);
+
+    if (wanted) {
+      card.style.display = "";
+      card.style.marginBottom = ""; // restore column spacing
+    } else {
+      // Hide but keep in DOM so positions of visible cards are unaffected
+      const vid = card.querySelector("video");
+      if (vid) vid.pause();
+      card.style.display = "none";
+      card.style.marginBottom = "0";
+    }
   });
 }
 
@@ -1267,7 +1265,7 @@ if (newestBtn) {
   newestBtn.addEventListener("click", () => {
     sortNewest = !sortNewest;
     newestBtn.classList.toggle("active", sortNewest);
-    applyFilters();
+    applyFilters(true); // always rebuild — sort order changed
   });
 }
 
