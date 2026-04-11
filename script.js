@@ -418,9 +418,11 @@ function applyFilters(forceRebuild = false) {
       .sort((a, b) => b.videoId - a.videoId);
     loadGallery(result, true);
   } else if (forceRebuild) {
+    // Refresh: reshuffle all non-protected videos and rebuild grid
     result = shuffleArray([...videos].filter(v => !isPasswordProtected(v.t2)));
     loadGallery(result, true);
   } else {
+    // Dynamic filter: show/hide in place — no repositioning
     loadGallery(result, false);
   }
 
@@ -641,120 +643,58 @@ function createVideoCard(v) {
 }
 
 // ================================
-// COLUMN-BASED GALLERY
-// Each column is a real <div> — hiding cards in one column never affects others
+// GRID GALLERY (CSS grid, row-based)
 // ================================
 
 let renderedVideos = []; // full shuffled list currently in DOM
 
-// Build N column divs inside gallery, distribute cards round-robin
-function buildColumnLayout(videoList, numCols) {
+// Full rebuild — wipe gallery and render videoList fresh
+function buildGridLayout(videoList) {
+  gallery.querySelectorAll("video").forEach(v => { v.pause(); v.src = ""; });
   gallery.innerHTML = "";
   renderedVideos = [...videoList];
-
-  // Create column containers
-  const columns = [];
-  for (let i = 0; i < numCols; i++) {
-    const col = document.createElement("div");
-    col.className = "gallery-column";
-    col.style.flex = "1";
-    col.style.minWidth = "0";
-    gallery.appendChild(col);
-    columns.push(col);
-  }
-
-  // Distribute cards round-robin across columns
-  videoList.forEach((v, i) => {
+  videoList.forEach(v => {
     const card = createVideoCard(v);
-    if (card) columns[i % numCols].appendChild(card);
+    if (card) gallery.appendChild(card);
   });
 }
 
-// Redistribute existing cards into a new column count (e.g. user changed grid)
+// Called when grid button changes column count — just update CSS
 function rebuildColumns(numCols) {
-  buildColumnLayout(renderedVideos, numCols);
+  applyGridCSS(numCols);
+}
+
+function applyGridCSS(cols) {
+  gallery.style.display = "grid";
+  gallery.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  gallery.style.gap = "20px";
+  gallery.style.padding = "2rem";
 }
 
 function loadGallery(videoList, forceRebuild = false) {
   if (!gallery) return;
-  const numCols = getCurrentCols();
 
   if (forceRebuild) {
-    gallery.querySelectorAll("video").forEach(v => { v.pause(); v.src = ""; });
-    buildColumnLayout(videoList, numCols);
+    buildGridLayout(videoList);
+    applyGridCSS(getCurrentCols());
     return;
   }
 
-  // Filter mode:
-  // 1. Mark cards that match the filter as "keep"
-  // 2. Remove cards that don't match
-  // 3. Distribute replacement videos evenly across columns that lost cards
-
+  // Dynamic filter mode:
+  // Show cards whose key is in videoList, hide the rest.
+  // No repositioning — cards stay exactly where they were placed on last full build.
   const wantedKeys = new Set(videoList.map(videoKey).filter(Boolean));
 
-  // Find which wanted keys are already sitting in a slot
-  const keptKeys = new Set();
   gallery.querySelectorAll(".video-card").forEach(card => {
-    if (wantedKeys.has(card.dataset.videoKey)) keptKeys.add(card.dataset.videoKey);
-  });
-
-  // Pool = wanted videos not already in a kept slot
-  const pool = videoList.filter(v => {
-    const k = videoKey(v);
-    return k && !keptKeys.has(k);
-  });
-
-  // Get all column elements
-  const columns = Array.from(gallery.querySelectorAll(".gallery-column"));
-
-  // First pass: show kept cards, collect empty slots per column
-  // empty slots = placeholder divs that mark where replacements should go
-  columns.forEach(col => {
-    Array.from(col.querySelectorAll(".video-card")).forEach(card => {
-      const key = card.dataset.videoKey;
-      if (wantedKeys.has(key)) {
-        // Keep and show
-        card.style.display = "";
-      } else {
-        // Remove and leave a placeholder so we know this slot needs filling
-        const vid = card.querySelector("video");
-        if (vid) vid.pause();
-        const placeholder = document.createElement("div");
-        placeholder.className = "gallery-slot-placeholder";
-        col.replaceChild(placeholder, card);
-      }
-    });
-  });
-
-  // Second pass: distribute pool videos into placeholders, shortest column first
-  // so columns stay balanced
-  let remaining = [...pool];
-  while (remaining.length > 0) {
-    // Find column with most placeholders (needs filling most)
-    const allPlaceholders = columns.map(col => ({
-      col,
-      slots: Array.from(col.querySelectorAll(".gallery-slot-placeholder"))
-    })).filter(c => c.slots.length > 0);
-
-    if (allPlaceholders.length === 0) break;
-
-    // Sort by most placeholders first so we fill greedily
-    allPlaceholders.sort((a, b) => b.slots.length - a.slots.length);
-
-    // Fill one slot in the neediest column
-    const { col, slots } = allPlaceholders[0];
-    const placeholder = slots[0];
-    const v = remaining.shift();
-    const newCard = createVideoCard(v);
-    if (newCard) {
-      col.replaceChild(newCard, placeholder);
+    const key = card.dataset.videoKey;
+    if (wantedKeys.has(key)) {
+      card.style.display = "";
     } else {
-      placeholder.remove();
+      const vid = card.querySelector("video");
+      if (vid) vid.pause();
+      card.style.display = "none";
     }
-  }
-
-  // Remove any remaining unfilled placeholders (pool ran out)
-  gallery.querySelectorAll(".gallery-slot-placeholder").forEach(p => p.remove());
+  });
 }
 
 
@@ -1165,8 +1105,7 @@ function applyGridColumns(cols, isUserOverride = false) {
     const category = getScreenCategory();
     gridOverride[category] = cols;
   }
-  // Rebuild column divs with new count, preserving current rendered videos
-  rebuildColumns(cols);
+  applyGridCSS(cols);
   renderGridCompact();
 }
 
@@ -1249,14 +1188,7 @@ document.addEventListener("click", () => {
 window.addEventListener("resize", () => {
   const category = getScreenCategory();
   const cols = gridOverride[category] ?? getDynamicCols();
-
-  // Rebuild column divs for new count
-  rebuildColumns(cols);
-
-  // Re-apply current filter visibility
-  applyFilters(false);
-
-  // Ensure button is compact
+  applyGridCSS(cols);
   expanded = false;
   renderGridCompact();
 });
