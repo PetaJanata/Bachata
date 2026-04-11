@@ -1,6 +1,8 @@
 let activeT1 = null;
 let activeT2 = null;
 let activeZnam = null;
+let activeFigury = new Set();   // multi-select
+let activeDatum = new Set();    // multi-select
 let sortNewest = false;
 
 
@@ -162,16 +164,55 @@ function shuffleArray(array) {
 // MENU BUILDER
 // ================================
 
+// ================================
+// ACTIVE FILTER TAGS (sticky summary at top of sidebar)
+// ================================
+function renderActiveFilters() {
+  const container = document.getElementById("active-filters");
+  if (!container) return;
+  container.innerHTML = "";
+
+  const tags = [];
+
+  if (activeT2) tags.push({ label: activeT2, remove: () => { activeT1 = null; activeT2 = null; activeDatum = new Set(); updateNewestButtonVisibility(); applyFilters(); } });
+  activeDatum.forEach(d => tags.push({ label: d, remove: () => { activeDatum.delete(d); applyFilters(); } }));
+  activeFigury.forEach(f => tags.push({ label: f, remove: () => { activeFigury.delete(f); applyFilters(); } }));
+  if (activeZnam) tags.push({ label: activeZnam, remove: () => { activeZnam = null; updateZnamUI(); applyFilters(); } });
+
+  if (tags.length === 0) {
+    container.style.display = "none";
+    return;
+  }
+
+  container.style.display = "flex";
+  tags.forEach(tag => {
+    const el = document.createElement("span");
+    el.className = "active-filter-tag";
+    el.textContent = tag.label + " ×";
+    el.addEventListener("click", () => { tag.remove(); renderActiveFilters(); buildMenu(videos); });
+    container.appendChild(el);
+  });
+}
+
+// ================================
+// MENU BUILDER
+// ================================
 function buildMenu(videos) {
   const menu = document.getElementById("dynamic-menu");
   menu.innerHTML = "";
 
+  // --- Lekce section ---
   const tree = {};
-
   videos.forEach(v => {
+    if (!v.t1 || !v.t2) return;
     if (!tree[v.t1]) tree[v.t1] = new Set();
     tree[v.t1].add(v.t2);
   });
+
+  const lekceTitle = document.createElement("div");
+  lekceTitle.className = "menu-section-title";
+  lekceTitle.textContent = "Lekce";
+  menu.appendChild(lekceTitle);
 
   Object.entries(tree).forEach(([t1, t2set]) => {
     const group = document.createElement("div");
@@ -180,6 +221,7 @@ function buildMenu(videos) {
     const main = document.createElement("button");
     main.className = "menu-main";
     main.textContent = t1;
+    main.addEventListener("click", () => group.classList.toggle("open"));
 
     const sub = document.createElement("div");
     sub.className = "menu-sub";
@@ -189,14 +231,98 @@ function buildMenu(videos) {
       btn.textContent = t2;
       btn.dataset.t1 = t1;
       btn.dataset.t2 = t2;
-      btn.addEventListener("click", () => applyPrimaryFilter(t1, t2));
+      if (activeT2 === t2) btn.classList.add("active");
+      btn.addEventListener("click", () => {
+        applyPrimaryFilter(t1, t2);
+        renderActiveFilters();
+        buildMenu(videos);
+      });
       sub.appendChild(btn);
+
+      // Datum sub-section — only for Peťák a Renča, only when active
+      if (t2 === "Peťák a Renča" && activeT2 === "Peťák a Renča") {
+        const dates = [...new Set(
+          videos
+            .filter(v => v.t2 === "Peťák a Renča" && v.datum)
+            .map(v => v.datum)
+        )].sort((a, b) => {
+          // Sort by year desc then month order
+          const monthOrder = ["Leden","Únor","Březen","Duben","Květen","Červen","Červenec","Srpen","Září","Říjen","Listopad","Prosinec"];
+          const [ay, am] = a.split("-"); const [by, bm] = b.split("-");
+          if (ay !== by) return Number(by) - Number(ay);
+          return monthOrder.indexOf(bm) - monthOrder.indexOf(am);
+        });
+
+        if (dates.length > 0) {
+          const datumWrap = document.createElement("div");
+          datumWrap.className = "datum-section";
+
+          const datumTitle = document.createElement("div");
+          datumTitle.className = "datum-section-title";
+          datumTitle.textContent = "Datum";
+          datumWrap.appendChild(datumTitle);
+
+          const chips = document.createElement("div");
+          chips.className = "datum-chips";
+          dates.forEach(d => {
+            const chip = document.createElement("button");
+            chip.className = "datum-chip" + (activeDatum.has(d) ? " active" : "");
+            chip.textContent = d;
+            chip.addEventListener("click", (e) => {
+              e.stopPropagation();
+              if (activeDatum.has(d)) activeDatum.delete(d);
+              else activeDatum.add(d);
+              applyFilters();
+              renderActiveFilters();
+              buildMenu(videos);
+            });
+            chips.appendChild(chip);
+          });
+          datumWrap.appendChild(chips);
+          sub.appendChild(datumWrap);
+        }
+      }
     });
 
     group.appendChild(main);
     group.appendChild(sub);
     menu.appendChild(group);
   });
+
+  // --- Figury section ---
+  const allFigury = [...new Set(
+    videos.flatMap(v => v.figury || [])
+  )].sort();
+
+  if (allFigury.length > 0) {
+    const divider = document.createElement("div");
+    divider.className = "menu-divider";
+    menu.appendChild(divider);
+
+    const figuryTitle = document.createElement("div");
+    figuryTitle.className = "menu-section-title";
+    figuryTitle.textContent = "Figury";
+    menu.appendChild(figuryTitle);
+
+    const figuryWrap = document.createElement("div");
+    figuryWrap.className = "figury-chips";
+
+    allFigury.forEach(f => {
+      const chip = document.createElement("button");
+      chip.className = "figury-chip" + (activeFigury.has(f) ? " active" : "");
+      chip.textContent = f;
+      chip.addEventListener("click", () => {
+        if (activeFigury.has(f)) activeFigury.delete(f);
+        else activeFigury.add(f);
+        applyFilters();
+        renderActiveFilters();
+        buildMenu(videos);
+      });
+      figuryWrap.appendChild(chip);
+    });
+
+    menu.appendChild(figuryWrap);
+  }
 }
 
 
@@ -223,11 +349,12 @@ function applyPrimaryFilter(t1, t2) {
 
   activeT1 = t1;
   activeT2 = t2;
-  sortNewest = false; // reset sorting
-updateNewestButtonVisibility();
+  sortNewest = false;
+  updateNewestButtonVisibility();
 
-  // 🔄 reset secondary filter when switching category
+  // reset secondary filters when switching category
   activeZnam = null;
+  activeDatum = new Set();
   updateZnamUI();
 
   applyFilters();
@@ -247,21 +374,39 @@ function applyFilters(forceRebuild = false) {
     activeT1 = null;
     activeT2 = null;
     activeZnam = null;
+    activeFigury = new Set();
+    activeDatum = new Set();
     sortNewest = false;
     updateZnamUI();
     updateNewestButtonVisibility();
+    renderActiveFilters();
   }
 
   let result = [...videos];
 
+  // Always hide password-protected categories unless they are the active one
   result = result.filter(v =>
     !isPasswordProtected(v.t2) || v.t2 === activeT2
   );
 
+  // Lekce filter
   if (activeT1 && activeT2) {
     result = result.filter(v => v.t1 === activeT1 && v.t2 === activeT2);
   }
 
+  // Datum filter (OR within group — any selected month matches)
+  if (activeDatum.size > 0) {
+    result = result.filter(v => v.datum && activeDatum.has(v.datum));
+  }
+
+  // Figury filter (OR within group — video must contain at least one selected figure)
+  if (activeFigury.size > 0) {
+    result = result.filter(v =>
+      Array.isArray(v.figury) && v.figury.some(f => activeFigury.has(f))
+    );
+  }
+
+  // Znam filter
   if (activeZnam) {
     result = result.filter(v => v.znam && v.znam === activeZnam);
   }
@@ -273,11 +418,9 @@ function applyFilters(forceRebuild = false) {
       .sort((a, b) => b.videoId - a.videoId);
     loadGallery(result, true);
   } else if (forceRebuild) {
-    // Refresh: reshuffle all videos and rebuild columns
     result = shuffleArray([...videos].filter(v => !isPasswordProtected(v.t2)));
     loadGallery(result, true);
   } else {
-    // Filter change: show/hide in place — columns never reflow
     loadGallery(result, false);
   }
 
@@ -939,7 +1082,9 @@ window.addEventListener("DOMContentLoaded", () => {
   startSec: row["StartSec"] ? Number(row["StartSec"]) : null,
   endSec: row["EndSec"] ? Number(row["EndSec"]) : null,
   facebook: row["FacebookURL"]?.trim() || null,
-  instagram: row["InstagramURL"]?.trim() || null
+  instagram: row["InstagramURL"]?.trim() || null,
+  figury: row["Figury"] ? row["Figury"].split(",").map(s => s.trim()).filter(Boolean) : [],
+  datum: row["Datum"]?.trim() || null
 }));
       
 videos = videos.filter(v => v.t1 && v.t2);
@@ -957,7 +1102,8 @@ document.querySelectorAll("[data-znam]").forEach(btn => {
 
       // Initial load — shuffle once
       applyFilters(true);
-buildMenu(videos);
+      buildMenu(videos);
+      renderActiveFilters();
 
          
     }) // closes fetch().then(...)
