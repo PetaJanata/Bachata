@@ -1,5 +1,4 @@
-let activeT1 = null;
-let activeT2 = null;
+let activeLekce = new Set();    // multi-select set of t2 values
 let activeZnam = null;
 let activeFigury = new Set();   // multi-select
 let activeDatum = new Set();    // multi-select
@@ -174,7 +173,15 @@ function renderActiveFilters() {
 
   const tags = [];
 
-  if (activeT2) tags.push({ label: activeT2, remove: () => { activeT1 = null; activeT2 = null; activeDatum = new Set(); updateNewestButtonVisibility(); applyFilters(); } });
+  activeLekce.forEach(t2 => tags.push({
+    label: t2,
+    remove: () => {
+      activeLekce.delete(t2);
+      if (t2 === "Peťák a Renča") activeDatum = new Set();
+      updateNewestButtonVisibility();
+      applyFilters();
+    }
+  }));
   activeDatum.forEach(d => tags.push({ label: d, remove: () => { activeDatum.delete(d); applyFilters(); } }));
   activeFigury.forEach(f => tags.push({ label: f, remove: () => { activeFigury.delete(f); applyFilters(); } }));
   if (activeZnam) tags.push({ label: activeZnam, remove: () => { activeZnam = null; updateZnamUI(); applyFilters(); } });
@@ -231,7 +238,7 @@ function buildMenu(videos) {
       btn.textContent = t2;
       btn.dataset.t1 = t1;
       btn.dataset.t2 = t2;
-      if (activeT2 === t2) btn.classList.add("active");
+      if (activeLekce.has(t2)) btn.classList.add("active");
       btn.addEventListener("click", () => {
         applyPrimaryFilter(t1, t2);
         renderActiveFilters();
@@ -239,8 +246,8 @@ function buildMenu(videos) {
       });
       sub.appendChild(btn);
 
-      // Datum sub-section — only for Peťák a Renča, only when active
-      if (t2 === "Peťák a Renča" && activeT2 === "Peťák a Renča") {
+      // Datum sub-section — only for Peťák a Renča, only when selected
+      if (t2 === "Peťák a Renča" && activeLekce.has("Peťák a Renča")) {
         const dates = [...new Set(
           videos
             .filter(v => v.t2 === "Peťák a Renča" && v.datum)
@@ -347,16 +354,17 @@ function checkPassword(t2) {
 function applyPrimaryFilter(t1, t2) {
   if (isPasswordProtected(t2) && !checkPassword(t2)) return;
 
-  activeT1 = t1;
-  activeT2 = t2;
-  sortNewest = false;
+  // Toggle this lekce in/out of activeLekce
+  if (activeLekce.has(t2)) {
+    activeLekce.delete(t2);
+    // If Peťák a Renča was deselected, clear its datum filters
+    if (t2 === "Peťák a Renča") activeDatum = new Set();
+  } else {
+    activeLekce.add(t2);
+  }
+
   updateNewestButtonVisibility();
-
-  // reset secondary filters when switching category
-  activeZnam = null;
-  activeDatum = new Set();
   updateZnamUI();
-
   applyFilters();
 }
 
@@ -371,8 +379,7 @@ function applyZnamFilter(value) {
 function applyFilters(forceRebuild = false) {
   // On forceRebuild (refresh): clear all filters first
   if (forceRebuild) {
-    activeT1 = null;
-    activeT2 = null;
+    activeLekce = new Set();
     activeZnam = null;
     activeFigury = new Set();
     activeDatum = new Set();
@@ -384,22 +391,22 @@ function applyFilters(forceRebuild = false) {
 
   let result = [...videos];
 
-  // Always hide password-protected categories unless they are the active one
+  // Always hide password-protected categories unless selected
   result = result.filter(v =>
-    !isPasswordProtected(v.t2) || v.t2 === activeT2
+    !isPasswordProtected(v.t2) || activeLekce.has(v.t2)
   );
 
-  // Lekce filter
-  if (activeT1 && activeT2) {
-    result = result.filter(v => v.t1 === activeT1 && v.t2 === activeT2);
+  // Lekce filter (OR — video must be in at least one selected lekce)
+  if (activeLekce.size > 0) {
+    result = result.filter(v => activeLekce.has(v.t2));
   }
 
-  // Datum filter (OR within group — any selected month matches)
+  // Datum filter (OR — any selected month matches)
   if (activeDatum.size > 0) {
     result = result.filter(v => v.datum && activeDatum.has(v.datum));
   }
 
-  // Figury filter (OR within group — video must contain at least one selected figure)
+  // Figury filter (OR — video must contain at least one selected figure)
   if (activeFigury.size > 0) {
     result = result.filter(v =>
       Array.isArray(v.figury) && v.figury.some(f => activeFigury.has(f))
@@ -411,18 +418,16 @@ function applyFilters(forceRebuild = false) {
     result = result.filter(v => v.znam && v.znam === activeZnam);
   }
 
-  // 🔥 NEWEST SORT — always rebuild so order is correct
-  if (sortNewest && activeT2 === "Peťák a Renča") {
+  // 🔥 NEWEST SORT — sort by videoId desc within whatever is filtered
+  if (sortNewest) {
     result = result
       .filter(v => Number.isFinite(v.videoId))
       .sort((a, b) => b.videoId - a.videoId);
     loadGallery(result, true);
   } else if (forceRebuild) {
-    // Refresh: reshuffle all non-protected videos and rebuild grid
     result = shuffleArray([...videos].filter(v => !isPasswordProtected(v.t2)));
     loadGallery(result, true);
   } else {
-    // Dynamic filter: show/hide in place — no repositioning
     loadGallery(result, false);
   }
 
@@ -1367,7 +1372,7 @@ function updateNewestButtonVisibility() {
   const btn = document.getElementById("btn-newest");
   if (!btn) return;
 
-  if (activeT2 === "Peťák a Renča") {
+  if (activeLekce.has("Peťák a Renča")) {
     btn.classList.remove("hidden");
   } else {
     btn.classList.add("hidden");
@@ -1382,7 +1387,7 @@ if (newestBtn) {
   newestBtn.addEventListener("click", () => {
     sortNewest = !sortNewest;
     newestBtn.classList.toggle("active", sortNewest);
-    applyFilters(true); // always rebuild — sort order changed
+    applyFilters(false); // show/hide in place when possible, rebuild when sortNewest
   });
 }
 
