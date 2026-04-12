@@ -3,6 +3,7 @@ let activeZnam = null;
 let activeFigury = new Set();   // multi-select
 let activeDatum = new Set();    // multi-select
 let sortNewest = false;
+let datumActiveYear = null;     // which year is shown in the datum grid
 
 
 
@@ -177,7 +178,7 @@ function renderActiveFilters() {
     label: t2,
     remove: () => {
       activeLekce.delete(t2);
-      if (t2 === "Peťák a Renča") activeDatum = new Set();
+      if (t2 === "Peťák a Renča") { activeDatum = new Set(); datumActiveYear = null; }
       updateNewestButtonVisibility();
       applyFilters();
     }
@@ -265,16 +266,14 @@ function buildMenu(videos) {
 
         if (years.length === 0) return;
 
-        // Track which year is currently visible in the grid
-        // Use a data attribute on the wrap so rebuilds stay in sync
-        const existingWrap = sub.querySelector(".datum-section");
-        const activeYear = existingWrap
-          ? existingWrap.dataset.activeYear
-          : years[0];
+        // Use persistent JS variable so year survives menu rebuilds
+        // Only initialise to latest year if not set yet or if year no longer exists
+        if (!datumActiveYear || !years.includes(datumActiveYear)) {
+          datumActiveYear = years[0];
+        }
 
         const datumWrap = document.createElement("div");
         datumWrap.className = "datum-section";
-        datumWrap.dataset.activeYear = activeYear;
 
         // Title
         const datumTitle = document.createElement("div");
@@ -287,14 +286,12 @@ function buildMenu(videos) {
         yearRow.className = "datum-year-row";
         years.forEach(yr => {
           const btn = document.createElement("button");
-          btn.className = "datum-year-btn" + (yr === datumWrap.dataset.activeYear ? " active" : "");
+          btn.className = "datum-year-btn" + (yr === datumActiveYear ? " active" : "");
           btn.textContent = yr;
           btn.addEventListener("click", (e) => {
             e.stopPropagation();
-            datumWrap.dataset.activeYear = yr;
-            // Re-render just the grid
+            datumActiveYear = yr;
             renderMonthGrid(datumWrap, yr, dataDates, monthOrder, monthShort);
-            // Update year button states
             yearRow.querySelectorAll(".datum-year-btn").forEach(b => {
               b.classList.toggle("active", b.textContent === yr);
             });
@@ -339,7 +336,7 @@ function buildMenu(videos) {
           gridWrap.appendChild(grid);
         }
 
-        renderMonthGrid(datumWrap, activeYear, dataDates, monthOrder, monthShort);
+        renderMonthGrid(datumWrap, datumActiveYear, dataDates, monthOrder, monthShort);
         sub.appendChild(datumWrap);
       }
     });
@@ -410,8 +407,7 @@ function applyPrimaryFilter(t1, t2) {
   // Toggle this lekce in/out of activeLekce
   if (activeLekce.has(t2)) {
     activeLekce.delete(t2);
-    // If Peťák a Renča was deselected, clear its datum filters
-    if (t2 === "Peťák a Renča") activeDatum = new Set();
+    if (t2 === "Peťák a Renča") { activeDatum = new Set(); datumActiveYear = null; }
   } else {
     activeLekce.add(t2);
   }
@@ -436,6 +432,7 @@ function applyFilters(forceRebuild = false) {
     activeZnam = null;
     activeFigury = new Set();
     activeDatum = new Set();
+    datumActiveYear = null;
     sortNewest = false;
     updateZnamUI();
     updateNewestButtonVisibility();
