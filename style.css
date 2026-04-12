@@ -830,9 +830,9 @@ html { scroll-behavior: smooth; }
   margin: 10px 0;
 }
 
-/* Datum chips */
+/* Datum — year toggle + month grid */
 .datum-section {
-  margin: 6px 0 4px 0;
+  margin: 8px 0 4px 0;
 }
 
 .datum-section-title {
@@ -840,37 +840,90 @@ html { scroll-behavior: smooth; }
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: #aaa;
-  margin-bottom: 5px;
+  margin-bottom: 6px;
   padding-left: 2px;
 }
 
-.datum-chips {
+/* Year toggle row */
+.datum-year-row {
   display: flex;
-  flex-direction: column;
+  margin-bottom: 8px;
+}
+
+.datum-year-btn {
+  flex: 1;
+  background: white;
+  border: 1px solid #ddd;
+  padding: 5px 0;
+  font-size: 12px;
+  cursor: pointer;
+  color: #333;
+  border-radius: 0;
+  transition: all 0.15s;
+}
+
+.datum-year-btn:first-child {
+  border-radius: 6px 0 0 6px;
+}
+
+.datum-year-btn:last-child {
+  border-radius: 0 6px 6px 0;
+  margin-left: -1px;
+}
+
+.datum-year-btn:only-child {
+  border-radius: 6px;
+}
+
+.datum-year-btn.active {
+  background: #e8eef8;
+  border-color: #5b7ec9;
+  color: #1a3a7a;
+  font-weight: 500;
+  z-index: 1;
+  position: relative;
+}
+
+/* Month grid */
+.datum-month-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: 4px;
 }
 
-.datum-chip {
+.datum-month-btn {
   background: white;
   border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 4px 10px;
-  font-size: 12px;
-  text-align: left;
+  border-radius: 5px;
+  padding: 5px 2px;
+  font-size: 11px;
+  text-align: center;
   cursor: pointer;
-  transition: all 0.15s;
   color: #333;
+  transition: all 0.15s;
+  font-family: inherit;
 }
 
-.datum-chip:hover {
-  border-color: #999;
+.datum-month-btn.has-data {
+  border-color: #bbb;
 }
 
-.datum-chip.active {
-  background: #e8f5ee;
-  border-color: #4caf82;
-  color: #1a6644;
+.datum-month-btn.has-data:hover {
+  border-color: #666;
+  background: #f5f5f5;
+}
+
+.datum-month-btn.active {
+  background: #e8eef8;
+  border-color: #5b7ec9;
+  color: #1a3a7a;
   font-weight: 500;
+}
+
+.datum-month-btn.no-data {
+  opacity: 0.3;
+  cursor: default;
+  border-color: #eee;
 }
 
 /* Figury chips */
