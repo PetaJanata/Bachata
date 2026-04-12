@@ -246,48 +246,101 @@ function buildMenu(videos) {
       });
       sub.appendChild(btn);
 
-      // Datum sub-section — only for Peťák a Renča, only when selected
+      // Datum sub-section — year toggle + month grid, only for Peťák a Renča
       if (t2 === "Peťák a Renča" && activeLekce.has("Peťák a Renča")) {
-        const dates = [...new Set(
+        const monthOrder = ["Leden","Únor","Březen","Duben","Květen","Červen","Červenec","Srpen","Září","Říjen","Listopad","Prosinec"];
+        const monthShort  = ["Led","Úno","Bře","Dub","Kvě","Čvn","Čvc","Srp","Zář","Říj","Lis","Pro"];
+
+        // Build set of all year-month combos that have data
+        const dataDates = new Set(
           videos
             .filter(v => v.t2 === "Peťák a Renča" && v.datum)
             .map(v => v.datum)
-        )].sort((a, b) => {
-          // Sort by year desc then month order
-          const monthOrder = ["Leden","Únor","Březen","Duben","Květen","Červen","Červenec","Srpen","Září","Říjen","Listopad","Prosinec"];
-          const [ay, am] = a.split("-"); const [by, bm] = b.split("-");
-          if (ay !== by) return Number(by) - Number(ay);
-          return monthOrder.indexOf(bm) - monthOrder.indexOf(am);
-        });
+        );
 
-        if (dates.length > 0) {
-          const datumWrap = document.createElement("div");
-          datumWrap.className = "datum-section";
+        // Extract unique years, newest first
+        const years = [...new Set(
+          [...dataDates].map(d => d.split("-")[0])
+        )].sort((a, b) => Number(b) - Number(a));
 
-          const datumTitle = document.createElement("div");
-          datumTitle.className = "datum-section-title";
-          datumTitle.textContent = "Datum";
-          datumWrap.appendChild(datumTitle);
+        if (years.length === 0) return;
 
-          const chips = document.createElement("div");
-          chips.className = "datum-chips";
-          dates.forEach(d => {
-            const chip = document.createElement("button");
-            chip.className = "datum-chip" + (activeDatum.has(d) ? " active" : "");
-            chip.textContent = d;
-            chip.addEventListener("click", (e) => {
-              e.stopPropagation();
-              if (activeDatum.has(d)) activeDatum.delete(d);
-              else activeDatum.add(d);
-              applyFilters();
-              renderActiveFilters();
-              buildMenu(videos);
+        // Track which year is currently visible in the grid
+        // Use a data attribute on the wrap so rebuilds stay in sync
+        const existingWrap = sub.querySelector(".datum-section");
+        const activeYear = existingWrap
+          ? existingWrap.dataset.activeYear
+          : years[0];
+
+        const datumWrap = document.createElement("div");
+        datumWrap.className = "datum-section";
+        datumWrap.dataset.activeYear = activeYear;
+
+        // Title
+        const datumTitle = document.createElement("div");
+        datumTitle.className = "datum-section-title";
+        datumTitle.textContent = "Datum";
+        datumWrap.appendChild(datumTitle);
+
+        // Year toggle buttons
+        const yearRow = document.createElement("div");
+        yearRow.className = "datum-year-row";
+        years.forEach(yr => {
+          const btn = document.createElement("button");
+          btn.className = "datum-year-btn" + (yr === datumWrap.dataset.activeYear ? " active" : "");
+          btn.textContent = yr;
+          btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            datumWrap.dataset.activeYear = yr;
+            // Re-render just the grid
+            renderMonthGrid(datumWrap, yr, dataDates, monthOrder, monthShort);
+            // Update year button states
+            yearRow.querySelectorAll(".datum-year-btn").forEach(b => {
+              b.classList.toggle("active", b.textContent === yr);
             });
-            chips.appendChild(chip);
           });
-          datumWrap.appendChild(chips);
-          sub.appendChild(datumWrap);
+          yearRow.appendChild(btn);
+        });
+        datumWrap.appendChild(yearRow);
+
+        // Month grid container
+        const gridWrap = document.createElement("div");
+        gridWrap.className = "datum-month-grid-wrap";
+        datumWrap.appendChild(gridWrap);
+
+        // Helper: render month grid for a given year
+        function renderMonthGrid(wrap, yr, dataDates, monthOrder, monthShort) {
+          const gridWrap = wrap.querySelector(".datum-month-grid-wrap");
+          gridWrap.innerHTML = "";
+          const grid = document.createElement("div");
+          grid.className = "datum-month-grid";
+          monthOrder.forEach((month, i) => {
+            const key = yr + "-" + month;
+            const hasData = dataDates.has(key);
+            const isActive = activeDatum.has(key);
+            const cell = document.createElement("button");
+            cell.className = "datum-month-btn" +
+              (hasData ? " has-data" : " no-data") +
+              (isActive ? " active" : "");
+            cell.textContent = monthShort[i];
+            cell.disabled = !hasData;
+            if (hasData) {
+              cell.addEventListener("click", (e) => {
+                e.stopPropagation();
+                if (activeDatum.has(key)) activeDatum.delete(key);
+                else activeDatum.add(key);
+                applyFilters();
+                renderActiveFilters();
+                buildMenu(videos);
+              });
+            }
+            grid.appendChild(cell);
+          });
+          gridWrap.appendChild(grid);
         }
+
+        renderMonthGrid(datumWrap, activeYear, dataDates, monthOrder, monthShort);
+        sub.appendChild(datumWrap);
       }
     });
 
