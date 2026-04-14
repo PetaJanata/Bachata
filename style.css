@@ -961,3 +961,67 @@ html { scroll-behavior: smooth; }
   background: #f0f0f0;
   font-weight: 600;
 }
+
+/* ================================ */
+/* VIDEO PROGRESS BAR               */
+/* ================================ */
+
+.progress-bar-wrap {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 7px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.55));
+  border-radius: 0 0 8px 8px;
+  transition: opacity 0.2s ease;
+  z-index: 6;
+}
+
+.progress-play-btn {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+  transition: background 0.15s;
+}
+
+.progress-play-btn:hover {
+  background: rgba(255,255,255,0.35);
+}
+
+.progress-track {
+  flex: 1;
+  height: 4px;
+  background: rgba(255,255,255,0.3);
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
+  overflow: visible;
+}
+
+.progress-track:hover {
+  height: 6px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #fff;
+  border-radius: 2px;
+  width: 0%;
+  pointer-events: none;
+  transition: width 0.1s linear;
+}
