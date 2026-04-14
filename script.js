@@ -543,8 +543,12 @@ function lazyLoadVideos() {
     pauseObserver = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         const video = entry.target;
-        if (!entry.isIntersecting) video.pause();
-        else if (video.paused && !video.dataset.src) video.play().catch(() => {});
+        if (!entry.isIntersecting) {
+          video.pause();
+        } else if (video.paused && !video.dataset.src && !video.dataset.userPaused) {
+          // Only auto-resume if user didn't manually pause
+          video.play().catch(() => {});
+        }
       });
     }, { threshold: 0.25 });
   }
@@ -694,7 +698,105 @@ function createVideoCard(v) {
 
   attachSpeedScroll(video, speedIcon, true);
   createHideToggle(card, video, v.znam);
+
+  // ── Progress bar ──
+  const bar = createProgressBar(video);
+  card.appendChild(bar);
+
+  // Show/hide bar with other hover icons
+  card.addEventListener("mouseenter", () => {
+    if (!card.dataset.hidden && video.style.display !== "none") {
+      bar.style.opacity = "1";
+      bar.style.pointerEvents = "auto";
+    }
+  });
+  card.addEventListener("mouseleave", () => {
+    bar.style.opacity = "0";
+    bar.style.pointerEvents = "none";
+  });
+
   return card;
+}
+
+// ================================
+// PROGRESS BAR
+// ================================
+function createProgressBar(video) {
+  const wrap = document.createElement("div");
+  wrap.className = "progress-bar-wrap";
+  wrap.style.opacity = "0";
+  wrap.style.pointerEvents = "none";
+
+  // Play/pause button
+  const playBtn = document.createElement("button");
+  playBtn.className = "progress-play-btn";
+  playBtn.innerHTML = "&#9646;&#9646;"; // ❚❚ pause symbol (video autoplays)
+  wrap.appendChild(playBtn);
+
+  // Seekable track
+  const track = document.createElement("div");
+  track.className = "progress-track";
+
+  const fill = document.createElement("div");
+  fill.className = "progress-fill";
+  track.appendChild(fill);
+
+  wrap.appendChild(track);
+
+  // Update fill as video plays
+  video.addEventListener("timeupdate", () => {
+    if (!video.duration) return;
+    fill.style.width = (video.currentTime / video.duration * 100) + "%";
+    // Keep play btn icon in sync
+    playBtn.innerHTML = video.paused ? "&#9654;" : "&#9646;&#9646;";
+  });
+
+  // Sync icon on play/pause events too
+  video.addEventListener("play",  () => { playBtn.innerHTML = "&#9646;&#9646;"; });
+  video.addEventListener("pause", () => { playBtn.innerHTML = "&#9654;"; });
+
+  // Play/pause toggle
+  playBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (video.paused) {
+      video.play().catch(() => {});
+      video.dataset.userPaused = "";   // clear user-paused flag
+    } else {
+      video.pause();
+      video.dataset.userPaused = "1"; // mark as intentionally paused
+    }
+  });
+
+  // Seek on track click
+  track.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (!video.duration) return;
+    const rect = track.getBoundingClientRect();
+    const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    video.currentTime = ratio * video.duration;
+    // Resume playback after seek only if user hadn't manually paused
+    if (!video.dataset.userPaused) {
+      video.play().catch(() => {});
+    }
+  });
+
+  // Drag seek
+  let dragging = false;
+  track.addEventListener("mousedown", (e) => {
+    e.stopPropagation();
+    dragging = true;
+  });
+  document.addEventListener("mousemove", (e) => {
+    if (!dragging) return;
+    if (!video.duration) return;
+    const rect = track.getBoundingClientRect();
+    const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    video.currentTime = ratio * video.duration;
+    fill.style.width = (ratio * 100) + "%";
+  });
+  document.addEventListener("mouseup", () => { dragging = false; });
+
+  return wrap;
 }
 
 // ================================
