@@ -38,25 +38,20 @@
 
   <!-- TOP PANEL (sticky later) -->
   <div class="top-panel">
-      <button id="hamburger-btn" class="hamburger">
-          &#9776; <!-- classic hamburger icon -->
-      </button>
-    <button id="back-to-hero" aria-label="Back to gallery">
-  🖼️
-</button>
-    <button id="grid-btn" title="Layout">
-  ⬛⬛⬛
-</button>
-<button id="refresh-btn" title="Načíst nová videa" class="top-btn">&#x21BB;</button>
-<div id="grid-menu" class="grid-menu hidden"></div>
-  
+      <button id="hamburger-btn" class="hamburger icon-btn icon-btn-square" aria-label="Otevřít menu"></button>
+    <button id="grid-btn" class="icon-btn" title="Layout" aria-label="Počet sloupců"></button>
+    <button id="refresh-btn" title="Načíst nová videa" class="top-btn icon-btn" aria-label="Načíst nová videa"></button>
+    <div id="grid-menu" class="grid-menu hidden"></div>
+
     <div class="znalost-filter">
-  <button class="znam-btn" data-znam="neznám" class="red">R</button>
-  <button class="znam-btn" data-znam="potřebuju zlepšit" class="yellow">Y</button>
-  <button class="znam-btn" data-znam="znám" class="green">G</button>
-</div>
-    
-<button id="btn-newest" class="top-btn hidden">Nejnovější</button>
+      <button class="znam-btn znam-red" data-znam="neznám" aria-label="Neznám">R</button>
+      <button class="znam-btn znam-yellow" data-znam="potřebuju zlepšit" aria-label="Potřebuju zlepšit">Y</button>
+      <button class="znam-btn znam-green" data-znam="znám" aria-label="Znám">G</button>
+    </div>
+
+    <button id="btn-newest" class="top-btn hidden">Nejnovější</button>
+
+    <button id="back-to-hero" class="icon-btn icon-btn-square" aria-label="Zpět na začátek"></button>
 
   </div>
 
@@ -80,10 +75,10 @@
 </section>
 
   
-   <!-- PapaParse CSV parser (must load before your script.js) -->
+   <!-- PapaParse CSV parser (must load before the app module) -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <!-- for youtube specific video section (example:6s to 10s) -->
   <script src="https://www.youtube.com/iframe_api"></script>
-  <script src="script.js"></script>
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>

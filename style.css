@@ -275,27 +275,52 @@ html { scroll-behavior: smooth; }
 
 
 
+/* Icon-only buttons (top panel) — SVGs are injected by ui.js */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  color: #000;
+  cursor: pointer;
+}
+
+.icon-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.icon-btn:hover {
+  color: #555;
+}
+
+/* Fixed 40x40 box — only for buttons holding a single icon.
+   #grid-btn and #refresh-btn keep their own sizing below since their
+   content (grid-count squares / label+icon) needs to size to content. */
+.icon-btn-square {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+}
+
 /* Hamburger button */
 .hamburger {
-  font-size: 1.5rem;
-  background: none;
-  border: none;
-  cursor: pointer;
   display: none; /* default hidden on large screens */
   margin-right: 10px;
 }
 
 /*back to hero button */
 #back-to-hero {
-  z-index: 3000;
   display: none;
-  padding: 8px 12px;
-  height: 40px;
   background: white;
-  cursor: pointer;
-  position: fixed;
-  top: 20px;      /* adjust where you want it */
-  right: 20px;
+  border: 1px solid #000;
+  border-radius: 6px;
+  margin-left: auto;
+}
+
+#back-to-hero.visible {
+  display: flex;
 }
 
 .znam-btn {
@@ -318,6 +343,15 @@ html { scroll-behavior: smooth; }
   background: #e0e0e0;         /* slightly grey background */
   border: 1px solid #000;      /* keep black border */
 }
+
+/* Color accents matching the know-state video borders (red/yellow/green) */
+.znam-btn.znam-red { border-color: #e74c3c; color: #c0392b; }
+.znam-btn.znam-yellow { border-color: #f1c40f; color: #b7950b; }
+.znam-btn.znam-green { border-color: #2ecc71; color: #1e8449; }
+
+.znam-btn.znam-red.active { background: #e74c3c; color: #fff; }
+.znam-btn.znam-yellow.active { background: #f1c40f; color: #4a3b00; }
+.znam-btn.znam-green.active { background: #2ecc71; color: #fff; }
 
 
 
@@ -520,6 +554,14 @@ html { scroll-behavior: smooth; }
   position: relative;
 }
 
+.gallery-empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 4rem 1rem;
+  color: #777;
+  font-size: 1rem;
+}
+
 .video-card video,
 .video-card img.video-thumb {
   width: 100%;
@@ -572,14 +614,23 @@ html { scroll-behavior: smooth; }
   position: absolute;
   top: 6px;
   right: 6px;
-  font-size: 1.5rem;
+  width: 28px;
+  height: 28px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border: none;
   color: white;
   background: rgba(0,0,0,0.5);
-  padding: 4px 6px;
+  padding: 4px;
   border-radius: 4px;
   cursor: pointer;
-  display: none;
   z-index: 10;
+}
+
+.fullscreen-icon svg {
+  width: 16px;
+  height: 16px;
 }
 
 .fullscreen-icon:hover {
@@ -1001,6 +1052,11 @@ html { scroll-behavior: smooth; }
 
 .progress-play-btn:hover {
   background: rgba(255,255,255,0.35);
+}
+
+.progress-play-btn svg {
+  width: 10px;
+  height: 10px;
 }
 
 .progress-track {
