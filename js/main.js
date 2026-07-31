@@ -35,7 +35,10 @@ document.addEventListener("DOMContentLoaded", () => {
           figury: row["Figury"] ? row["Figury"].split(",").map((s) => s.trim()).filter(Boolean) : [],
           datum: row["Datum"]?.trim() || null,
         }))
-        .filter((v) => v.t1 && v.t2);
+        .filter((v) => v.t1 && v.t2)
+        // "Trénink Peťa/Hanka/Barča" removed from the site entirely — they no
+        // longer show up in the menu, gallery, or any filter.
+        .filter((v) => !["Trénink Peťa", "Trénink Hanka", "Trénink Barča"].includes(v.t2));
 
       document.querySelectorAll("[data-znam]").forEach((btn) => {
         btn.addEventListener("click", () => applyZnamFilter(btn.dataset.znam));
