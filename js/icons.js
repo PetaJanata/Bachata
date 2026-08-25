@@ -24,6 +24,9 @@ export const icons = {
 
   close: wrap(`<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>`),
 
+  chevronLeft: wrap(`<polyline points="15 18 9 12 15 6"/>`),
+  chevronRight: wrap(`<polyline points="9 18 15 12 9 6"/>`),
+
   play: wrap(`<polygon points="6 3 20 12 6 21 6 3"/>`),
 
   pause: wrap(`<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>`),

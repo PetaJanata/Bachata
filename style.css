@@ -15,17 +15,13 @@ html { scroll-behavior: smooth; }
 
 /* HERO */
 .hero {
-  height: 100vh;
+  min-height: 100vh;
   width: 100%;
-  /*background: url('images/background.jpg') center center no-repeat; 
-  background-size: cover;    */
-  background-color: #ffffff; 
+  background-color: #ffffff;
   display: flex;
   flex-direction: column; /* vertical layout */
- /* justify-content: center; */ /* centers headline */
   align-items: center;
- /* padding-top: 3rem; *//* push headline down a little */
- /* padding-bottom: 3rem; *//* space between carousel and hero buttons */
+  padding-bottom: 4vh;
 }
 
 /* Headline text */
@@ -41,118 +37,129 @@ html { scroll-behavior: smooth; }
 }
 
 /* ================================ */
-/* HERO CAROUSEL */
+/* PHOTO GALLERY                    */
 /* ================================ */
 
-.hero-carousel {
-  position: relative;
+.photo-gallery {
   width: 90%;
-  height: 60vh; /* main image height */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: visible;
-  margin-top: 0;
+  max-width: 1400px;
   margin-bottom: 3rem;
 }
 
-.hero-carousel img {
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+/* ---- Mobile: Instagram-style 3-col grid, all photos visible at once ---- */
+.photo-gallery.grid-mode {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  width: 100%;
+}
+
+.photo-tile {
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
   cursor: pointer;
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.photo-tile img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+  display: block;
 }
 
-/* Base image */
-.hero-carousel img.carousel-img {
+/* ---- Desktop: justified gallery (Zenfolio-style) ---- */
+.photo-gallery.justified-mode .justified-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.photo-gallery.justified-mode .justified-row img {
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.photo-gallery.justified-mode .justified-row img:hover {
+  opacity: 0.85;
+}
+
+/* ---- Lightbox ---- */
+.photo-lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5000;
+}
+
+.photo-lightbox-img {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.photo-lightbox-btn {
   position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  transition: all 0.5s ease;
-  cursor: default;
-  z-index: 1;
-}
-
-/* Main image */
-.hero-carousel img.main-img {
-  height: 60vh;
-  left: 50%;
-  z-index: 5;
-}
-
-/* First layer */
-.hero-carousel img.first-layer {
-  height: 50vh;
-  z-index: 4;
-}
-
-.hero-carousel img.left {
-  left: 30%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
   cursor: pointer;
 }
 
-.hero-carousel img.right {
-  left: 70%;
-  cursor: pointer;
+.photo-lightbox-btn svg {
+  width: 22px;
+  height: 22px;
 }
 
-/* Hover effect */
-.hero-carousel img.first-layer:hover {
-  transform: translate(-50%, -50%) scale(1.05);
+.photo-lightbox-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
 }
 
+.photo-lightbox-close {
+  top: 20px;
+  right: 20px;
+}
 
-/* Mobile arrows */
-.mobile-arrow {
-  position: absolute;
+.photo-lightbox-prev {
+  left: 20px;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 2.5rem;
-  color: rgba(255, 255, 255, 0.8);
-  background: rgba(0, 0, 0, 0.3);
-  padding: 0.2rem 0.5rem;
-  border-radius: 50%;
-  cursor: pointer;
-  z-index: 10;
-  transition: all 0.3s ease;
-  user-select: none;
 }
 
-.mobile-arrow: {
-  color: #fff;
-  background: rgba(0, 0, 0, 0.6);
-  transform: translateY(-50%) scale(1.2);
+.photo-lightbox-next {
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
-.left-arrow {
-  left: 5%;
-}
-
-.right-arrow {
-  right: 5%;
-}
-
-/* Only show arrows on mobile */
-@media (min-width: 769px) {
-  .mobile-arrow {
-    display: none;
+@media (max-width: 768px) {
+  .photo-lightbox-btn {
+    width: 38px;
+    height: 38px;
   }
+  .photo-lightbox-prev { left: 8px; }
+  .photo-lightbox-next { right: 8px; }
+  .photo-lightbox-close { top: 12px; right: 12px; }
 }
-
 
 .hero-buttons {
-  position: absolute;
-  bottom: 3vh;
   display: flex;
   flex-wrap: wrap; /* allow buttons to move to next row */
   gap: 10px;
- /* padding: 10px; */
-  background: rgba(0,0,0,0);
- /* border-radius: 10px; */
-  z-index: 10;       /* above the hero image */
   justify-content: center;
-   transition: opacity 0.4s ease, transform 0.4s ease; /* to hide hero buttons seamlessly*/
+  transition: opacity 0.4s ease, transform 0.4s ease; /* to hide hero buttons seamlessly*/
 
   /* Responsive padding */
   padding: clamp(5px, 1vw, 12px) clamp(10px, 2vw, 20px);

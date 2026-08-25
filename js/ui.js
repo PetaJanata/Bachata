@@ -1,6 +1,6 @@
 import { state } from "./state.js";
 import { applyFilters } from "./filters.js";
-import { scrollToGallery } from "./carousel.js";
+import { scrollToGallery } from "./photoGallery.js";
 import { icons } from "./icons.js";
 
 // ================================

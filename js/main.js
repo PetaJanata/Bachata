@@ -1,14 +1,14 @@
 import { state } from "./state.js";
 import { applyFilters } from "./filters.js";
 import { buildMenu, renderActiveFilters, applyZnamFilter } from "./menu.js";
-import { initCarousel } from "./carousel.js";
+import { initPhotoGallery } from "./photoGallery.js";
 import { initGridSelector } from "./gallery.js";
 import { initUI } from "./ui.js";
 
 // Carousel + top-panel UI can initialize as soon as the DOM is parsed —
 // modules are deferred by default, so this runs after parsing regardless
 // of where the <script type="module"> tag sits.
-initCarousel();
+initPhotoGallery();
 initGridSelector();
 initUI();
 
