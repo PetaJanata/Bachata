@@ -22,11 +22,6 @@ export function applyFilters(forceRebuild = false) {
     result = result.filter((v) => state.activeLekce.has(v.t2));
   }
 
-  // Datum filter (OR — any selected month matches)
-  if (state.activeDatum.size > 0) {
-    result = result.filter((v) => v.datum && state.activeDatum.has(v.datum));
-  }
-
   // Figury filter (OR — video must contain at least one selected figure)
   if (state.activeFigury.size > 0) {
     result = result.filter((v) => Array.isArray(v.figury) && v.figury.some((f) => state.activeFigury.has(f)));

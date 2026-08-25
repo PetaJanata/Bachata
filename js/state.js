@@ -9,9 +9,7 @@ export const state = {
   activeLekce: new Set(),   // multi-select set of t2 values
   activeZnam: null,
   activeFigury: new Set(),  // multi-select
-  activeDatum: new Set(),   // multi-select
   sortNewest: false,
-  datumActiveYear: null,    // which year is shown in the datum grid
 
   // data
   videos: [],          // all video metadata from CSV
@@ -25,7 +23,5 @@ export function resetFilters() {
   state.activeLekce = new Set();
   state.activeZnam = null;
   state.activeFigury = new Set();
-  state.activeDatum = new Set();
-  state.datumActiveYear = null;
   state.sortNewest = false;
 }

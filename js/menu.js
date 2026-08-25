@@ -38,17 +38,10 @@ export function renderActiveFilters() {
       label: t2,
       remove: () => {
         state.activeLekce.delete(t2);
-        if (t2 === "Peťák a Renča") {
-          state.activeDatum = new Set();
-          state.datumActiveYear = null;
-        }
         updateNewestButtonVisibility();
         applyFilters();
       },
     })
-  );
-  state.activeDatum.forEach((d) =>
-    tags.push({ label: d, remove: () => { state.activeDatum.delete(d); applyFilters(); } })
   );
   state.activeFigury.forEach((f) =>
     tags.push({ label: f, remove: () => { state.activeFigury.delete(f); applyFilters(); } })
@@ -94,11 +87,6 @@ export function buildMenu(videos) {
     tree[v.t1].add(v.t2);
   });
 
-  const lekceTitle = document.createElement("div");
-  lekceTitle.className = "menu-section-title";
-  lekceTitle.textContent = "Lekce";
-  menu.appendChild(lekceTitle);
-
   Object.entries(tree).forEach(([t1, t2set]) => {
     const group = document.createElement("div");
     group.className = "menu-group open";
@@ -123,10 +111,6 @@ export function buildMenu(videos) {
         buildMenu(videos);
       });
       sub.appendChild(btn);
-
-      if (t2 === "Peťák a Renča" && state.activeLekce.has("Peťák a Renča")) {
-        appendDatumSection(sub, videos);
-      }
     });
 
     group.appendChild(main);
@@ -141,11 +125,6 @@ export function buildMenu(videos) {
     const divider = document.createElement("div");
     divider.className = "menu-divider";
     menu.appendChild(divider);
-
-    const figuryTitle = document.createElement("div");
-    figuryTitle.className = "menu-section-title";
-    figuryTitle.textContent = "Figury";
-    menu.appendChild(figuryTitle);
 
     const figuryWrap = document.createElement("div");
     figuryWrap.className = "figury-chips";
@@ -168,85 +147,6 @@ export function buildMenu(videos) {
   }
 }
 
-// Datum (date) sub-section — year toggle + month grid, only for "Peťák a Renča"
-function appendDatumSection(sub, videos) {
-  const monthOrder = ["Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"];
-  const monthShort = ["Led", "Úno", "Bře", "Dub", "Kvě", "Čvn", "Čvc", "Srp", "Zář", "Říj", "Lis", "Pro"];
-
-  const dataDates = new Set(
-    videos.filter((v) => v.t2 === "Peťák a Renča" && v.datum).map((v) => v.datum)
-  );
-
-  const years = [...new Set([...dataDates].map((d) => d.split("-")[0]))].sort((a, b) => Number(b) - Number(a));
-  if (years.length === 0) return;
-
-  if (!state.datumActiveYear || !years.includes(state.datumActiveYear)) {
-    state.datumActiveYear = years[0];
-  }
-
-  const datumWrap = document.createElement("div");
-  datumWrap.className = "datum-section";
-
-  const datumTitle = document.createElement("div");
-  datumTitle.className = "datum-section-title";
-  datumTitle.textContent = "Datum";
-  datumWrap.appendChild(datumTitle);
-
-  const yearRow = document.createElement("div");
-  yearRow.className = "datum-year-row";
-  years.forEach((yr) => {
-    const btn = document.createElement("button");
-    btn.className = "datum-year-btn" + (yr === state.datumActiveYear ? " active" : "");
-    btn.textContent = yr;
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      state.datumActiveYear = yr;
-      renderMonthGrid(datumWrap, yr, dataDates, monthOrder, monthShort);
-      yearRow.querySelectorAll(".datum-year-btn").forEach((b) => {
-        b.classList.toggle("active", b.textContent === yr);
-      });
-    });
-    yearRow.appendChild(btn);
-  });
-  datumWrap.appendChild(yearRow);
-
-  const gridWrap = document.createElement("div");
-  gridWrap.className = "datum-month-grid-wrap";
-  datumWrap.appendChild(gridWrap);
-
-  renderMonthGrid(datumWrap, state.datumActiveYear, dataDates, monthOrder, monthShort);
-  sub.appendChild(datumWrap);
-}
-
-function renderMonthGrid(wrap, yr, dataDates, monthOrder, monthShort) {
-  const gridWrap = wrap.querySelector(".datum-month-grid-wrap");
-  gridWrap.innerHTML = "";
-  const grid = document.createElement("div");
-  grid.className = "datum-month-grid";
-
-  monthOrder.forEach((month, i) => {
-    const key = yr + "-" + month;
-    const hasData = dataDates.has(key);
-    const isActive = state.activeDatum.has(key);
-    const cell = document.createElement("button");
-    cell.className = "datum-month-btn" + (hasData ? " has-data" : " no-data") + (isActive ? " active" : "");
-    cell.textContent = monthShort[i];
-    cell.disabled = !hasData;
-    if (hasData) {
-      cell.addEventListener("click", (e) => {
-        e.stopPropagation();
-        if (state.activeDatum.has(key)) state.activeDatum.delete(key);
-        else state.activeDatum.add(key);
-        applyFilters();
-        renderActiveFilters();
-        buildMenu(state.videos);
-      });
-    }
-    grid.appendChild(cell);
-  });
-  gridWrap.appendChild(grid);
-}
-
 // ================================
 // FILTER ACTIONS
 // ================================
@@ -255,10 +155,6 @@ export function applyPrimaryFilter(t1, t2) {
 
   if (state.activeLekce.has(t2)) {
     state.activeLekce.delete(t2);
-    if (t2 === "Peťák a Renča") {
-      state.activeDatum = new Set();
-      state.datumActiveYear = null;
-    }
   } else {
     state.activeLekce.add(t2);
   }
