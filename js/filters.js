@@ -1,5 +1,5 @@
 import { state, resetFilters } from "./state.js";
-import { shuffleArray } from "./utils.js";
+import { shuffleArray, videoKey } from "./utils.js";
 import { loadGallery, lazyLoadVideos } from "./gallery.js";
 import { isPasswordProtected, renderActiveFilters, updateZnamUI, updateNewestButtonVisibility } from "./menu.js";
 
@@ -34,7 +34,16 @@ export function applyFilters(forceRebuild = false) {
 
   if (state.sortNewest) {
     result = result.filter((v) => Number.isFinite(v.videoId)).sort((a, b) => b.videoId - a.videoId);
-    loadGallery(result, true);
+
+    // The DOM must still contain every video (not just this filtered/sorted
+    // subset) so that later filter changes — which only toggle visibility,
+    // they don't rebuild — can still find and show/hide the rest. Rebuild
+    // with the sorted matches first, followed by everything else, then
+    // immediately toggle visibility down to just the matches.
+    const matchedKeys = new Set(result.map(videoKey).filter(Boolean));
+    const rest = state.videos.filter((v) => !matchedKeys.has(videoKey(v)));
+    loadGallery([...result, ...rest], true);
+    loadGallery(result, false);
   } else if (forceRebuild) {
     result = shuffleArray([...state.videos].filter((v) => !isPasswordProtected(v.t2)));
     loadGallery(result, true);
