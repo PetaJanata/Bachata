@@ -41,7 +41,7 @@ export function applyFilters(forceRebuild = false) {
     // with the sorted matches first, followed by everything else, then
     // immediately toggle visibility down to just the matches.
     const matchedKeys = new Set(result.map(videoKey).filter(Boolean));
-    const rest = state.videos.filter((v) => !matchedKeys.has(videoKey(v)));
+    const rest = shuffleArray(state.videos.filter((v) => !matchedKeys.has(videoKey(v))));
     loadGallery([...result, ...rest], true);
     loadGallery(result, false);
   } else if (forceRebuild) {
