@@ -1,51 +1,51 @@
-import { debounce } from "./utils.js";
+import { debounce, shuffleArray } from "./utils.js";
 import { icons } from "./icons.js";
 
 // ================================
-// PHOTO LIST
+// PHOTO LIST + DIMENSIONS
 // ================================
-// Edit this list to match your actual files in /images. Keep it under ~20-25
-// for the desktop justified layout to stay snappy (it measures every photo's
-// real aspect ratio on load).
-const PHOTOS = [
-  "images/photo1.jpg",
-  "images/photo2.jpg",
-  "images/photo3.jpg",
-  "images/photo4.jpg",
-  "images/photo5.jpg",
-  "images/photo6.jpg",
-  "images/photo7.jpg",
-  "images/photo8.jpg",
-  "images/photo9.jpg",
-  "images/photo10.jpg",
-  "images/photo11.jpg",
-  "images/photo12.jpg",
-  "images/photo13.jpg",
-  "images/photo14.jpg",
-  "images/photo15.jpg",
-  "images/photo16.jpg",
-];
+// The photo list and every photo's real width/height come from
+// images/manifest.json, generated locally by
+// scripts/generate-photo-manifest.js (see that file for instructions).
+// This means the website never has to download a photo just to measure
+// it — it reads the pre-computed numbers instead — and you never have
+// to manually maintain a photo list: whatever's in images/ becomes the
+// gallery automatically when you regenerate the manifest.
+const MANIFEST_URL = "images/manifest.json";
 
 const MOBILE_QUERY = window.matchMedia("(max-width: 768px)");
 const TARGET_ROW_HEIGHT = 280; // desktop justified-row target height, px
 const ROW_GAP = 6;             // desktop gap between photos, px
 
 let container = null;
-let ratios = []; // { src, ratio } — natural aspect ratio (width / height), measured once
+let photos = [];  // [{ src, width, height, ratio }]
+let loaded = false;
 
 // ================================
-// MEASURE ASPECT RATIOS (once)
+// LOAD MANIFEST (once)
 // ================================
-function measureRatio(src) {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => {
-      const ratio = img.naturalWidth && img.naturalHeight ? img.naturalWidth / img.naturalHeight : 1.5;
-      resolve({ src, ratio });
-    };
-    img.onerror = () => resolve({ src, ratio: 1.5 }); // fallback ratio so layout doesn't break
-    img.src = src;
-  });
+async function loadPhotos() {
+  if (loaded) return photos;
+  loaded = true;
+
+  try {
+    const res = await fetch(MANIFEST_URL);
+    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+    const data = await res.json();
+    photos = shuffleArray(
+      data
+        .filter((p) => p.src && p.width && p.height)
+        .map((p) => ({ ...p, ratio: p.width / p.height }))
+    );
+  } catch (err) {
+    console.error(
+      `Couldn't load ${MANIFEST_URL} — run "node scripts/generate-photo-manifest.js" and commit the result.`,
+      err
+    );
+    photos = [];
+  }
+
+  return photos;
 }
 
 // ================================
@@ -55,13 +55,15 @@ function renderGridMode() {
   container.className = "photo-gallery grid-mode";
   container.innerHTML = "";
 
-  PHOTOS.forEach((src, i) => {
+  photos.forEach((photo, i) => {
     const tile = document.createElement("div");
     tile.className = "photo-tile";
 
     const img = document.createElement("img");
-    img.src = src;
+    img.src = photo.src;
     img.alt = "";
+    img.width = photo.width;
+    img.height = photo.height;
     img.loading = i < 9 ? "eager" : "lazy"; // first screenful loads immediately, rest lazy
     img.decoding = "async";
     tile.appendChild(img);
@@ -79,9 +81,9 @@ function layoutJustifiedRows(containerWidth) {
   let row = [];
   let rowRatioSum = 0;
 
-  ratios.forEach((item) => {
-    row.push(item);
-    rowRatioSum += item.ratio;
+  photos.forEach((photo) => {
+    row.push(photo);
+    rowRatioSum += photo.ratio;
 
     const widthAtTargetHeight = rowRatioSum * TARGET_ROW_HEIGHT + (row.length - 1) * ROW_GAP;
     if (widthAtTargetHeight >= containerWidth) {
@@ -115,14 +117,14 @@ function renderJustifiedMode() {
     rowEl.className = "justified-row";
     rowEl.style.height = `${row.height}px`;
 
-    row.items.forEach((item) => {
-      const idx = ratios.indexOf(item);
+    row.items.forEach((photo) => {
+      const idx = photos.indexOf(photo);
       const img = document.createElement("img");
-      img.src = item.src;
+      img.src = photo.src;
       img.alt = "";
       img.loading = "eager";
       img.decoding = "async";
-      img.style.width = `${item.ratio * row.height}px`;
+      img.style.width = `${photo.ratio * row.height}px`;
       img.addEventListener("click", () => openLightbox(idx));
       rowEl.appendChild(img);
     });
@@ -136,6 +138,13 @@ function renderJustifiedMode() {
 // ================================
 function render() {
   if (!container) return;
+
+  if (photos.length === 0) {
+    container.className = "photo-gallery";
+    container.innerHTML = "";
+    return;
+  }
+
   if (MOBILE_QUERY.matches) {
     renderGridMode();
   } else {
@@ -194,10 +203,10 @@ function openLightbox(index) {
 }
 
 function showLightboxPhoto(index) {
-  const total = PHOTOS.length;
+  const total = photos.length;
   lightboxIndex = (index + total) % total;
   const img = lightboxEl.querySelector(".photo-lightbox-img");
-  img.src = PHOTOS[lightboxIndex];
+  img.src = photos[lightboxIndex].src;
 }
 
 function handleLightboxKeydown(e) {
@@ -225,15 +234,10 @@ export async function initPhotoGallery() {
   container.className = "photo-gallery";
   heroSection.insertBefore(container, heroSection.querySelector(".hero-buttons"));
 
-  // Measure every photo's real aspect ratio once, up front — needed for the
-  // desktop justified layout. Mobile grid mode doesn't need this, but we
-  // measure regardless since the visitor can resize across the breakpoint.
-  ratios = await Promise.all(PHOTOS.map(measureRatio));
-
+  await loadPhotos(); // one small JSON fetch — no per-photo measuring
   render();
 
-  const rerender = debounce(render, 150);
-  window.addEventListener("resize", rerender);
+  window.addEventListener("resize", debounce(render, 150));
   MOBILE_QUERY.addEventListener("change", render);
 }
 
@@ -243,3 +247,4 @@ export function scrollToGallery() {
   const heroBottom = hero.getBoundingClientRect().bottom + window.scrollY;
   window.scrollTo({ top: heroBottom, behavior: "smooth" });
 }
+

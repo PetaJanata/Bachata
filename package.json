@@ -1,0 +1,11 @@
+{
+  "name": "bachata-site-tools",
+  "private": true,
+  "description": "Local build tooling for the Bachata revision website (not needed to run the site itself \u2014 only for regenerating the photo manifest).",
+  "scripts": {
+    "generate-photos": "node scripts/generate-photo-manifest.js"
+  },
+  "dependencies": {
+    "image-size": "^2.0.2"
+  }
+}
