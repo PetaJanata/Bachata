@@ -54,13 +54,14 @@ function layoutJustifiedRows(containerWidth) {
   const rows = [];
   let row = [];
   let rowRatioSum = 0;
+  const MIN_COLUMNS = 2; // never let a single photo fill a whole row by itself
 
   photos.forEach((photo) => {
     row.push(photo);
     rowRatioSum += photo.ratio;
 
     const widthAtTargetHeight = rowRatioSum * TARGET_ROW_HEIGHT + (row.length - 1) * ROW_GAP;
-    if (widthAtTargetHeight >= containerWidth) {
+    if (row.length >= MIN_COLUMNS && widthAtTargetHeight >= containerWidth) {
       const totalGap = (row.length - 1) * ROW_GAP;
       const height = (containerWidth - totalGap) / rowRatioSum;
       rows.push({ items: row, height });
@@ -219,13 +220,11 @@ function sizeGalleryWindow() {
   const innerHeight = heroSection.clientHeight - paddingTop - paddingBottom;
   const buttonsHeight = heroButtons.getBoundingClientRect().height;
 
-  // On mobile, the browser's own UI (address bar / gesture bar) often
-  // overlaps the very bottom of the viewport, hiding a button placed flush
-  // against it. Reserve blank space below the button — 1.5x its own height —
-  // so it sits clear of that area. This is subtracted from the gallery's
-  // available height too, so everything still fits inside the fixed-height
-  // hero without causing any overflow/scroll of the page itself.
-  const bottomSafeSpace = buttonsHeight * 1.5;
+  // Only phones commonly have browser UI (address bar / gesture bar) that
+  // overlaps the bottom of the viewport — reserve space for that only there.
+  // Mid-size and large screens keep the button in its original position.
+  const isMobile = window.innerWidth <= 768;
+  const bottomSafeSpace = isMobile ? buttonsHeight * 1.5 : 0;
   heroButtons.style.marginBottom = `${bottomSafeSpace}px`;
 
   const availableHeight = innerHeight - buttonsHeight - gap - bottomSafeSpace;
