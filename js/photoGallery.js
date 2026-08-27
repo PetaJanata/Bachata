@@ -6,19 +6,18 @@ import { icons } from "./icons.js";
 // ================================
 // The photo list and every photo's real width/height come from
 // images/manifest.json, generated locally by
-// scripts/generate-photo-manifest.js (see that file for instructions).
+// scripts/generate_photo_manifest.py (see that file for instructions).
 // This means the website never has to download a photo just to measure
 // it — it reads the pre-computed numbers instead — and you never have
 // to manually maintain a photo list: whatever's in images/ becomes the
 // gallery automatically when you regenerate the manifest.
 const MANIFEST_URL = "images/manifest.json";
 
-const MOBILE_QUERY = window.matchMedia("(max-width: 768px)");
-const TARGET_ROW_HEIGHT = 280; // desktop justified-row target height, px
+const TARGET_ROW_HEIGHT = 280; // justified-row target height, px
 const ROW_GAP = 6;             // desktop gap between photos, px
 
 let container = null;
-let photos = [];  // [{ src, width, height, ratio }]
+let photos = [];  // [{ src, width, height, ratio }] — full shuffled list
 let loaded = false;
 
 // ================================
@@ -39,7 +38,7 @@ async function loadPhotos() {
     );
   } catch (err) {
     console.error(
-      `Couldn't load ${MANIFEST_URL} — run "node scripts/generate-photo-manifest.js" and commit the result.`,
+      `Couldn't load ${MANIFEST_URL} — generate it locally (see scripts/) and commit the result.`,
       err
     );
     photos = [];
@@ -49,32 +48,7 @@ async function loadPhotos() {
 }
 
 // ================================
-// MOBILE: INSTAGRAM-STYLE GRID
-// ================================
-function renderGridMode() {
-  container.className = "photo-gallery grid-mode";
-  container.innerHTML = "";
-
-  photos.forEach((photo, i) => {
-    const tile = document.createElement("div");
-    tile.className = "photo-tile";
-
-    const img = document.createElement("img");
-    img.src = photo.src;
-    img.alt = "";
-    img.width = photo.width;
-    img.height = photo.height;
-    img.loading = i < 9 ? "eager" : "lazy"; // first screenful loads immediately, rest lazy
-    img.decoding = "async";
-    tile.appendChild(img);
-
-    tile.addEventListener("click", () => openLightbox(i));
-    container.appendChild(tile);
-  });
-}
-
-// ================================
-// DESKTOP: JUSTIFIED GALLERY
+// JUSTIFIED GALLERY (scrolls inside its own window, all screen sizes)
 // ================================
 function layoutJustifiedRows(containerWidth) {
   const rows = [];
@@ -122,7 +96,7 @@ function renderJustifiedMode() {
       const img = document.createElement("img");
       img.src = photo.src;
       img.alt = "";
-      img.loading = "eager";
+      img.loading = "lazy";
       img.decoding = "async";
       img.style.width = `${photo.ratio * row.height}px`;
       img.addEventListener("click", () => openLightbox(idx));
@@ -134,7 +108,7 @@ function renderJustifiedMode() {
 }
 
 // ================================
-// RENDER DISPATCH
+// RENDER
 // ================================
 function render() {
   if (!container) return;
@@ -145,11 +119,7 @@ function render() {
     return;
   }
 
-  if (MOBILE_QUERY.matches) {
-    renderGridMode();
-  } else {
-    renderJustifiedMode();
-  }
+  renderJustifiedMode();
 }
 
 // ================================
@@ -224,6 +194,38 @@ function closeLightbox() {
 }
 
 // ================================
+// SIZE THE GALLERY WINDOW
+// ================================
+// Sets an explicit pixel height instead of relying on flex-grow. Nested
+// flexbox + CSS grid + aspect-ratio + overflow-y:auto is a known trouble
+// spot on mobile Safari — an explicit height computed here is more
+// predictable across mobile browsers.
+//
+// Computed as: hero's inner height (minus its own padding) minus the
+// button row's own height minus the gap between them — independent of
+// the gallery's current size, since measuring the button's position
+// directly would be circular (it depends on the gallery's size, which
+// is exactly what we're trying to determine).
+function sizeGalleryWindow() {
+  const heroSection = document.querySelector(".hero");
+  const heroButtons = document.querySelector(".hero-buttons");
+  if (!heroSection || !heroButtons || !container) return;
+
+  const heroStyles = getComputedStyle(heroSection);
+  const paddingTop = parseFloat(heroStyles.paddingTop) || 0;
+  const paddingBottom = parseFloat(heroStyles.paddingBottom) || 0;
+  const gap = parseFloat(heroStyles.rowGap || heroStyles.gap) || 0;
+
+  const innerHeight = heroSection.clientHeight - paddingTop - paddingBottom;
+  const buttonsHeight = heroButtons.getBoundingClientRect().height;
+  const availableHeight = innerHeight - buttonsHeight - gap;
+
+  if (availableHeight > 0) {
+    container.style.height = `${availableHeight}px`;
+  }
+}
+
+// ================================
 // INIT
 // ================================
 export async function initPhotoGallery() {
@@ -234,11 +236,15 @@ export async function initPhotoGallery() {
   container.className = "photo-gallery";
   heroSection.insertBefore(container, heroSection.querySelector(".hero-buttons"));
 
+  sizeGalleryWindow();
   await loadPhotos(); // one small JSON fetch — no per-photo measuring
   render();
 
-  window.addEventListener("resize", debounce(render, 150));
-  MOBILE_QUERY.addEventListener("change", render);
+  const handleResize = debounce(() => {
+    sizeGalleryWindow();
+    render();
+  }, 150);
+  window.addEventListener("resize", handleResize);
 }
 
 export function scrollToGallery() {
@@ -247,4 +253,3 @@ export function scrollToGallery() {
   const heroBottom = hero.getBoundingClientRect().bottom + window.scrollY;
   window.scrollTo({ top: heroBottom, behavior: "smooth" });
 }
-

@@ -1,82 +1,112 @@
 [
   {
-    "src": "images/photo1.jpg",
-    "width": 1632,
-    "height": 1224
+    "src": "images/bachata day prague 2026.jpg",
+    "width": 2048,
+    "height": 1363
   },
   {
-    "src": "images/photo10.jpg",
-    "width": 1632,
-    "height": 1224
+    "src": "images/bachata festival prague 2026.jpg",
+    "width": 2048,
+    "height": 1365
   },
   {
-    "src": "images/photo11.jpg",
-    "width": 1632,
-    "height": 1224
-  },
-  {
-    "src": "images/photo12.jpg",
-    "width": 1632,
-    "height": 1224
-  },
-  {
-    "src": "images/photo13.jpg",
+    "src": "images/friday part 2026 04.jpg",
     "width": 2048,
     "height": 1536
   },
   {
-    "src": "images/photo14.jpg",
+    "src": "images/friday party 2023.jpg",
     "width": 2048,
     "height": 1536
   },
   {
-    "src": "images/photo15.jpg",
+    "src": "images/friday party 2024.jpg",
     "width": 2048,
     "height": 1536
   },
   {
-    "src": "images/photo16.jpg",
-    "width": 2048,
-    "height": 1536
-  },
-  {
-    "src": "images/photo2.jpg",
+    "src": "images/friday party 2025 02.jpg",
     "width": 1632,
     "height": 1224
   },
   {
-    "src": "images/photo3.jpg",
+    "src": "images/friday party 2025 03.jpg",
     "width": 1154,
     "height": 866
   },
   {
-    "src": "images/photo4.jpg",
+    "src": "images/friday party 2025 04.jpg",
     "width": 1632,
     "height": 1224
   },
   {
-    "src": "images/photo5.jpg",
+    "src": "images/friday party 2025 05.jpg",
+    "width": 1632,
+    "height": 1224
+  },
+  {
+    "src": "images/friday party 2025 06.jpg",
+    "width": 1632,
+    "height": 1224
+  },
+  {
+    "src": "images/friday party 2025.jpg",
     "width": 1224,
     "height": 1632
   },
   {
-    "src": "images/photo6.jpg",
-    "width": 1632,
-    "height": 1224
+    "src": "images/friday party 2026 01.jpg",
+    "width": 2048,
+    "height": 1536
   },
   {
-    "src": "images/photo7.jpg",
+    "src": "images/friday party 2026 02.jpg",
+    "width": 2048,
+    "height": 1536
+  },
+  {
+    "src": "images/friday party 2026 03.jpg",
+    "width": 2048,
+    "height": 1536
+  },
+  {
+    "src": "images/petrov 2023 03.jpg",
     "width": 585,
     "height": 708
   },
   {
-    "src": "images/photo8.jpg",
+    "src": "images/petrov 2025 02.jpg",
+    "width": 1632,
+    "height": 1224
+  },
+  {
+    "src": "images/petrov 2025.jpg",
     "width": 1224,
     "height": 1632
   },
   {
-    "src": "images/photo9.jpg",
+    "src": "images/vankovka 2024.jpg",
+    "width": 1154,
+    "height": 866
+  },
+  {
+    "src": "images/vankovka 2025 02.jpg",
     "width": 1632,
     "height": 1224
+  },
+  {
+    "src": "images/vankovka 2025 03.jpg",
+    "width": 1632,
+    "height": 1224
+  },
+  {
+    "src": "images/vankovka 2025.jpg",
+    "width": 1632,
+    "height": 1224
+  },
+  {
+    "src": "images/vankovka 2026.jpg",
+    "width": 2048,
+    "height": 1536
   }
 ]
