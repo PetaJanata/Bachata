@@ -218,7 +218,17 @@ function sizeGalleryWindow() {
 
   const innerHeight = heroSection.clientHeight - paddingTop - paddingBottom;
   const buttonsHeight = heroButtons.getBoundingClientRect().height;
-  const availableHeight = innerHeight - buttonsHeight - gap;
+
+  // On mobile, the browser's own UI (address bar / gesture bar) often
+  // overlaps the very bottom of the viewport, hiding a button placed flush
+  // against it. Reserve blank space below the button — 1.5x its own height —
+  // so it sits clear of that area. This is subtracted from the gallery's
+  // available height too, so everything still fits inside the fixed-height
+  // hero without causing any overflow/scroll of the page itself.
+  const bottomSafeSpace = buttonsHeight * 1.5;
+  heroButtons.style.marginBottom = `${bottomSafeSpace}px`;
+
+  const availableHeight = innerHeight - buttonsHeight - gap - bottomSafeSpace;
 
   if (availableHeight > 0) {
     container.style.height = `${availableHeight}px`;
